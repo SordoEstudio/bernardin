@@ -1,0 +1,129 @@
+{
+  "theme": {
+    "nombre": "Alfaterra",
+    "logo": "/images/logo-alfaterra.svg",
+    "verdeOscuro": "#257446",
+    "verdeClaro": "#40B553",
+    "azul": "#085294"
+  },
+  "nav": {
+    "es": [
+      [
+        "Inicio",
+        "/"
+      ],
+      [
+        "Empresa",
+        "/empresa"
+      ],
+      [
+        "Productos",
+        "/productos"
+      ],
+      [
+        "Noticias",
+        "/noticias"
+      ],
+      [
+        "Contacto",
+        "/contacto"
+      ]
+    ],
+    "en": [
+      [
+        "Home",
+        "/en/"
+      ],
+      [
+        "Company",
+        "/en/empresa"
+      ],
+      [
+        "Products",
+        "/en/productos"
+      ],
+      [
+        "News",
+        "/en/noticias"
+      ],
+      [
+        "Contact",
+        "/en/contacto"
+      ]
+    ]
+  },
+  "hero": {
+    "es": {
+      "eyebrow": "Tecnología que mueve el campo",
+      "title": "El futuro de la agricultura empieza hoy",
+      "text": "Distribuidores oficiales de maquinaria agrícola internacional para producir más, mejor y de manera sostenible.",
+      "cta": "Conocé nuestros productos"
+    },
+    "en": {
+      "eyebrow": "Technology moving agriculture",
+      "title": "The future of farming starts today",
+      "text": "Official distributors of international agricultural machinery to produce more, better and more sustainably.",
+      "cta": "Discover our products"
+    }
+  },
+  "brands": [
+    {
+      "id": "bernardin",
+      "name": "Bernardín",
+      "tag": "Fertilización y soluciones viales",
+      "color": "#257446",
+      "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg"
+    },
+    {
+      "id": "unia",
+      "name": "UNIA",
+      "tag": "Maquinaria para el suelo",
+      "color": "#085294",
+      "logo": "/brands/Unia/Logo - Unia.svg"
+    },
+    {
+      "id": "antonio-carraro",
+      "name": "Antonio Carraro",
+      "tag": "Tractores especializados",
+      "color": "#257446",
+      "logo": "/brands/Carraro/Logo - Antonio Carraro.svg"
+    },
+    {
+      "id": "samasz",
+      "name": "SaMASZ",
+      "tag": "Forraje y cosecha",
+      "color": "#085294",
+      "logo": "/brands/Samasz/Logo - Samasz.svg"
+    },
+    {
+      "id": "casale",
+      "name": "Casale",
+      "tag": "Tecnología para el campo",
+      "color": "#257446",
+      "logo": "/brands/Casale/Logo - Casale.svg"
+    }
+  ],
+  "stats": [
+    [
+      "100+",
+      "años de experiencia"
+    ],
+    [
+      "4",
+      "marcas líderes"
+    ],
+    [
+      "24/7",
+      "acompañamiento"
+    ],
+    [
+      "Argentina",
+      "raíces y territorio"
+    ]
+  ],
+  "contact": {
+    "whatsapp": "5493492597277",
+    "email": "info@alfaterra.com.ar",
+    "address": "San Vicente, Santa Fe, Argentina"
+  }
+}

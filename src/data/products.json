@@ -1,0 +1,72 @@
+{
+    "bernardin": [
+        {
+            "id": "fertilizadoras",
+            "name": "Fertilizadoras",
+            "description": "Precisión y rendimiento para cada aplicación.",
+            "items": [
+                "Fertilizadora a gravedad 1000L",
+                "Fertilizadora centrífuga"
+            ],
+            "accent": "#257446"
+        },
+        {
+            "id": "vial",
+            "name": "Equipos viales",
+            "description": "Soluciones robustas para el mantenimiento de caminos.",
+            "items": [
+                "Esparcidor de arena",
+                "Barredora vial"
+            ],
+            "accent": "#40B553"
+        }
+    ],
+    "unia": [
+        {
+            "id": "suelos",
+            "name": "Acondicionadores de suelos",
+            "description": "Preparación profesional para cada lote.",
+            "items": [
+                "Cultivador de campo",
+                "Subsolador"
+            ],
+            "accent": "#085294"
+        }
+    ],
+    "antonio-carraro": [
+        {
+            "id": "tractores",
+            "name": "Tractores especializados",
+            "description": "Potencia compacta para tareas exigentes.",
+            "items": [
+                "TRX 7800",
+                "Tigre 4000"
+            ],
+            "accent": "#257446"
+        }
+    ],
+    "samasz": [
+        {
+            "id": "forraje",
+            "name": "Forraje",
+            "description": "Corte y recolección con máxima eficiencia.",
+            "items": [
+                "Segadora frontal",
+                "Rastrillo henificador"
+            ],
+            "accent": "#085294"
+        }
+    ],
+    "casale": [
+        {
+            "id": "equipos",
+            "name": "Equipos agrícolas",
+            "description": "Soluciones confiables para una producción eficiente.",
+            "items": [
+                "Equipos de aplicación",
+                "Soluciones para granos"
+            ],
+            "accent": "#257446"
+        }
+    ]
+}

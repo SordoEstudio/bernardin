@@ -1,0 +1,31 @@
+---
+import '../styles/global.css'
+import site from '../data/site.json'
+type Locale = 'es' | 'en'
+type NavItem = [label: string, href: string]
+const { locale = 'es', title = 'Alfaterra' } = Astro.props as { locale?: Locale; title?: string }
+const currentLocale: Locale = locale
+const nav = site.nav[currentLocale] as NavItem[]
+const home = currentLocale === 'en' ? '/en/' : '/'
+const path = Astro.url.pathname
+const translations = locale === 'es'
+  ? { '/': '/en/', '/empresa': '/en/empresa', '/productos': '/en/productos', '/noticias': '/en/noticias', '/contacto': '/en/contacto' }
+  : { '/en/': '/', '/en/empresa': '/empresa', '/en/productos': '/productos', '/en/noticias': '/noticias', '/en/contacto': '/contacto' }
+const langUrl = translations[path] ?? (locale === 'es' ? '/en/' : '/')
+const currentPath = path.replace(/\/$/, '') || '/'
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title}</title>
+  </head>
+  <body>
+<header class="site-header"><div class="container nav"><a class="logo" href={home} aria-label="Alfaterra inicio">alfa<span>terra</span></a><nav class="navlinks" aria-label="Navegación principal">{nav.map(([label,href])=><a href={href} aria-current={currentPath === href.replace(/\/$/, '') || (currentPath === '/' && href === '/') ? 'page' : undefined}>{label}</a>)}<a class="language-toggle" href={langUrl} aria-label={locale === 'es' ? 'Ver sitio en inglés' : 'View site in Spanish'}><span class:list={{'language-option':true, active:locale === 'es'}}>ES</span><span class="language-divider" aria-hidden="true">/</span><span class:list={{'language-option':true, active:locale === 'en'}}>EN</span></a></nav><button class="menu" aria-label="Abrir menú" onclick="document.querySelector('.navlinks').classList.toggle('open')">☰</button></div></header>
+<main><slot /></main>
+<a class="whatsapp" href={`https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(locale==='es'?'Hola Alfaterra, me comunico desde el sitio web.':'Hi Alfaterra, I am contacting you from the website.')}`} aria-label="Contactar por WhatsApp">◔</a>
+<footer class="footer"><div class="container footer-grid"><div><a class="logo" href={home}>alfa<span>terra</span></a><p>{locale==='es'?'Tecnología agrícola para producir mejor.':'Agricultural technology to produce better.'}</p></div><div><h3>{locale==='es'?'Explorá':'Explore'}</h3>{nav.slice(0,4).map(([label,href])=><a href={href}>{label}</a>)}</div><div><h3>{locale==='es'?'Contacto':'Contact'}</h3><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a><a href={`https://wa.me/${site.contact.whatsapp}`}>WhatsApp</a><span>{site.contact.address}</span></div></div><div class="container"><small>© {new Date().getFullYear()} Alfaterra. {locale==='es'?'Todos los derechos reservados.':'All rights reserved.'}</small></div></footer>
+<style>.navlinks.open{display:flex;position:absolute;top:78px;left:0;right:0;padding:24px;background:white;flex-direction:column;box-shadow:var(--shadow)}.logo span{color:var(--blue)}.language-toggle{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--blue);transition:.2s}.language-toggle:hover{border-color:var(--blue);background:var(--pale)}.language-option{opacity:.55}.language-option.active{opacity:1;font-weight:700}.language-divider{opacity:.35}@media(max-width:700px){.navlinks{display:none}.menu{display:block}}</style>
+  </body>
+</html>
