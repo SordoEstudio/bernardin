@@ -1,5 +1,74 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'; import site from '../data/site.json'
-const d=site.hero.es
+import BaseLayout from "../layouts/BaseLayout.astro";
+import site from "../data/site.json";
+const d = site.hero.es;
 ---
-<BaseLayout title="Alfaterra | Tecnología agrícola" locale="es"><section class="hero"><div class="hero-art"></div><div class="container hero-content"><span class="eyebrow">{d.eyebrow}</span><h1>{d.title}</h1><p>{d.text}</p><a class="btn" href="/productos">{d.cta} <span>→</span></a></div></section><section class="stats">{site.stats.map(([value,label])=><div class="stat container"><strong>{value}</strong><span>{label}</span></div>)}</section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">Nuestras marcas</span><h2>Equipos para cada desafío</h2></div><p>Representamos marcas internacionales que comparten nuestra obsesión por la precisión, la innovación y el servicio.</p></div><div class="brand-grid">{site.brands.map(b=><a class="brand-card" href={`/productos/${b.id}`}><div><div class="brand-mark">{b.name}</div><p>{b.tag}</p></div><span class="arrow">Explorar catálogo →</span></a>)}</div></div></section><section class="section soft"><div class="container split"><div><span class="eyebrow">Nuestra forma de hacer</span><h2>Más que maquinaria. Un socio para tu campo.</h2><p>Desde la selección del equipo hasta el acompañamiento post venta, estamos cerca de quienes hacen crecer la producción argentina.</p><a class="btn alt" href="/empresa">Conocé Alfaterra</a></div><div class="story-panel"><span class="eyebrow">Desde 1924</span><h2>100 años mirando hacia adelante.</h2><p>Una historia construida con trabajo, territorio y relaciones que perduran.</p></div></div></section></BaseLayout>
+
+<BaseLayout title="Bernardin | Tecnología agrícola" locale="es"
+    ><section class="hero">
+        <div class="hero-art"></div><div class="container hero-content">
+            <span class="eyebrow">{d.eyebrow}</span><h1>{d.title}</h1><p>
+                {d.text}
+            </p><a class="btn" href="/productos">{d.cta} <span>→</span></a>
+        </div>
+    </section><section class="stats">
+        {
+            site.stats.map(([value, label]) => (
+                <div class="stat container">
+                    <>
+                        <strong>{value}</strong>
+                        <span>{label}</span>
+                    </>
+                </div>
+            ))
+        }
+    </section><section class="section">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">Nuestras marcas</span><h2>
+                        Equipos para cada desafío
+                    </h2>
+                </div><p>
+                    Representamos marcas internacionales que comparten nuestra
+                    obsesión por la precisión, la innovación y el servicio.
+                </p>
+            </div><div class="brand-grid">
+                {
+                    site.brands.map((b) => (
+                        <a class="brand-card" href={`/productos/${b.id}`}>
+                            <>
+                                <div>
+                                    <>
+                                        <div class="brand-mark">{b.name}</div>
+                                        <p>{b.tag}</p>
+                                    </>
+                                </div>
+                                <span class="arrow">Explorar catálogo →</span>
+                            </>
+                        </a>
+                    ))
+                }
+            </div>
+        </div>
+    </section><section class="section soft">
+        <div class="container split">
+            <div>
+                <span class="eyebrow">Nuestra forma de hacer</span><h2>
+                    Más que maquinaria. Un socio para tu campo.
+                </h2><p>
+                    Desde la selección del equipo hasta el acompañamiento post
+                    venta, estamos cerca de quienes hacen crecer la producción
+                    argentina.
+                </p><a class="btn alt" href="/empresa">Conocé Bernardin</a>
+            </div><div class="story-panel">
+                <span class="eyebrow">Desde 1924</span><h2>
+                    100 años mirando hacia adelante.
+                </h2><p>
+                    Una historia construida con trabajo, territorio y relaciones
+                    que perduran.
+                </p>
+            </div>
+        </div>
+    </section></BaseLayout
+>

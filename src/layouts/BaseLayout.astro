@@ -1,34 +1,35 @@
 ---
 import "../styles/global.css";
 import site from "../data/site.json";
+
 type Locale = "es" | "en";
 type NavItem = [label: string, href: string];
-const { locale = "es", title = "Alfaterra" } = Astro.props as {
-  locale?: Locale;
-  title?: string;
-};
+const { locale = "es", title = "Bernardin Maquinaria Agrícola" } =
+  Astro.props as { locale?: Locale; title?: string };
 const currentLocale: Locale = locale;
 const nav = site.nav[currentLocale] as NavItem[];
 const home = currentLocale === "en" ? "/en/" : "/";
 const path = Astro.url.pathname;
-const translations =
-  locale === "es"
-    ? {
-        "/": "/en/",
-        "/empresa": "/en/empresa",
-        "/productos": "/en/productos",
-        "/noticias": "/en/noticias",
-        "/contacto": "/en/contacto",
-      }
-    : {
-        "/en/": "/",
-        "/en/empresa": "/empresa",
-        "/en/productos": "/productos",
-        "/en/noticias": "/noticias",
-        "/en/contacto": "/contacto",
-      };
-const langUrl = translations[path] ?? (locale === "es" ? "/en/" : "/");
+const translations: Record<string, string> = {
+  "/": "/en/",
+  "/empresa": "/en/empresa",
+  "/productos": "/en/productos",
+  "/noticias": "/en/noticias",
+  "/contacto": "/en/contacto",
+  "/en/": "/",
+  "/en/empresa": "/empresa",
+  "/en/productos": "/productos",
+  "/en/noticias": "/noticias",
+  "/en/contacto": "/contacto",
+};
+const langUrl =
+  translations[path] ??
+  (path.startsWith("/en/") ? path.replace(/^\/en/, "") || "/" : `/en${path}`);
 const currentPath = path.replace(/\/$/, "") || "/";
+const logoAlt =
+  currentLocale === "es"
+    ? "Bernardin Maquinaria Agrícola"
+    : "Bernardin Agricultural Machinery";
 ---
 
 <!doctype html>
@@ -41,11 +42,17 @@ const currentPath = path.replace(/\/$/, "") || "/";
   <body>
     <header class="site-header">
       <div class="container nav">
-        <a class="logo" href={home} aria-label="Alfaterra inicio"
-          >alfa<span>terra</span></a
-        ><nav class="navlinks" aria-label="Navegación principal">
+        <a class="logo" href={home} aria-label={`${logoAlt} home`}>
+          <img src={site.theme.logo} alt={logoAlt} />
+        </a>
+        <nav
+          class="navlinks"
+          aria-label={currentLocale === "es"
+            ? "Navegación principal"
+            : "Main navigation"}
+        >
           {
-            nav.map(([label, href]) => (
+            nav.map(([label, href]: NavItem) => (
               <a
                 href={href}
                 aria-current={
@@ -58,23 +65,26 @@ const currentPath = path.replace(/\/$/, "") || "/";
                 {label}
               </a>
             ))
-          }<a
+          }
+          <a
             class="language-toggle"
             href={langUrl}
             aria-label={locale === "es"
-              ? "Ver sitio en inglés"
-              : "View site in Spanish"}
-            ><span
+              ? "View site in English"
+              : "Ver sitio en español"}
+          >
+            <span
               class:list={{ "language-option": true, active: locale === "es" }}
               >ES</span
-            ><span class="language-divider" aria-hidden="true">/</span><span
+            ><span class="language-divider" aria-hidden="true">|</span><span
               class:list={{ "language-option": true, active: locale === "en" }}
               >EN</span
-            ></a
-          >
-        </nav><button
+            >
+          </a>
+        </nav>
+        <button
           class="menu"
-          aria-label="Abrir menú"
+          aria-label={currentLocale === "es" ? "Abrir menú" : "Open menu"}
           onclick="document.querySelector('.navlinks').classList.toggle('open')"
           >☰</button
         >
@@ -83,33 +93,40 @@ const currentPath = path.replace(/\/$/, "") || "/";
     <main><slot /></main>
     <a
       class="whatsapp"
-      href={`https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(locale === "es" ? "Hola Alfaterra, me comunico desde el sitio web." : "Hi Alfaterra, I am contacting you from the website.")}`}
+      href={`https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(locale === "es" ? "Hola Bernardin, me comunico desde el sitio web." : "Hi Bernardin, I am contacting you from the website.")}`}
       aria-label="Contactar por WhatsApp">◔</a
     >
     <footer class="footer">
       <div class="container footer-grid">
         <div>
-          <a class="logo" href={home}>alfa<span>terra</span></a><p>
+          <a class="logo" href={home}
+            ><img src={site.theme.logo} alt={logoAlt} /></a
+          ><p>
             {
               locale === "es"
-                ? "Tecnología agrícola para producir mejor."
-                : "Agricultural technology to produce better."
+                ? "Maquinaria agrícola para producir mejor."
+                : "Agricultural machinery to produce better."
             }
           </p>
-        </div><div>
+        </div>
+        <div>
           <h3>{locale === "es" ? "Explorá" : "Explore"}</h3>{
-            nav.slice(0, 4).map(([label, href]) => <a href={href}>{label}</a>)
+            nav
+              .slice(0, 4)
+              .map(([label, href]: NavItem) => <a href={href}>{label}</a>)
           }
-        </div><div>
+        </div>
+        <div>
           <h3>{locale === "es" ? "Contacto" : "Contact"}</h3><a
             href={`mailto:${site.contact.email}`}>{site.contact.email}</a
           ><a href={`https://wa.me/${site.contact.whatsapp}`}>WhatsApp</a><span
             >{site.contact.address}</span
           >
         </div>
-      </div><div class="container">
+      </div>
+      <div class="container">
         <small
-          >© {new Date().getFullYear()} Alfaterra. {
+          >© {new Date().getFullYear()} Bernardin Maquinaria Agrícola. {
             locale === "es"
               ? "Todos los derechos reservados."
               : "All rights reserved."
@@ -117,53 +134,61 @@ const currentPath = path.replace(/\/$/, "") || "/";
         >
       </div>
     </footer>
-    <style>
-      .navlinks.open {
-        display: flex;
-        position: absolute;
-        top: 78px;
-        left: 0;
-        right: 0;
-        padding: 24px;
-        background: white;
-        flex-direction: column;
-        box-shadow: var(--shadow);
-      }
-      .logo span {
-        color: var(--blue);
-      }
-      .language-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 7px 10px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        color: var(--blue);
-        transition: 0.2s;
-      }
-      .language-toggle:hover {
-        border-color: var(--blue);
-        background: var(--pale);
-      }
-      .language-option {
-        opacity: 0.55;
-      }
-      .language-option.active {
-        opacity: 1;
-        font-weight: 700;
-      }
-      .language-divider {
-        opacity: 0.35;
-      }
-      @media (max-width: 700px) {
-        .navlinks {
-          display: none;
-        }
-        .menu {
-          display: block;
-        }
-      }
-    </style>
   </body>
 </html>
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+  }
+  .logo img {
+    width: 190px;
+    height: 48px;
+    object-fit: contain;
+    object-position: left center;
+  }
+  .language-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--blue);
+    transition: 0.2s;
+  }
+  .language-toggle:hover {
+    border-color: var(--blue);
+    background: var(--pale);
+  }
+  .language-option {
+    opacity: 0.5;
+  }
+  .language-option.active {
+    opacity: 1;
+    font-weight: 700;
+  }
+  .language-divider {
+    opacity: 0.35;
+  }
+  .navlinks.open {
+    display: flex;
+    position: absolute;
+    top: 78px;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    background: white;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+  }
+  @media (max-width: 700px) {
+    .navlinks {
+      display: none;
+    }
+    .menu {
+      display: block;
+    }
+  }
+</style>

@@ -1,7 +1,7 @@
 {
   "theme": {
-    "nombre": "Alfaterra",
-    "logo": "/images/logo-alfaterra.svg",
+    "nombre": "Bernardin Maquinaria Agrícola",
+    "logo": "/images/logo-bernardin.svg",
     "verdeOscuro": "#257446",
     "verdeClaro": "#40B553",
     "azul": "#085294"
@@ -72,35 +72,35 @@
       "name": "Bernardín",
       "tag": "Fertilización y soluciones viales",
       "color": "#257446",
-      "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg"
+      "logo": "/brands/bernardin.svg"
     },
     {
       "id": "unia",
       "name": "UNIA",
       "tag": "Maquinaria para el suelo",
       "color": "#085294",
-      "logo": "/brands/Unia/Logo - Unia.svg"
+      "logo": "/brands/unia.svg"
     },
     {
       "id": "antonio-carraro",
       "name": "Antonio Carraro",
       "tag": "Tractores especializados",
       "color": "#257446",
-      "logo": "/brands/Carraro/Logo - Antonio Carraro.svg"
+      "logo": "/brands/antonio-carraro.svg"
     },
     {
       "id": "samasz",
       "name": "SaMASZ",
       "tag": "Forraje y cosecha",
       "color": "#085294",
-      "logo": "/brands/Samasz/Logo - Samasz.svg"
+      "logo": "/brands/samasz.svg"
     },
     {
       "id": "casale",
       "name": "Casale",
       "tag": "Tecnología para el campo",
       "color": "#257446",
-      "logo": "/brands/Casale/Logo - Casale.svg"
+      "logo": "/brands/casale.svg"
     }
   ],
   "stats": [
@@ -124,6 +124,6 @@
   "contact": {
     "whatsapp": "5493492597277",
     "email": "info@alfaterra.com.ar",
-    "address": "San Vicente, Santa Fe, Argentina"
+    "address": "Provincia de Santa Fe, Argentina"
   }
 }

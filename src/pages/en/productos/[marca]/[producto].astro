@@ -1,0 +1,176 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import site from "../../../../data/site.json";
+import products from "../../../../data/products.json";
+
+type Product = {
+    name: string;
+    image?: string;
+    description?: string;
+    photos?: string[];
+};
+type Category = {
+    id: string;
+    name: string;
+    description: string;
+    items: (string | Product)[];
+};
+type Brand = (typeof site.brands)[number];
+const slugify = (value: string) =>
+    value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+export function getStaticPaths() {
+    const slugify = (value: string) =>
+        value
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "");
+    return site.brands.flatMap((brand) =>
+        (products[brand.id as keyof typeof products] as Category[]).flatMap(
+            (category) =>
+                category.items.map((entry) => {
+                    const product =
+                        typeof entry === "string" ? { name: entry } : entry;
+                    return {
+                        params: {
+                            marca: brand.id,
+                            producto: slugify(product.name),
+                        },
+                        props: { brand, product, category },
+                    };
+                }),
+        ),
+    );
+}
+const { brand, product, category } = Astro.props as {
+    brand: Brand;
+    product: Product;
+    category: Category;
+};
+const media = product.photos?.length
+    ? product.photos
+    : product.image
+      ? [product.image]
+      : [brand.logo];
+---
+
+<BaseLayout locale="en" title={`${product.name} | ${brand.name} | Bernardin`}>
+    <section class="page-hero">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="/en/productos">Products</a> / <a
+                    href={`/en/productos/${brand.id}`}>{brand.name}</a
+                > / {product.name}
+            </div><span class="eyebrow">{brand.name}</span><h1>
+                {product.name}
+            </h1><p>{product.description ?? category.description}</p>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container product-detail">
+            <div class="product-gallery">
+                <div class="gallery-main">
+                    <img src={media[0]} alt={product.name} />
+                </div>{
+                    media.length > 1 && (
+                        <div class="gallery-thumbs">
+                            {media.map((image, index) => (
+                                <a href={`#media-${index}`}>
+                                    <img
+                                        id={`media-${index}`}
+                                        src={image}
+                                        alt={`${product.name}, image ${index + 1}`}
+                                    />
+                                </a>
+                            ))}
+                        </div>
+                    )
+                }
+            </div><div class="product-copy">
+                <span class="eyebrow">{category.name}</span><h2>
+                    A solution designed for your farm.
+                </h2><p>
+                    {
+                        product.description ??
+                            `Discover ${product.name}, a ${brand.name} solution designed for precision, performance and technical support.`
+                    }
+                </p><a
+                    class="btn"
+                    href={`/en/contacto?producto=${encodeURIComponent(product.name)}`}
+                    >Ask about this product <span>→</span></a
+                >
+            </div>
+        </div>
+    </section>
+</BaseLayout>
+<style>
+    .product-detail {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+        gap: clamp(34px, 7vw, 90px);
+        align-items: center;
+    }
+    .gallery-main {
+        display: grid;
+        place-items: center;
+        min-height: 420px;
+        padding: 48px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        background:
+            radial-gradient(
+                circle at 50% 45%,
+                rgba(64, 181, 83, 0.12),
+                transparent 65%
+            ),
+            var(--pale);
+        box-shadow: var(--shadow);
+    }
+    .gallery-main img {
+        width: 100%;
+        height: 330px;
+        object-fit: contain;
+    }
+    .gallery-thumbs {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+    .gallery-thumbs a {
+        padding: 6px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+    }
+    .gallery-thumbs img {
+        width: 74px;
+        height: 58px;
+        object-fit: cover;
+    }
+    .product-copy h2 {
+        margin: 12px 0 20px;
+    }
+    .product-copy p {
+        max-width: 520px;
+        margin-bottom: 30px;
+        color: #5b675e;
+    }
+    @media (max-width: 760px) {
+        .product-detail {
+            grid-template-columns: 1fr;
+        }
+        .gallery-main {
+            min-height: 280px;
+            padding: 28px;
+        }
+        .gallery-main img {
+            height: 240px;
+        }
+    }
+</style>

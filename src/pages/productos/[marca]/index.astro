@@ -86,7 +86,24 @@ const cats = products[brand.id] || [];
                                                     />
                                                 )}
                                             </div>
-                                            <h3>{product.name}</h3>
+                                            <h3>
+                                                <a
+                                                    href={`/productos/${brand.id}/${encodeURIComponent(
+                                                        product.name
+                                                            .toLowerCase()
+                                                            .replace(
+                                                                /[^a-z0-9]+/g,
+                                                                "-",
+                                                            )
+                                                            .replace(
+                                                                /^-|-$/g,
+                                                                "",
+                                                            ),
+                                                    )}`}
+                                                >
+                                                    {product.name}
+                                                </a>
+                                            </h3>
                                         </article>
                                     );
                                 })}
