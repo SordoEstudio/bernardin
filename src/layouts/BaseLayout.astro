@@ -94,6 +94,8 @@ const logoAlt =
     <a
       class="whatsapp"
       href={`https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(locale === "es" ? "Hola Bernardin, me comunico desde el sitio web." : "Hi Bernardin, I am contacting you from the website.")}`}
+      target="_blank"
+      rel="noopener noreferrer"
       aria-label={locale === "es"
         ? "Contactar por WhatsApp"
         : "Contact Bernardin on WhatsApp"}
@@ -127,8 +129,7 @@ const logoAlt =
           <h3>{locale === "es" ? "Contacto" : "Contact"}</h3><a
             href={`mailto:${site.contact.email}`}>{site.contact.email}</a
           ><a href={`https://wa.me/${site.contact.whatsapp}`}>WhatsApp</a><span
-            >{site.contact.address}</span
-          >
+            >{site.contact.address}</span>
         </div>
       </div>
       <div class="container">
@@ -137,8 +138,7 @@ const logoAlt =
             locale === "es"
               ? "Todos los derechos reservados."
               : "All rights reserved."
-          }</small
-        >
+          }</small>
       </div>
     </footer>
   </body>

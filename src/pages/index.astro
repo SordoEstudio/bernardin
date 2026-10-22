@@ -71,4 +71,101 @@ const d = site.hero.es;
             </div>
         </div>
     </section></BaseLayout
->
+><style>
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--line);
+    }
+    .stats .stat {
+        width: 100%;
+        min-height: 150px;
+        padding: 28px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: var(--white);
+    }
+    .stats .stat strong {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        line-height: 1;
+    }
+    .stats .stat span {
+        max-width: 16ch;
+        margin-top: 10px;
+    }
+    .story-panel {
+        background: var(--green);
+        color: white;
+        padding: clamp(28px, 5vw, 64px);
+        border-radius: 4px;
+    }
+    .story-panel .eyebrow {
+        color: #b9efc3;
+    }
+    .story-panel h2 {
+        color: white;
+    }
+    .story-panel p {
+        color: #f1fff4;
+    }
+    @media (max-width: 700px) {
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1px;
+            background: var(--line);
+            padding: 0;
+        }
+        .stats .stat {
+            width: 100%;
+            min-height: 126px;
+            padding: 22px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: var(--white);
+        }
+        .stats .stat:last-child {
+            grid-column: 1 / -1;
+        }
+        .stats .stat strong {
+            font-size: 2.25rem;
+            line-height: 1;
+        }
+        .stats .stat span {
+            max-width: 13ch;
+            margin-top: 8px;
+            font-size: 0.82rem;
+            line-height: 1.25;
+        }
+        .story-panel {
+            margin-top: 28px;
+            padding: 30px 24px;
+            min-height: 300px;
+            background: linear-gradient(145deg, #e9f4e9 0%, #d4eadb 100%);
+            border: 1px solid #b8d7c1;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .story-panel .eyebrow {
+            color: var(--green);
+        }
+        .story-panel h2 {
+            color: var(--green);
+            font-size: 2rem;
+        }
+        .story-panel p {
+            color: var(--ink);
+            margin-bottom: 0;
+        }
+    }
+</style>

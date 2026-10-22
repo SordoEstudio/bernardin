@@ -70,4 +70,71 @@ const d = site.hero.en;
             </div>
         </div>
     </section></BaseLayout
->
+><style>
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--line);
+    }
+    .stats .stat {
+        width: 100%;
+        min-height: 150px;
+        padding: 28px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: var(--white);
+    }
+    .stats .stat strong {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        line-height: 1;
+    }
+    .stats .stat span {
+        max-width: 16ch;
+        margin-top: 10px;
+    }
+    .story-panel {
+        background: var(--green);
+        color: white;
+        padding: clamp(28px, 5vw, 64px);
+        border-radius: 4px;
+    }
+    .story-panel .eyebrow {
+        color: #b9efc3;
+    }
+    .story-panel h2 {
+        color: white;
+    }
+    .story-panel p {
+        color: #f1fff4;
+    }
+    @media (max-width: 700px) {
+        .stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .stats .stat {
+            min-height: 126px;
+            padding: 22px 16px;
+        }
+        .stats .stat strong {
+            font-size: 2.25rem;
+        }
+        .stats .stat span {
+            max-width: 13ch;
+            margin-top: 8px;
+        }
+        .stats .stat:last-child {
+            grid-column: 1 / -1;
+        }
+        .story-panel {
+            margin-top: 16px;
+            padding: 28px 22px;
+        }
+        .hero .eyebrow {
+            color: #d8f5df;
+        }
+    }
+</style>
