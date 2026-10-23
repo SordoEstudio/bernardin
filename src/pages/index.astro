@@ -75,27 +75,53 @@ const d = site.hero.es;
     .stats {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1px;
-        background: var(--line);
+        gap: 0;
+        background: var(--white);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
     }
     .stats .stat {
         width: 100%;
-        min-height: 150px;
-        padding: 28px 24px;
+        min-height: 142px;
+        padding: 26px 24px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         text-align: center;
-        background: var(--white);
+        background: var(--pale);
+        color: var(--green);
+        border-right: 1px solid var(--line);
+    }
+    .stats .stat:last-child {
+        border-right: 0;
     }
     .stats .stat strong {
-        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        font-size: clamp(2.1rem, 4vw, 3.5rem);
         line-height: 1;
+        color: var(--green);
     }
     .stats .stat span {
         max-width: 16ch;
         margin-top: 10px;
+        color: var(--ink);
+        font-size: 0.92rem;
+    }
+    .stats .stat:nth-child(2),
+    .stats .stat:nth-child(3),
+    .stats .stat:nth-child(4) {
+        background: var(--pale);
+        color: var(--green);
+    }
+    .stats .stat:nth-child(2) strong,
+    .stats .stat:nth-child(3) strong,
+    .stats .stat:nth-child(4) strong {
+        color: var(--green);
+    }
+    .stats .stat:nth-child(2) span,
+    .stats .stat:nth-child(3) span,
+    .stats .stat:nth-child(4) span {
+        color: var(--ink);
     }
     .story-panel {
         background: var(--green);

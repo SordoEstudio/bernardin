@@ -1,0 +1,66 @@
+{
+    "bernardin": [
+        {
+            "id": "fertilizadoras",
+            "name": "Fertilizer spreaders",
+            "description": "Precision and performance for every application.",
+            "items": [
+                "Gravity fertilizer spreader 1000L",
+                "Centrifugal fertilizer spreader"
+            ]
+        },
+        {
+            "id": "vial",
+            "name": "Road equipment",
+            "description": "Robust solutions for road maintenance.",
+            "items": [
+                "Sand spreader",
+                "Road sweeper"
+            ]
+        }
+    ],
+    "unia": [
+        {
+            "id": "suelos",
+            "name": "Soil conditioners",
+            "description": "Professional preparation for every field.",
+            "items": [
+                "Field cultivator",
+                "Subsoiler"
+            ]
+        }
+    ],
+    "antonio-carraro": [
+        {
+            "id": "tractores",
+            "name": "Specialized tractors",
+            "description": "Compact power for demanding tasks.",
+            "items": [
+                "TRX 7800",
+                "Tigre 4000"
+            ]
+        }
+    ],
+    "samasz": [
+        {
+            "id": "forraje",
+            "name": "Forage equipment",
+            "description": "Cutting and harvesting with maximum efficiency.",
+            "items": [
+                "Front mower",
+                "Tedding rake"
+            ]
+        }
+    ],
+    "casale": [
+        {
+            "id": "equipos",
+            "name": "Agricultural equipment",
+            "description": "Reliable solutions for efficient production.",
+            "items": [
+                "Application equipment",
+                "Grain solutions"
+            ]
+        }
+    ]
+}

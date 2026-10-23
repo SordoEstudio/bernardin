@@ -2,6 +2,7 @@
   "theme": {
     "nombre": "Bernardin Maquinaria Agrícola",
     "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg",
+    "footerLogo": "/brands/Bernardin/Logo Bernardin - Monocromatico.svg",
     "verdeOscuro": "#257446",
     "verdeClaro": "#40B553",
     "azul": "#085294"
@@ -71,6 +72,7 @@
       "id": "bernardin",
       "name": "Bernardín",
       "tag": "Fertilización y soluciones viales",
+      "tagEn": "Fertilization and road solutions",
       "color": "#257446",
       "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg"
     },
@@ -78,6 +80,7 @@
       "id": "unia",
       "name": "UNIA",
       "tag": "Maquinaria para el suelo",
+      "tagEn": "Soil preparation machinery",
       "color": "#085294",
       "logo": "/brands/Unia/Logo - Unia.svg"
     },
@@ -85,6 +88,7 @@
       "id": "antonio-carraro",
       "name": "Antonio Carraro",
       "tag": "Tractores especializados",
+      "tagEn": "Specialized tractors",
       "color": "#257446",
       "logo": "/brands/Carraro/Logo - Antonio Carraro.svg"
     },
@@ -92,6 +96,7 @@
       "id": "samasz",
       "name": "SaMASZ",
       "tag": "Forraje y cosecha",
+      "tagEn": "Forage and harvesting",
       "color": "#085294",
       "logo": "/brands/Samasz/Logo - Samasz.svg"
     },
@@ -99,6 +104,7 @@
       "id": "casale",
       "name": "Casale",
       "tag": "Tecnología para el campo",
+      "tagEn": "Technology for agriculture",
       "color": "#257446",
       "logo": "/brands/Casale/Logo - Casale.svg"
     }
@@ -121,9 +127,27 @@
       "raíces y territorio"
     ]
   ],
+  "statsEn": [
+    [
+      "100+",
+      "years of experience"
+    ],
+    [
+      "5",
+      "leading brands"
+    ],
+    [
+      "24/7",
+      "support"
+    ],
+    [
+      "Argentina",
+      "roots and territory"
+    ]
+  ],
   "contact": {
     "whatsapp": "5493492597277",
-    "email": "info@bernardin.com.ar",
-    "address": "Andres Bernardin 198 - San Vicente, Santa Fe"
+    "email": "info@alfaterra.com.ar",
+    "address": "Provincia de Santa Fe, Argentina"
   }
 }
