@@ -4,8 +4,21 @@ import site from "../data/site.json";
 
 type Locale = "es" | "en";
 type NavItem = [label: string, href: string];
-const { locale = "es", title = "Bernardin Maquinaria Agrícola" } =
-  Astro.props as { locale?: Locale; title?: string };
+const {
+  locale = "es",
+  title = "Bernardin Maquinaria Agrícola",
+  description,
+  image = "/og-default.jpg",
+  type = "website",
+  noindex = false,
+} = Astro.props as {
+  locale?: Locale;
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: "website" | "article";
+  noindex?: boolean;
+};
 const currentLocale: Locale = locale;
 const nav = site.nav[currentLocale] as NavItem[];
 const home = currentLocale === "en" ? "/en/" : "/";
@@ -30,14 +43,100 @@ const logoAlt =
   currentLocale === "es"
     ? "Bernardin Maquinaria Agrícola"
     : "Bernardin Agricultural Machinery";
+
+/* ---------- SEO ---------- */
+const defaultDescription =
+  currentLocale === "es"
+    ? "Bernardin: maquinaria agrícola y tecnología de precisión para el campo argentino. Representamos marcas internacionales con asesoramiento y servicio postventa."
+    : "Bernardin: agricultural machinery and precision technology for Argentine farms. International brands with expert advice and after-sales service.";
+const metaDescription = description ?? defaultDescription;
+
+// Misma convención que el sitemap (build.format "directory"): URLs con "/" final
+const withSlash = (p: string) =>
+  /\.[a-z0-9]+$/i.test(p) || p.endsWith("/") ? p : `${p}/`;
+const abs = (p: string) => new URL(p, Astro.site).href;
+
+const canonical = abs(withSlash(path));
+const esPath = currentLocale === "es" ? path : langUrl;
+const enPath = currentLocale === "en" ? path : langUrl;
+const esHref = abs(withSlash(esPath));
+const enHref = abs(withSlash(enPath));
+const ogImage = abs(image);
+const ogLocale = currentLocale === "es" ? "es_AR" : "en_US";
+const ogLocaleAlt = currentLocale === "es" ? "en_US" : "es_AR";
+const siteName = "Bernardin Maquinaria Agrícola";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": abs("/#organization"),
+      name: siteName,
+      url: abs("/"),
+      logo: abs(site.theme.logo),
+      email: site.contact.email,
+      address: site.contact.address,
+      foundingDate: "1924",
+    },
+    {
+      "@type": "WebSite",
+      "@id": abs("/#website"),
+      url: abs("/"),
+      name: siteName,
+      inLanguage: ["es-AR", "en"],
+      publisher: { "@id": abs("/#organization") },
+    },
+  ],
+};
 ---
 
 <!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <meta name="description" content={metaDescription} />
+    <meta
+      name="robots"
+      content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"}
+    />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Idiomas alternativos -->
+    <link rel="alternate" hreflang="es-AR" href={esHref} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="x-default" href={esHref} />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlt} />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Favicon e íconos -->
+    <link rel="icon" href="/brands/Bernardin/Logo - Condor.svg" sizes="48x48" />
+    <link rel="icon" href="/brands/Bernardin/Logo - Condor.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brands/Bernardin/Logo - Condor.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#257446" />
+
+    <!-- Datos estructurados -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <header class="site-header">

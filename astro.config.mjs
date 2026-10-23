@@ -1,9 +1,15 @@
-import { defineConfig } from 'astro/config'
-import sitemap from '@astrojs/sitemap'
+import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
-  site: 'https://alfaterra.com.ar',
-  i18n: { defaultLocale: 'es', locales: ['es', 'en'] },
-  integrations: [sitemap()],
-})
-
+  site: "https://bernardin.com.ar",
+  i18n: { defaultLocale: "es", locales: ["es", "en"] },
+  integrations: [
+    sitemap({
+      i18n: {
+        defaultLocale: "es",
+        locales: { es: "es-AR", en: "en" },
+      },
+    }),
+  ],
+});
