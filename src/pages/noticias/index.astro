@@ -73,29 +73,46 @@ const locale = "es";
     </section>
 </BaseLayout>
 <script>
-    const cards = [...document.querySelectorAll("[data-news-card]")],
-        pagination = document.querySelector("[data-pagination]"),
-        perPage = 6,
-        featured = cards.find((card) => card.dataset.featured === "true"),
-        regular = cards.filter((card) => card.dataset.featured !== "true"),
-        pages = Math.max(1, Math.ceil(regular.length / perPage)),
-        params = new URLSearchParams(location.search);
-    let current = Math.min(
+    const cards = [
+        ...document.querySelectorAll<HTMLElement>("[data-news-card]"),
+    ];
+    const pagination = document.querySelector<HTMLElement>("[data-pagination]");
+    const perPage = 6;
+    const featured = cards.find((card) => card.dataset.featured === "true");
+    const regular = cards.filter((card) => card.dataset.featured !== "true");
+    const pages = Math.max(1, Math.ceil(regular.length / perPage));
+    const params = new URLSearchParams(location.search);
+    const current = Math.min(
         Math.max(Number(params.get("pagina")) || 1, 1),
         pages,
     );
+
     if (featured) featured.hidden = false;
-    regular.forEach(
-        (card, i) =>
-            (card.hidden =
-                i < (current - 1) * perPage || i >= current * perPage),
-    );
-    if (pagination && pages > 1)
-        pagination.innerHTML = Array.from(
-            { length: pages },
-            (_, i) =>
-                `<a class="${i + 1 === current ? "is-current" : ""}" href="?pagina=${i + 1}" aria-current="${i + 1 === current ? "page" : "false"}">${i + 1}</a>`,
-        ).join("");
+
+    regular.forEach((card, i) => {
+        card.hidden = i < (current - 1) * perPage || i >= current * perPage;
+    });
+
+    if (pagination && pages > 1) {
+        const prev =
+            current > 1
+                ? `<a class="pg-arrow" href="?pagina=${current - 1}" rel="prev" aria-label="Página anterior">←</a>`
+                : `<span class="pg-arrow is-disabled" aria-hidden="true">←</span>`;
+
+        const next =
+            current < pages
+                ? `<a class="pg-arrow" href="?pagina=${current + 1}" rel="next" aria-label="Página siguiente">→</a>`
+                : `<span class="pg-arrow is-disabled" aria-hidden="true">→</span>`;
+
+        const numbers = Array.from({ length: pages }, (_, i) => {
+            const page = i + 1;
+            return page === current
+                ? `<span class="pg-number is-current" aria-current="page" aria-label="Página ${page}, actual">${page}</span>`
+                : `<a class="pg-number" href="?pagina=${page}" aria-label="Ir a la página ${page}">${page}</a>`;
+        }).join("");
+
+        pagination.innerHTML = `${prev}${numbers}${next}<p class="pg-status">Página ${current} de ${pages}</p>`;
+    }
 </script>
 <style>
     .news-grid {
@@ -130,7 +147,7 @@ const locale = "es";
         min-height: 360px;
     }
     .news-image strong {
-        font: 700 clamp(5rem, 12vw, 10rem)/0.8 var(--display);
+        font: 700 clamp(5rem, 12vw, 10rem) / 0.8 var(--display);
         opacity: 0.9;
     }
     .news-content {
@@ -153,35 +170,65 @@ const locale = "es";
         text-transform: uppercase;
         letter-spacing: 0.08em;
     }
+
+    /* ---------- Paginado ----------
+       El contenido se inserta con innerHTML desde el script, por eso
+       los hijos van con :global() (Astro no les agrega su atributo de scope). */
     .pagination {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
+        align-items: center;
         gap: 8px;
         margin-top: 44px;
     }
-    .pagination a {
+    .pagination :global(.pg-number),
+    .pagination :global(.pg-arrow) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         min-width: 46px;
-        padding: 11px 14px;
-        text-align: center;
-        border: 1px solid var(--line);
+        height: 46px;
+        padding: 0 14px;
+        border: 2px solid var(--line);
         border-radius: 4px;
-        color: var(--blue);
         background: #fff;
+        color: var(--blue);
         font-weight: 700;
+        line-height: 1;
         transition: 0.2s;
     }
-    .pagination a:hover {
+    .pagination :global(a.pg-number:hover),
+    .pagination :global(a.pg-arrow:hover) {
         border-color: var(--green);
         background: var(--pale);
+        color: var(--green);
     }
-    .pagination a[aria-current="page"] {
+    /* Página actual: relleno verde, ligeramente más grande y con halo */
+    .pagination :global(.pg-number.is-current) {
+        min-width: 54px;
+        height: 54px;
         background: var(--green);
-        border: 2px solid var(--green);
+        border-color: var(--green);
         color: #fff;
+        font-size: 1.15rem;
+        cursor: default;
         box-shadow:
-            0 0 0 4px rgba(37, 116, 70, 0.14),
-            0 5px 14px rgba(37, 116, 70, 0.22);
-        transform: translateY(-2px);
+            0 0 0 4px rgba(37, 116, 70, 0.18),
+            0 6px 16px rgba(37, 116, 70, 0.28);
+    }
+    /* Flechas deshabilitadas (primera / última página) */
+    .pagination :global(.pg-arrow.is-disabled) {
+        opacity: 0.4;
+        background: var(--pale);
+        cursor: not-allowed;
+    }
+    .pagination :global(.pg-status) {
+        flex: 0 0 100%;
+        margin: 10px 0 0;
+        text-align: center;
+        color: #566b60;
+        font-size: 0.9rem;
     }
     @media (max-width: 700px) {
         .news-grid {
