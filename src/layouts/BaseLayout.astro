@@ -6,7 +6,7 @@ type Locale = "es" | "en";
 type NavItem = [label: string, href: string];
 const {
   locale = "es",
-  title = "Bernardin Maquinaria Agrícola",
+  title = "Bernardin Máquinas Agrícolas",
   description,
   image = "/og-default.jpg",
   type = "website",
@@ -41,7 +41,7 @@ const langUrl =
 const currentPath = path.replace(/\/$/, "") || "/";
 const logoAlt =
   currentLocale === "es"
-    ? "Bernardin Maquinaria Agrícola"
+    ? "Bernardin Máquinas Agrícolas"
     : "Bernardin Agricultural Machinery";
 
 /* ---------- SEO ---------- */
@@ -64,7 +64,7 @@ const enHref = abs(withSlash(enPath));
 const ogImage = abs(image);
 const ogLocale = currentLocale === "es" ? "es_AR" : "en_US";
 const ogLocaleAlt = currentLocale === "es" ? "en_US" : "es_AR";
-const siteName = "Bernardin Maquinaria Agrícola";
+const siteName = "Bernardin Máquinas Agrícolas";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -100,7 +100,9 @@ const jsonLd = {
     <meta name="description" content={metaDescription} />
     <meta
       name="robots"
-      content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"}
+      content={noindex
+        ? "noindex, nofollow"
+        : "index, follow, max-image-preview:large"}
     />
     <link rel="canonical" href={canonical} />
 
@@ -129,9 +131,20 @@ const jsonLd = {
     <meta name="twitter:image" content={ogImage} />
 
     <!-- Favicon e íconos -->
-    <link rel="icon" href="/brands/Bernardin/Logo - Condor.svg" sizes="48x48" />
-    <link rel="icon" href="/brands/Bernardin/Logo - Condor.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/brands/Bernardin/Logo - Condor.svg" />
+    <link
+      rel="icon"
+      href="/brands/Bernardin/Logo - Condor con fondo.png"
+      sizes="48x48"
+    />
+    <link
+      rel="icon"
+      href="/brands/Bernardin/Logo - Condor con fondo.png"
+      type="image/svg+xml"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="/brands/Bernardin/Logo - Condor con fondo.png"
+    />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#257446" />
 
@@ -227,17 +240,36 @@ const jsonLd = {
         <div>
           <h3>{locale === "es" ? "Contacto" : "Contact"}</h3><a
             href={`mailto:${site.contact.email}`}>{site.contact.email}</a
-          ><a href={`https://wa.me/${site.contact.whatsapp}`}>WhatsApp</a><span
-            >{site.contact.address}</span>
+          ><a href={`https://wa.me/${site.contact.whatsapp}`} target="_blank"
+            >WhatsApp</a
+          >
+          <a
+            href={`https://maps.google.com/?q=${encodeURIComponent(site.contact.address)}`}
+            target="_blank"
+          >
+            <span>{site.contact.address}</span>
+          </a>
         </div>
       </div>
       <div class="container">
-        <small
-          >© {new Date().getFullYear()} Bernardin Maquinaria Agrícola. {
-            locale === "es"
-              ? "Todos los derechos reservados."
-              : "All rights reserved."
-          }</small>
+        <small class="footer-bottom">
+          <span
+            >© {new Date().getFullYear()} Bernardin Máquinas Agrícolas. {
+              locale === "es"
+                ? "Todos los derechos reservados."
+                : "All rights reserved."
+            }</span
+          ><a
+            href="http://harvi.digital/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="credit"
+              >{locale === "es" ? "Desarrollado por " : "Developed by "}
+              Harvi Digital</span
+            ></a
+          >
+        </small>
       </div>
     </footer>
   </body>
@@ -294,6 +326,29 @@ const jsonLd = {
     background: white;
     flex-direction: column;
     box-shadow: var(--shadow);
+  }
+  .footer .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+  }
+  .footer .credit {
+    font-size: 0.85em;
+    opacity: 0.7;
+  }
+  .footer .credit a {
+    display: inline;
+    margin: 0;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+  }
+  .footer .credit a:hover {
+    color: var(--lime);
+    transform: none;
+    text-decoration-color: currentColor;
   }
   @media (max-width: 700px) {
     .navlinks {

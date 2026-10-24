@@ -1,6 +1,6 @@
 {
   "theme": {
-    "nombre": "Bernardin Maquinaria Agrícola",
+    "nombre": "Bernardin Máquinas Agrícolas",
     "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg",
     "footerLogo": "/brands/Bernardin/Logo Bernardin - Monocromatico.svg",
     "verdeOscuro": "#257446",
@@ -147,7 +147,7 @@
   ],
   "contact": {
     "whatsapp": "5493492597277",
-    "email": "info@alfaterra.com.ar",
-    "address": "San Vicente, Santa Fe, Argentina"
+    "email": "info@bernardin.com.ar",
+    "address": "Andrés Bernardin 198, San Vicente, Santa Fe"
   }
 }
