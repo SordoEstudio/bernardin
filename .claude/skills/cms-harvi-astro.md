@@ -150,6 +150,76 @@ Crear el deploy hook en: Vercel → proyecto Astro → Settings → Git → Depl
 
 Cada cambio de contenido en el CMS setea `pendingRebuild = true` en la DB. Atlas Scheduled Trigger lo procesa cada 5 minutos y dispara el rebuild de Vercel.
 
+## Resiliencia del build (cliente no registrado aún)
+
+El build debe pasar **antes** de registrar el cliente en el CMS. Wrap todo CMS call en try-catch:
+
+```ts
+// En getStaticPaths() — una excepción aquí aborta el build entero
+export async function getStaticPaths() {
+  try {
+    const { items } = await cms.news.list({ limit: 100 });
+    return items.map((n) => ({ params: { slug: n.slug }, props: { article: n } }));
+  } catch {
+    return []; // build pasa, páginas se generan cuando haya contenido
+  }
+}
+
+// En fetch de runtime — fallback a vacío
+const { components } = await cms.components.list({ page_filter: 'Inicio' })
+  .catch(() => ({ components: [] }));
+```
+
+**Error típico pre-registro**: `cms.products.list({ category: 'mi-slug' })` → CMS intenta parsear el slug como MongoDB ObjectId → `"input must be a 24 character hex string"`. Fix: try-catch en getStaticPaths().
+
+## Campos del modelo Product
+
+```ts
+product.slug              // string — identificador URL
+product.productType       // string — slug de la Category (sub-categoría)
+product.locale?.title     // string — nombre traducido
+product.locale?.description // string — descripción traducida
+product.images            // CMSImage[] | undefined — array de imágenes
+product.images?.[0]       // primera imagen (thumbnail)
+```
+
+## Sub-categorías via CMS Category entities
+
+```ts
+const allCategories = await cms.categories.list().catch(() => []);
+// Category.slug === product.productType
+const category = allCategories.find((c) => c.slug === product.productType);
+// category?.name → nombre para mostrar
+// category?.description → descripción de la categoría
+```
+
+## Bilingüe — locale como query param
+
+```ts
+// ES (default) — no hace falta pasar locale
+const { items } = await cms.news.list({ limit: 100 });
+
+// EN — pasar locale: 'en' en todos los calls de la página EN
+const { items } = await cms.news.list({ limit: 100, locale: 'en' });
+const { components } = await cms.components.list({ page_filter: 'Inicio', locale: 'en' });
+```
+
+NO usar sufijos `_es`/`_en` en claves. El CMS maneja locale en backend.
+
+## `getByType<T>` siempre retorna T | undefined
+
+```ts
+const hero = cms.components.getByType<HeroData>(components, 'hero');
+// hero puede ser undefined — SIEMPRE usar ?.
+hero?.txt_titulo  // ✓
+hero.txt_titulo   // ✗ — TypeScript error + runtime crash si no hay componente
+```
+
+Usar fallback para texto estático durante el período sin registro:
+```ts
+hero?.txt_titulo ?? "Título por defecto hardcodeado"
+```
+
 ## Errores comunes en Astro
 
 | Error | Causa | Fix |
