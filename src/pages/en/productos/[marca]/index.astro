@@ -1,29 +1,44 @@
 ---
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import site from "../../../../data/site.json";
-import products from "../../../../data/products-en.json";
+import { cms } from "../../../../lib/cms";
+import type { Category } from "../../../../lib/cms/types";
+
 export function getStaticPaths() {
     return site.brands.map((b) => ({
         params: { marca: b.id },
         props: { brand: b },
     }));
 }
+
 const { brand } = Astro.props;
-const cats = products[brand.id];
+const [{ products }, allCategories] = await Promise.all([
+    cms.products.list({ locale: "en", category: brand.id, limit: 100 }),
+    cms.categories.list(),
+]).catch(() => [{ products: [] as import("../../../../lib/cms/types").Product[] }, [] as import("../../../../lib/cms/types").Category[]]);
+const uniqueTypes = [
+    ...new Set(products.map((p) => p.productType).filter(Boolean)),
+] as string[];
+const getCat = (slug: string): Category | undefined =>
+    allCategories.find((c) => c.slug === slug);
 ---
 
-<BaseLayout locale="en" title={`${brand.name} | Alfaterra`}
-    ><section class="page-hero">
+<BaseLayout locale="en" title={`${brand.name} | Alfaterra`}>
+    <section class="page-hero">
         <div class="container">
             <div class="breadcrumbs">
                 <a href="/en/productos">Products</a> / {brand.name}
-            </div><img
+            </div>
+            <img
                 class="brand-logo-hero"
                 src={brand.logo}
                 alt={`Logo of ${brand.name}`}
-            /><h1>{brand.name}</h1><p>{brand.tagEn}</p>
+            />
+            <h1>{brand.name}</h1>
+            <p>{brand.tagEn}</p>
         </div>
-    </section><section class="section">
+    </section>
+    <section class="section">
         <div class="container">
             <div class="brand-strip" aria-label="Alfaterra brands">
                 {
@@ -36,72 +51,50 @@ const cats = products[brand.id];
                         </a>
                     ))
                 }
-            </div><div class="products-column">
+            </div>
+            <div class="products-column">
                 {
-                    cats.map((cat) => (
-                        <article class="category">
-                            <>
+                    uniqueTypes.map((typeSlug) => {
+                        const cat = getCat(typeSlug);
+                        const items = products.filter(
+                            (p) => p.productType === typeSlug,
+                        );
+                        return (
+                            <article class="category">
                                 <header>
                                     <div>
-                                        <>
-                                            <span class="eyebrow">
-                                                {brand.name}
-                                            </span>
-                                            <h2>{cat.name}</h2>
-                                        </>
+                                        <span class="eyebrow">{brand.name}</span>
+                                        <h2>{cat?.name ?? typeSlug}</h2>
                                     </div>
                                 </header>
-                                <p>{cat.description}</p>
+                                <p>{cat?.description ?? ""}</p>
                                 <div class="items">
-                                    {cat.items.map((item) => {
-                                        const product =
-                                            typeof item === "string"
-                                                ? { name: item }
-                                                : item;
-                                        return (
-                                            <article class="product-card">
-                                                <div class="product-media">
-                                                    {product.image ? (
-                                                        <img
-                                                            src={product.image}
-                                                            alt={product.name}
-                                                        />
-                                                    ) : (
-                                                        <img
-                                                            src={brand.logo}
-                                                            alt={`Logo of ${brand.name}`}
-                                                        />
-                                                    )}
-                                                </div>
-                                                <h3>
-                                                    <a
-                                                        href={`/en/productos/${brand.id}/${encodeURIComponent(
-                                                            product.name
-                                                                .toLowerCase()
-                                                                .replace(
-                                                                    /[^a-z0-9]+/g,
-                                                                    "-",
-                                                                )
-                                                                .replace(
-                                                                    /^-|-$/g,
-                                                                    "",
-                                                                ),
-                                                        )}`}
-                                                    >
-                                                        {product.name}
-                                                    </a>
-                                                </h3>
-                                            </article>
-                                        );
-                                    })}
+                                    {items.map((p) => (
+                                        <article class="product-card">
+                                            <div class="product-media">
+                                                <img
+                                                    src={p.images?.[0] ?? brand.logo}
+                                                    alt={p.locale?.title ?? p.slug}
+                                                />
+                                            </div>
+                                            <h3>
+                                                <a
+                                                    href={`/en/productos/${brand.id}/${p.slug}`}
+                                                >
+                                                    {p.locale?.title ?? p.slug}
+                                                </a>
+                                            </h3>
+                                        </article>
+                                    ))}
                                 </div>
-                            </>
-                        </article>
-                    ))
+                            </article>
+                        );
+                    })
                 }
             </div>
         </div>
-    </section><style>
+    </section>
+    <style>
         .brand-logo-hero {
             width: 210px;
             height: 60px;

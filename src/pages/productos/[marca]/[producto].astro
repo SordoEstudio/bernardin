@@ -1,93 +1,68 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
-import products from "../../../data/products.json";
+import { cms } from "../../../lib/cms";
+import type { Product } from "../../../lib/cms/types";
 
-type Product = {
-    name: string;
-    image?: string;
-    description?: string;
-    photos?: string[];
-    video?: string;
-    youtube?: string;
-};
-type Category = {
-    id: string;
-    name: string;
-    description: string;
-    items: (string | Product)[];
-};
-type Brand = (typeof site.brands)[number];
-const slugify = (value: string) =>
-    value
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
-export function getStaticPaths() {
-    const slugify = (value: string) =>
-        value
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-|-$/g, "");
-    return site.brands.flatMap((brand) =>
-        (products[brand.id as keyof typeof products] as Category[]).flatMap(
-            (category) =>
-                category.items.map((entry) => {
-                    const product =
-                        typeof entry === "string" ? { name: entry } : entry;
-                    return {
-                        params: {
-                            marca: brand.id,
-                            producto: slugify(product.name),
-                        },
-                        props: { brand, product, category },
-                    };
-                }),
-        ),
-    );
+export async function getStaticPaths() {
+    try {
+        const results = await Promise.all(
+            site.brands.map((b) =>
+                cms.products
+                    .list({ locale: "es", category: b.id, limit: 100 })
+                    .then(({ products }) =>
+                        products.map((p) => ({
+                            params: { marca: b.id, producto: p.slug },
+                            props: { product: p, brandId: b.id },
+                        })),
+                    ),
+            ),
+        );
+        return results.flat();
+    } catch {
+        return [];
+    }
 }
-const { brand, product, category } = Astro.props as {
-    brand: Brand;
+
+const { product, brandId } = Astro.props as {
     product: Product;
-    category: Category;
+    brandId: string;
 };
-const media = product.photos?.length
-    ? product.photos
-    : product.image
-      ? [product.image]
-      : [brand.logo];
+const brand = site.brands.find((b) => b.id === brandId)!;
+const allCategories = await cms.categories.list().catch(() => []);
+const category = allCategories.find((c) => c.slug === product.productType);
+const images = product.images?.length ? product.images : [brand.logo];
+const productName = product.locale?.title ?? product.slug;
+const productDesc =
+    product.locale?.description ?? category?.description ?? "";
 ---
 
-<BaseLayout locale="es" title={`${product.name} | ${brand.name} | Bernardin`}>
+<BaseLayout locale="es" title={`${productName} | ${brand.name} | Bernardin`}>
     <section class="page-hero">
         <div class="container">
             <div class="breadcrumbs">
                 <a href="/productos">Productos</a> / <a
                     href={`/productos/${brand.id}`}>{brand.name}</a
-                > / {product.name}
+                > / {productName}
             </div><span class="eyebrow">{brand.name}</span><h1>
-                {product.name}
-            </h1><p>{product.description ?? category.description}</p>
+                {productName}
+            </h1><p>{productDesc}</p>
         </div>
     </section>
     <section class="section">
         <div class="container product-detail">
             <div class="product-gallery">
                 <div class="gallery-main">
-                    <img src={media[0]} alt={product.name} />
+                    <img src={images[0]} alt={productName} />
                 </div>{
-                    media.length > 1 && (
+                    images.length > 1 && (
                         <div class="gallery-thumbs">
-                            {media.map((image, index) => (
+                            {images.map((image, index) => (
                                 <a href={`#media-${index}`}>
                                     <img
                                         id={`media-${index}`}
                                         src={image}
-                                        alt={`${product.name}, imagen ${index + 1}`}
+                                        alt={`${productName}, imagen ${index + 1}`}
                                     />
                                 </a>
                             ))}
@@ -95,16 +70,16 @@ const media = product.photos?.length
                     )
                 }
             </div><div class="product-copy">
-                <span class="eyebrow">{category.name}</span><h2>
+                <span class="eyebrow">{category?.name ?? ""}</span><h2>
                     Una solución pensada para tu campo.
                 </h2><p>
                     {
-                        product.description ??
-                            `Conocé ${product.name}, una propuesta de ${brand.name} para trabajar con precisión, rendimiento y respaldo técnico.`
+                        productDesc ||
+                            `Conocé ${productName}, una propuesta de ${brand.name} para trabajar con precisión, rendimiento y respaldo técnico.`
                     }
                 </p><a
                     class="btn"
-                    href={`/contacto?producto=${encodeURIComponent(product.name)}`}
+                    href={`/contacto?producto=${encodeURIComponent(productName)}`}
                     >Consultar por este producto <span>→</span></a>
             </div>
         </div>
