@@ -1,4 +1,124 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro'; import site from '../../../data/site.json'
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import site from "../../../data/site.json";
 ---
-<BaseLayout locale="en" title="Products | Alfaterra"><section class="page-hero"><div class="container"><div class="breadcrumbs">Home / Products</div><h1>Brands that work with you.</h1><p>Alfaterra represents five international brands, each with specific solutions for agriculture.</p></div></section><section class="section"><div class="container"><div class="brand-grid">{site.brands.map(b=><a class="brand-card brand-card-logo" href={`/en/productos/${b.id}`}><img src={b.logo} alt={`${b.name} logo`} /><p>{b.tag}</p><span class="arrow">View products →</span></a>)}</div></div></section></BaseLayout><style>.brand-grid{grid-template-columns:repeat(6,1fr)}.brand-card-logo{display:flex;min-height:220px;flex-direction:column;align-items:flex-start;justify-content:space-between}.brand-card-logo:nth-child(1){grid-column:1 / span 2}.brand-card-logo:nth-child(2){grid-column:3 / span 2}.brand-card-logo:nth-child(3){grid-column:5 / span 2}.brand-card-logo:nth-child(4){grid-column:2 / span 2}.brand-card-logo:nth-child(5){grid-column:4 / span 2}.brand-card-logo img{width:min(100%,220px);height:72px;object-fit:contain;object-position:left center}.brand-card-logo p{margin:0;color:#566b60}.arrow{color:var(--blue);font-weight:700;text-transform:uppercase;font-size:.78rem;letter-spacing:.06em}</style>
+
+<BaseLayout locale="en" title="Products | Bernardin"
+    ><section class="page-hero">
+        <div class="container">
+            <div class="breadcrumbs">Home / Products</div><h1>
+                Brands that work with you.
+            </h1><p>
+                Bernardin represents five international brands, each with
+                specific solutions for agriculture.
+            </p>
+        </div>
+    </section><section class="section">
+        <div class="container">
+            <div class="brand-grid">
+                {
+                    site.brands.map((b) => (
+                        <a
+                            class="brand-card brand-card-logo"
+                            href={`/en/productos/${b.id}`}
+                        >
+                            <>
+                                <img src={b.logo} alt={`${b.name} logo`} />
+                                <p>{b.tagEn}</p>
+                                <span class="arrow">View products →</span>
+                            </>
+                        </a>
+                    ))
+                }
+            </div>
+        </div>
+    </section></BaseLayout
+><style>
+    .brand-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 18px;
+    }
+    .brand-card-logo {
+        display: flex;
+        min-height: 220px;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 28px 26px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+    .brand-card-logo:nth-child(1) {
+        grid-column: 1 / span 2;
+    }
+    .brand-card-logo:nth-child(2) {
+        grid-column: 3 / span 2;
+    }
+    .brand-card-logo:nth-child(3) {
+        grid-column: 5 / span 2;
+    }
+    .brand-card-logo:nth-child(4) {
+        grid-column: 2 / span 2;
+    }
+    .brand-card-logo:nth-child(5) {
+        grid-column: 4 / span 2;
+    }
+    .brand-card-logo img {
+        width: min(100%, 220px);
+        height: 72px;
+        object-fit: contain;
+        object-position: left center;
+    }
+    .brand-card-logo p {
+        margin: 18px 0 0;
+        color: #566b60;
+        max-width: 22ch;
+    }
+    .arrow {
+        color: var(--blue);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        white-space: nowrap;
+    }
+    @media (max-width: 700px) {
+        .section {
+            padding: 64px 0;
+        }
+        .brand-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .brand-card-logo,
+        .brand-card-logo:nth-child(n) {
+            grid-column: auto;
+            min-height: 205px;
+            padding: 22px 18px;
+        }
+        .brand-card-logo:nth-child(5) {
+            grid-column: 1 / -1;
+            max-width: calc(50% - 7px);
+            width: 100%;
+            justify-self: center;
+        }
+        .brand-card-logo img {
+            width: 100%;
+            height: 58px;
+            object-position: center;
+        }
+        .brand-card-logo p {
+            font-size: 0.95rem;
+            line-height: 1.35;
+            margin-top: 14px;
+        }
+        .arrow {
+            font-size: 0.68rem;
+            letter-spacing: 0.03em;
+        }
+    }
+</style>

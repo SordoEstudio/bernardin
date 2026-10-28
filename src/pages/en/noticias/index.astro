@@ -1,8 +1,242 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro'
-import news from '../../../data/news.json'
-const locale='en'
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import news from "../../../data/news.json";
+const locale = "en";
 ---
-<BaseLayout title="News | Alfaterra" locale={locale}><section class="page-hero"><div class="container"><span class="eyebrow">Alfaterra today</span><h1>News</h1><p>Ideas, updates and everything happening close to the field.</p></div></section><section class="section"><div class="container"><div class="news-grid">{[...news.articles].sort((a,b)=>{const parse=(date)=>{const [day,month,year]=date.split('.').map(Number);return new Date(year,month-1,day).getTime()};return parse(b.date)-parse(a.date)}).map((article,index)=><article class:list={["news-card",{featured:index===0}]} data-news-card data-featured={index===0 ? 'true' : 'false'}><div class="news-image"><span>Alfaterra today</span><strong>{String(index+1).padStart(2,'0')}</strong></div><div class="news-content"><time>{article.date}</time><h2>{article.title[locale]}</h2><p>{article.excerpt[locale]}</p><a href={`/en/noticias/${article.slug}`}>Read article <span>→</span></a></div></article>)}</div><nav class="pagination" aria-label="News pagination" data-pagination></nav></div></section></BaseLayout>
-<script>const cards=[...document.querySelectorAll('[data-news-card]')],pagination=document.querySelector('[data-pagination]'),perPage=6,featured=cards.find((card)=>card.dataset.featured==='true'),regular=cards.filter((card)=>card.dataset.featured!=='true'),pages=Math.max(1,Math.ceil(regular.length/perPage)),params=new URLSearchParams(location.search);let current=Math.min(Math.max(Number(params.get('pagina'))||1,1),pages);if(featured)featured.hidden=false;regular.forEach((card,i)=>card.hidden=i<(current-1)*perPage||i>=current*perPage);if(pagination&&pages>1)pagination.innerHTML=Array.from({length:pages},(_,i)=>`<a href="?pagina=${i+1}" aria-current="${i+1===current?'page':'false'}">${i+1}</a>`).join('')</script>
-<style>.news-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}.news-card[hidden]{display:none}.news-card{overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.news-card.featured{grid-column:span 2;display:grid;grid-template-columns:1.05fr 1fr}.news-image{min-height:220px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;background:linear-gradient(135deg,var(--green),var(--blue))}.news-card.featured .news-image{min-height:360px}.news-image strong{font:700 clamp(5rem,12vw,10rem)/.8 var(--display);opacity:.9}.news-content{padding:28px 30px}.news-content h2{margin:14px 0 12px;font-size:clamp(1.5rem,3vw,2.25rem)}.news-content p{color:#566b60}.news-content a{color:var(--blue);font-weight:700}.pagination{display:flex;justify-content:center;gap:8px;margin-top:44px}.pagination a{min-width:40px;padding:8px 12px;text-align:center;border:1px solid var(--line);color:var(--blue)}.pagination a[aria-current=page]{background:var(--green);color:#fff}@media(max-width:700px){.news-grid{grid-template-columns:1fr}.news-card.featured{grid-column:auto;display:block}}</style>
+
+<BaseLayout title="News | Alfaterra" locale={locale}>
+    <section class="page-hero">
+        <div class="container">
+            <span class="eyebrow">Alfaterra today</span><h1>News</h1><p>
+                Ideas, updates and everything happening close to the field.
+            </p>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="news-grid" id="news-grid">
+                {
+                    [...news.articles]
+                        .sort((a, b) => {
+                            const parse = (date: string): number => {
+                                const [day, month, year] = date
+                                    .split(".")
+                                    .map(Number);
+                                return new Date(year, month - 1, day).getTime();
+                            };
+                            return parse(b.date) - parse(a.date);
+                        })
+                        .map((article, index) => (
+                            <article
+                                class:list={[
+                                    "news-card",
+                                    { featured: index === 0 },
+                                ]}
+                                data-news-card
+                                data-featured={index === 0 ? "true" : "false"}
+                            >
+                                <>
+                                    <div class="news-image">
+                                        <>
+                                            <span>Alfaterra today</span>
+                                            <strong>
+                                                {String(index + 1).padStart(
+                                                    2,
+                                                    "0",
+                                                )}
+                                            </strong>
+                                        </>
+                                    </div>
+                                    <div class="news-content">
+                                        <>
+                                            <time>{article.date}</time>
+                                            <h2>{article.title[locale]}</h2>
+                                            <p>{article.excerpt[locale]}</p>
+                                            <a
+                                                href={`/en/noticias/${article.slug}`}
+                                            >
+                                                Read article <span>→</span>
+                                            </a>
+                                        </>
+                                    </div>
+                                </>
+                            </article>
+                        ))
+                }
+            </div><nav
+                class="pagination"
+                aria-label="News pagination"
+                data-pagination
+            >
+            </nav>
+        </div>
+    </section>
+</BaseLayout>
+<script>
+    const cards = [
+        ...document.querySelectorAll<HTMLElement>("[data-news-card]"),
+    ];
+    const pagination = document.querySelector<HTMLElement>("[data-pagination]");
+    const perPage = 6;
+    const featured = cards.find((card) => card.dataset.featured === "true");
+    const regular = cards.filter((card) => card.dataset.featured !== "true");
+    const pages = Math.max(1, Math.ceil(regular.length / perPage));
+    const params = new URLSearchParams(location.search);
+    const current = Math.min(
+        Math.max(Number(params.get("pagina")) || 1, 1),
+        pages,
+    );
+
+    if (featured) featured.hidden = false;
+
+    regular.forEach((card, i) => {
+        card.hidden = i < (current - 1) * perPage || i >= current * perPage;
+    });
+
+    if (pagination && pages > 1) {
+        const prev =
+            current > 1
+                ? `<a class="pg-arrow" href="?pagina=${current - 1}" rel="prev" aria-label="Previous page">←</a>`
+                : `<span class="pg-arrow is-disabled" aria-hidden="true">←</span>`;
+
+        const next =
+            current < pages
+                ? `<a class="pg-arrow" href="?pagina=${current + 1}" rel="next" aria-label="Next page">→</a>`
+                : `<span class="pg-arrow is-disabled" aria-hidden="true">→</span>`;
+
+        const numbers = Array.from({ length: pages }, (_, i) => {
+            const page = i + 1;
+            return page === current
+                ? `<span class="pg-number is-current" aria-current="page" aria-label="Page ${page}, current">${page}</span>`
+                : `<a class="pg-number" href="?pagina=${page}" aria-label="Go to page ${page}">${page}</a>`;
+        }).join("");
+
+        pagination.innerHTML = `${prev}${numbers}${next}<p class="pg-status">Page ${current} of ${pages}</p>`;
+    }
+</script>
+<style>
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+    }
+    .news-card[hidden] {
+        display: none;
+    }
+    .news-card {
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+    }
+    .news-card.featured {
+        grid-column: span 2;
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+    }
+    .news-image {
+        min-height: 220px;
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: #fff;
+        background: linear-gradient(135deg, var(--green), var(--blue));
+    }
+    .news-card.featured .news-image {
+        min-height: 360px;
+    }
+    .news-image strong {
+        font: 700 clamp(5rem, 12vw, 10rem) / 0.8 var(--display);
+        opacity: 0.9;
+    }
+    .news-content {
+        padding: 28px 30px;
+    }
+    .news-content time {
+        color: var(--blue);
+        font-weight: 700;
+    }
+    .news-content h2 {
+        margin: 14px 0 12px;
+        font-size: clamp(1.5rem, 3vw, 2.25rem);
+    }
+    .news-content p {
+        color: #566b60;
+    }
+    .news-content a {
+        color: var(--blue);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    /* ---------- Pagination ----------
+       The content is inserted with innerHTML from the script, so the
+       children use :global() (Astro doesn't add its scope attribute to them). */
+    .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: 44px;
+    }
+    .pagination :global(.pg-number),
+    .pagination :global(.pg-arrow) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 46px;
+        height: 46px;
+        padding: 0 14px;
+        border: 2px solid var(--line);
+        border-radius: 4px;
+        background: #fff;
+        color: var(--blue);
+        font-weight: 700;
+        line-height: 1;
+        transition: 0.2s;
+    }
+    .pagination :global(a.pg-number:hover),
+    .pagination :global(a.pg-arrow:hover) {
+        border-color: var(--green);
+        background: var(--pale);
+        color: var(--green);
+    }
+    /* Current page: green fill, slightly larger, with a halo */
+    .pagination :global(.pg-number.is-current) {
+        min-width: 54px;
+        height: 54px;
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+        font-size: 1.15rem;
+        cursor: default;
+        box-shadow:
+            0 0 0 4px rgba(37, 116, 70, 0.18),
+            0 6px 16px rgba(37, 116, 70, 0.28);
+    }
+    /* Disabled arrows (first / last page) */
+    .pagination :global(.pg-arrow.is-disabled) {
+        opacity: 0.4;
+        background: var(--pale);
+        cursor: not-allowed;
+    }
+    .pagination :global(.pg-status) {
+        flex: 0 0 100%;
+        margin: 10px 0 0;
+        text-align: center;
+        color: #566b60;
+        font-size: 0.9rem;
+    }
+    @media (max-width: 700px) {
+        .news-grid {
+            grid-template-columns: 1fr;
+        }
+        .news-card.featured {
+            grid-column: auto;
+            display: block;
+        }
+    }
+</style>

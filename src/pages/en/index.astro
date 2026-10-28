@@ -1,4 +1,192 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro'; import site from '../../data/site.json'; const d=site.hero.en
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import site from "../../data/site.json";
+const d = site.hero.en;
 ---
-<BaseLayout locale="en" title="Alfaterra | Agricultural technology"><section class="hero"><div class="hero-art"></div><div class="container hero-content"><span class="eyebrow">{d.eyebrow}</span><h1>{d.title}</h1><p>{d.text}</p><a class="btn" href="/en/productos">{d.cta} <span>→</span></a></div></section><section class="stats">{site.stats.map(([value,label])=><div class="stat container"><strong>{value}</strong><span>{label}</span></div>)}</section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">Our brands</span><h2>Equipment for every challenge</h2></div><p>We represent international brands that share our passion for precision, innovation and service.</p></div><div class="brand-grid">{site.brands.map(b=><a class="brand-card" href={`/en/productos/${b.id}`}><div><div class="brand-mark">{b.name}</div><p>{b.tag}</p></div><span class="arrow">Explore catalog →</span></a>)}</div></div></section><section class="section soft"><div class="container split"><div><span class="eyebrow">Our way of working</span><h2>More than machinery. A partner for your farm.</h2><p>From choosing the right equipment to after-sales support, we stay close to those growing Argentina&apos;s production.</p><a class="btn alt" href="/en/empresa">Discover Alfaterra</a></div><div class="story-panel"><span class="eyebrow">Since 1924</span><h2>100 years looking ahead.</h2><p>A story built on hard work, territory and lasting relationships.</p></div></div></section></BaseLayout>
+
+<BaseLayout locale="en" title="Bernardin | Agricultural technology"
+  ><section class="hero">
+    <div class="hero-art"></div><div class="container hero-content">
+      <span class="eyebrow">{d.eyebrow}</span><h1>{d.title}</h1><p>
+        {d.text}
+      </p><a class="btn" href="/en/productos">{d.cta} <span>→</span></a>
+    </div>
+  </section><section class="stats">
+    {
+      site.statsEn.map(([value, label]) => (
+        <div class="stat container">
+          <>
+            <strong>{value}</strong>
+            <span>{label}</span>
+          </>
+        </div>
+      ))
+    }
+  </section><section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Our brands</span><h2>
+            Equipment for every challenge
+          </h2>
+        </div><p>
+          We represent international brands that share our passion for
+          precision, innovation and service.
+        </p>
+      </div><div class="brand-grid">
+        {
+          site.brands.map((b) => (
+            <a class="brand-card" href={`/en/productos/${b.id}`}>
+              <>
+                <div>
+                  <>
+                    <div class="brand-mark">{b.name}</div>
+                    <p>{b.tagEn}</p>
+                  </>
+                </div>
+                <span class="arrow">Explore catalog →</span>
+              </>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section><section class="section soft">
+    <div class="container split">
+      <div>
+        <span class="eyebrow">Our way of working</span><h2>
+          More than machinery. A partner for your farm.
+        </h2><p>
+          From choosing the right equipment to after-sales support, we stay
+          close to those growing Argentina&apos;s production.
+        </p><a class="btn alt" href="/en/empresa">Discover Bernardin</a>
+      </div><div class="story-panel">
+        <span class="eyebrow">Since 1924</span><h2>
+          100 years looking ahead.
+        </h2><p>
+          A story built on hard work, territory and lasting relationships.
+        </p>
+      </div>
+    </div>
+  </section></BaseLayout
+><style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: var(--white);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stats .stat {
+    width: 100%;
+    min-height: 142px;
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: var(--pale);
+    color: var(--green);
+    border-right: 1px solid var(--line);
+  }
+  .stats .stat:last-child {
+    border-right: 0;
+  }
+  .stats .stat strong {
+    font-size: clamp(2.1rem, 4vw, 3.5rem);
+    line-height: 1;
+    color: var(--green);
+  }
+  .stats .stat span {
+    max-width: 16ch;
+    margin-top: 10px;
+    color: var(--ink);
+    font-size: 0.92rem;
+  }
+  .stats .stat:nth-child(2),
+  .stats .stat:nth-child(3),
+  .stats .stat:nth-child(4) {
+    background: var(--pale);
+    color: var(--green);
+  }
+  .stats .stat:nth-child(2) strong,
+  .stats .stat:nth-child(3) strong,
+  .stats .stat:nth-child(4) strong {
+    color: var(--green);
+  }
+  .stats .stat:nth-child(2) span,
+  .stats .stat:nth-child(3) span,
+  .stats .stat:nth-child(4) span {
+    color: var(--ink);
+  }
+  .story-panel {
+    background: var(--green);
+    color: white;
+    padding: clamp(28px, 5vw, 64px);
+    border-radius: 4px;
+  }
+  .story-panel .eyebrow {
+    color: #b9efc3;
+  }
+  .story-panel h2 {
+    color: white;
+  }
+  .story-panel p {
+    color: #f1fff4;
+  }
+  @media (max-width: 700px) {
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      padding: 0;
+    }
+    .stats .stat {
+      width: 100%;
+      min-height: 126px;
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--white);
+    }
+    .stats .stat strong {
+      font-size: 2.25rem;
+      line-height: 1;
+    }
+    .stats .stat span {
+      max-width: 13ch;
+      margin-top: 8px;
+      font-size: 0.82rem;
+      line-height: 1.25;
+    }
+    .story-panel {
+      margin-top: 28px;
+      padding: 30px 24px;
+      min-height: 300px;
+      background: linear-gradient(145deg, #e9f4e9 0%, #d4eadb 100%);
+      border: 1px solid #b8d7c1;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .story-panel .eyebrow {
+      color: var(--green);
+    }
+    .story-panel h2 {
+      color: var(--green);
+      font-size: 2rem;
+    }
+    .story-panel p {
+      color: var(--ink);
+      margin-bottom: 0;
+    }
+  }
+</style>

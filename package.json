@@ -1,5 +1,5 @@
 {
-  "name": "my-project",
+  "name": "alfaterra-web",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@12.3.4",
@@ -11,5 +11,8 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.3.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }

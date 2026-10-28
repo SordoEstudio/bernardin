@@ -1,6 +1,127 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'
-const milestones=[['1924','Nace una historia ligada al campo argentino.'],['1978','El conocimiento técnico se convierte en acompañamiento cercano.'],['2008','Alfaterra amplía su red y suma nuevas marcas internacionales.'],['Hoy','Seguimos conectando tecnología, personas y territorio.']]
+import BaseLayout from "../layouts/BaseLayout.astro";
+const milestones = [
+  ["1924", "Nace una historia ligada al campo argentino."],
+  ["1978", "El conocimiento técnico se convierte en acompañamiento cercano."],
+  ["2008", "Alfaterra amplía su red y suma nuevas marcas internacionales."],
+  ["Hoy", "Seguimos conectando tecnología, personas y territorio."],
+];
 ---
-<BaseLayout locale="es" title="Empresa | Alfaterra"><section class="page-hero"><div class="container"><div class="breadcrumbs">Inicio / Empresa</div><h1>Una historia de campo, innovación y confianza.</h1></div></section><section class="section"><div class="container split"><div><span class="eyebrow">Quiénes somos</span><h2>Conocemos el campo porque somos parte de él.</h2></div><div><p class="quote">“La mejor tecnología es la que se convierte en resultados concretos.”</p><p>Alfaterra conecta a productores argentinos con maquinaria agrícola de primer nivel. Nuestro equipo combina experiencia comercial, conocimiento técnico y una mirada de largo plazo.</p></div></div></section><section class="section soft"><div class="container"><div class="section-head"><div><span class="eyebrow">Nuestra historia</span><h2>Un camino que sigue creciendo</h2></div></div><div class="timeline">{milestones.map(([year,text])=><div class="timeline-item"><strong>{year}</strong><p>{text}</p></div>)}</div></div></section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">Nuestros principios</span><h2>Lo que nos mueve</h2></div></div><div class="brand-grid"><div class="brand-card"><h3>Misión</h3><p>Acercar tecnología confiable y acompañamiento experto a cada productor.</p></div><div class="brand-card"><h3>Visión</h3><p>Ser el socio estratégico de referencia para una agricultura más eficiente.</p></div><div class="brand-card"><h3>Valores</h3><p>Construimos vínculos con compromiso, conocimiento y transparencia.</p></div></div></div></section></BaseLayout>
-<style>.timeline{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--green);gap:24px}.timeline-item{position:relative;padding-top:28px}.timeline-item:before{content:'';position:absolute;top:-9px;width:15px;height:15px;border-radius:50%;background:var(--green);border:3px solid var(--pale)}.timeline-item strong{font:700 2rem var(--display);color:var(--blue)}.timeline-item p{max-width:210px}@media(max-width:700px){.timeline{grid-template-columns:1fr;border-top:0;border-left:2px solid var(--green);padding-left:24px}.timeline-item{padding-top:0;padding-bottom:22px}.timeline-item:before{left:-33px;top:4px}}</style></BaseLayout>
+
+<BaseLayout locale="es" title="Empresa | Alfaterra"
+  ><section class="page-hero">
+    <div class="container">
+      <div class="breadcrumbs">Inicio / Empresa</div><h1>
+        Una historia de campo, innovación y confianza.
+      </h1>
+    </div>
+  </section><section class="section">
+    <div class="container split">
+      <div>
+        <span class="eyebrow">Quiénes somos</span><h2>
+          Conocemos el campo porque somos parte de él.
+        </h2>
+      </div><div>
+        <p class="quote">
+          “La mejor tecnología es la que se convierte en resultados concretos.”
+        </p><p>
+          Alfaterra conecta a productores argentinos con maquinaria agrícola de
+          primer nivel. Nuestro equipo combina experiencia comercial,
+          conocimiento técnico y una mirada de largo plazo.
+        </p>
+      </div>
+    </div>
+  </section><section class="section soft">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Nuestra historia</span><h2>
+            Un camino que sigue creciendo
+          </h2>
+        </div>
+      </div><div class="timeline">
+        {
+          milestones.map(([year, text]) => (
+            <div class="timeline-item">
+              <>
+                <strong>{year}</strong>
+                <p>{text}</p>
+              </>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section><section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Nuestros principios</span><h2>
+            Lo que nos mueve
+          </h2>
+        </div>
+      </div><div class="brand-grid">
+        <div class="brand-card">
+          <h3>Misión</h3><p>
+            Acercar tecnología confiable y acompañamiento experto a cada
+            productor.
+          </p>
+        </div><div class="brand-card">
+          <h3>Visión</h3><p>
+            Ser el socio estratégico de referencia para una agricultura más
+            eficiente.
+          </p>
+        </div><div class="brand-card">
+          <h3>Valores</h3><p>
+            Construimos vínculos con compromiso, conocimiento y transparencia.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section></BaseLayout
+>
+<style>
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 2px solid var(--green);
+    gap: 24px;
+  }
+  .timeline-item {
+    position: relative;
+    padding-top: 28px;
+  }
+  .timeline-item:before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid var(--pale);
+  }
+  .timeline-item strong {
+    font: 700 2rem var(--display);
+    color: var(--blue);
+  }
+  .timeline-item p {
+    max-width: 210px;
+  }
+  @media (max-width: 700px) {
+    .timeline {
+      grid-template-columns: 1fr;
+      border-top: 0;
+      border-left: 2px solid var(--green);
+      padding-left: 24px;
+    }
+    .timeline-item {
+      padding-top: 0;
+      padding-bottom: 22px;
+    }
+    .timeline-item:before {
+      left: -33px;
+      top: 4px;
+    }
+  }
+</style>
