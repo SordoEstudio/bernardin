@@ -1,0 +1,88 @@
+# CLAUDE.md — [NOMBRE DEL SITIO]
+
+Sitio web de **[NOMBRE DEL CLIENTE]** construido con Astro 5 SSG.
+Consume contenido desde **CMS Harvi** (CMS multi-cliente) vía API pública.
+
+## Stack
+
+- Astro 5 SSG (`output: 'static'`) — TODO el fetch ocurre en build time
+- TypeScript, Tailwind CSS
+- Sin React — islands con `<script is:inline>` o `client:*` nativos de Astro
+- Deploy: Vercel (static)
+
+## CMS Harvi
+
+```
+CMS_API      = https://micms.website/api/public/v1
+CLIENT_SLUG  = <slug-del-cliente>
+DOMINIO_PROD = <dominio-produccion.com>
+```
+
+Variables de entorno (`.env` local):
+```
+PUBLIC_CMS_API=https://micms.website/api/public/v1
+PUBLIC_CLIENT_SLUG=<slug-del-cliente>
+PUBLIC_SITE_ORIGIN=http://localhost:4321
+```
+
+> `PUBLIC_SITE_ORIGIN` es solo para dev local. En Vercel **no se configura** — el CMS identifica
+> al cliente por el dominio de producción (`Host` header). Sin este header en SSG local, el CMS
+> no puede autorizar el request aunque el `clientSlug` esté bien.
+
+Cliente CMS en `src/lib/cms.ts`:
+```ts
+import { createCMSClient } from './cms/index';
+export const cms = createCMSClient({
+  baseUrl: import.meta.env.PUBLIC_CMS_API,
+  clientSlug: import.meta.env.PUBLIC_CLIENT_SLUG,
+  defaultHeaders: {
+    Origin: import.meta.env.PUBLIC_SITE_ORIGIN ?? import.meta.env.SITE,
+  },
+});
+```
+
+## Reglas de integración (obligatorias)
+
+- API pública, sin auth. Cliente identificado por `clientSlug` (SSG) o dominio (prod).
+- **NUNCA** usar `fetch` directo — siempre usar `cms.*` de `src/lib/cms.ts`.
+- **NUNCA** hacer fetch en el cliente para contenido — solo en frontmatter de `.astro`.
+- Formularios: form HTML estático → submit `client:*` a `/forms/{slug}/submit`.
+- Deploy trigger: modo `rebuild` en CMS admin. Atlas Trigger rebuildea cada 5 min.
+- Validar `json.success` antes de usar `json.data`.
+
+## Módulos CMS activos para este cliente
+
+<!-- Marcá lo que aplica -->
+- [ ] Noticias (`cms.news.list()` / `cms.news.get(slug)`)
+- [ ] Productos (`cms.products.list()` / `cms.products.get(slug)`)
+- [ ] Propiedades (`cms.properties.list()`)
+- [ ] Licitaciones (`cms.biddings.list()`)
+- [ ] Legislaciones (`cms.legislations.list()`)
+- [x] Componentes CMS (`cms.components.list({ page_filter })`)
+- [ ] Formularios (`cms.forms.submit(slug, body)`)
+- [x] Config cliente (`cms.clientConfig.get()`)
+
+## Componentes CMS — mapa de `type` → componente Astro
+
+<!-- Completar con los tipos acordados para este proyecto -->
+<!-- Página = valor escrito en el CMS admin (español, mayúscula inicial) = page_filter en código -->
+| `type` en CMS | Componente Astro | `Página` en CMS / `page_filter` en código |
+|---|---|---|
+| `hero` | `HeroSection.astro` | `Inicio` |
+| `stats` | `StatsSection.astro` | `Inicio` |
+| `about` | `AboutSection.astro` | `Quiénes somos` |
+
+Consumo tipado:
+```ts
+import type { CMSButtonField } from './cms/types';
+interface HeroData { txt_titulo: string; img_fondo?: string; btn_cta?: CMSButtonField }
+const hero = cms.components.getByType<HeroData>(components, 'hero');
+```
+
+## Skills de IA disponibles
+
+- `.claude/skills/cms-harvi-json-format.md` — prefijos de JSON para componentes CMS
+- `.claude/skills/cms-harvi-astro.md` — patrones Astro SSG con el CMS
+- `.claude/skills/cms-harvi-components.md` — flujo sitio → JSON CMS → consumo tipado
+
+Cuando generes JSON de `data` para componentes CMS, seguí las reglas de `cms-harvi-json-format.md`.

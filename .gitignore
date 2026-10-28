@@ -19,6 +19,9 @@ __v0_jsx-dev-runtime.ts
 .env.*
 !.env.example
 
+# SDD workspace (superpowers scratch — not source)
+.superpowers/
+
 # Operating system files
 .DS_Store
 Thumbs.db
