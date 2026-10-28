@@ -1,5 +1,81 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro'; import news from '../../../data/news.json'
-export function getStaticPaths(){return news.articles.map(article=>({params:{slug:article.slug},props:{article}}))}; const {article}=Astro.props
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { cms } from '../../../lib/cms';
+import type { NewsItem } from '../../../lib/cms/types';
+
+export async function getStaticPaths() {
+    const { items } = await cms.news.list({ limit: 100, locale: 'en' } as Parameters<typeof cms.news.list>[0]);
+    return items.map((n) => ({ params: { slug: n.slug }, props: { article: n } }));
+}
+
+const { article } = Astro.props as { article: NewsItem };
+const fmtDate = (item: NewsItem) =>
+    new Date(item.publishedAt ?? item.createdAt).toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
 ---
-<BaseLayout title={`${article.title.en} | Alfaterra`} locale="en"><section class="page-hero"><div class="container"><div class="breadcrumbs"><a href="/en/noticias">News</a> / {article.date}</div><span class="eyebrow">Alfaterra today</span><h1>{article.title.en}</h1><p>{article.excerpt.en}</p></div></section><article class="section article-page"><div class="container article-layout"><div class="article-cover"><strong>Alfaterra</strong></div><div class="article-copy"><time>{article.date}</time>{article.body.en.map(p=><p>{p}</p>)}{article.media?.length>0&&<div class="media-carousel"><div class="media-track">{article.media.map(media=>media.type==='youtube'?<div class="media-slide" data-slide><div class="video-wrap"><iframe src={media.src} title={media.title} loading="lazy" allowfullscreen></iframe></div></div>:<div class="media-slide" data-slide><img src={media.src} alt={media.alt.en}/></div>)}</div>{article.media.length>1&&<div class="carousel-controls"><button type="button" data-prev aria-label="Previous content">←</button><span data-count>1 / {article.media.length}</span><button type="button" data-next aria-label="Next content">→</button></div>}</div>}<a class="btn" href="/en/noticias">Back to news</a></div></div></article><script>const slides=[...document.querySelectorAll('[data-slide]')],count=document.querySelector('[data-count]');let active=0;function show(i){active=(i+slides.length)%slides.length;slides.forEach((s,n)=>s.hidden=n!==active);if(count)count.textContent=`${active+1} / ${slides.length}`}document.querySelector('[data-prev]')?.addEventListener('click',()=>show(active-1));document.querySelector('[data-next]')?.addEventListener('click',()=>show(active+1));show(0)</script><style>.article-layout{display:grid;grid-template-columns:minmax(280px,.8fr) 1.2fr;gap:clamp(36px,7vw,96px)}.article-cover{min-height:360px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--green),var(--blue));font:700 clamp(3rem,7vw,6rem) var(--display)}.article-copy{max-width:680px}.article-copy p{font-size:1.12rem}.media-carousel{margin:32px 0}.media-slide img{width:100%}.video-wrap{aspect-ratio:16/9}.video-wrap iframe{width:100%;height:100%;border:0}.carousel-controls{display:flex;justify-content:space-between;align-items:center;margin-top:12px}.carousel-controls button{border:1px solid var(--line);background:white;color:var(--blue);padding:8px 14px}@media(max-width:760px){.article-layout{grid-template-columns:1fr}.article-cover{min-height:220px}}</style></BaseLayout>
+<BaseLayout title={`${article.title} | Alfaterra`} locale="en">
+    <section class="page-hero">
+        <div class="container">
+            <div class="breadcrumbs"><a href="/en/noticias">News</a> / {fmtDate(article)}</div>
+            <span class="eyebrow">Alfaterra today</span>
+            <h1>{article.title}</h1>
+            <p>{article.summary ?? ''}</p>
+        </div>
+    </section>
+    <article class="section article-page">
+        <div class="container article-layout">
+            <div class="article-cover"><strong>Alfaterra</strong></div>
+            <div class="article-copy">
+                <time>{fmtDate(article)}</time>
+                <div set:html={article.content ?? ''} />
+                {article.gallery && article.gallery.length > 0 && (
+                    <div class="media-carousel">
+                        <div class="media-track">
+                            {article.gallery.map((_img) => (
+                                <div class="media-slide" data-slide>
+                                    <img src={_img.url} alt={_img.alt ?? ''} />
+                                </div>
+                            ))}
+                        </div>
+                        {article.gallery.length > 1 && (
+                            <div class="carousel-controls">
+                                <button type="button" data-prev aria-label="Previous content">←</button>
+                                <span data-count>1 / {article.gallery.length}</span>
+                                <button type="button" data-next aria-label="Next content">→</button>
+                            </div>
+                        )}
+                    </div>
+                )}
+                <a class="btn" href="/en/noticias">Back to news</a>
+            </div>
+        </div>
+    </article>
+</BaseLayout>
+<script>
+    const slides = [...document.querySelectorAll<HTMLElement>('[data-slide]')];
+    const count = document.querySelector('[data-count]');
+    let active = 0;
+    function show(i: number) {
+        active = (i + slides.length) % slides.length;
+        slides.forEach((s, n) => (s.hidden = n !== active));
+        if (count) count.textContent = `${active + 1} / ${slides.length}`;
+    }
+    document.querySelector('[data-prev]')?.addEventListener('click', () => show(active - 1));
+    document.querySelector('[data-next]')?.addEventListener('click', () => show(active + 1));
+    show(0);
+</script>
+<style>
+    .article-layout { display: grid; grid-template-columns: minmax(280px, .8fr) 1.2fr; gap: clamp(36px, 7vw, 96px) }
+    .article-cover { min-height: 360px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--green), var(--blue)); font: 700 clamp(3rem, 7vw, 6rem) var(--display) }
+    .article-copy { max-width: 680px }
+    .article-copy time { color: var(--blue); font-weight: 700 }
+    .article-copy p { font-size: 1.12rem }
+    .media-carousel { margin: 32px 0 }
+    .media-slide img { width: 100%; height: auto }
+    .carousel-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 12px }
+    .carousel-controls button { border: 1px solid var(--line); background: white; color: var(--blue); padding: 8px 14px }
+    @media (max-width: 760px) { .article-layout { grid-template-columns: 1fr } .article-cover { min-height: 220px } }
+</style>

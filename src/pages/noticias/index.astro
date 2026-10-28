@@ -1,7 +1,15 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import news from "../../data/news.json";
+import { cms } from "../../lib/cms";
+import type { NewsItem } from "../../lib/cms/types";
 const locale = "es";
+const { items: articles } = await cms.news.list({ limit: 100 });
+const fmtDate = (item: NewsItem) =>
+    new Date(item.publishedAt ?? item.createdAt).toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
 ---
 
 <BaseLayout title="Noticias | Alfaterra" locale={locale}>
@@ -16,17 +24,7 @@ const locale = "es";
         <div class="container">
             <div class="news-grid" id="news-grid">
                 {
-                    [...news.articles]
-                        .sort((a, b) => {
-                            const parse = (date: string): number => {
-                                const [day, month, year] = date
-                                    .split(".")
-                                    .map(Number);
-                                return new Date(year, month - 1, day).getTime();
-                            };
-                            return parse(b.date) - parse(a.date);
-                        })
-                        .map((article, index) => (
+                    articles.map((article, index) => (
                             <article
                                 class:list={[
                                     "news-card",
@@ -49,9 +47,9 @@ const locale = "es";
                                     </div>
                                     <div class="news-content">
                                         <>
-                                            <time>{article.date}</time>
-                                            <h2>{article.title[locale]}</h2>
-                                            <p>{article.excerpt[locale]}</p>
+                                            <time>{fmtDate(article)}</time>
+                                            <h2>{article.title}</h2>
+                                            <p>{article.summary ?? ""}</p>
                                             <a
                                                 href={`/noticias/${article.slug}`}
                                             >
