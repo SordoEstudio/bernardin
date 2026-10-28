@@ -1,10 +1,24 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-const milestones = [
-  ["1924", "Nace una historia ligada al campo argentino."],
-  ["1978", "El conocimiento técnico se convierte en acompañamiento cercano."],
-  ["2008", "Alfaterra amplía su red y suma nuevas marcas internacionales."],
-  ["Hoy", "Seguimos conectando tecnología, personas y territorio."],
+import { cms } from "../lib/cms";
+
+interface MilestonesData { lista_milestones?: { txt_year: string; txt_descripcion: string }[]; }
+interface ValoresData { lista_valores?: { txt_titulo: string; txt_descripcion: string }[]; }
+
+const { components } = await cms.components.list({ page_filter: "Empresa", locale: "es" }).catch(() => ({ components: [] }));
+const milestonesData = cms.components.getByType<MilestonesData>(components, "milestones");
+const valoresData = cms.components.getByType<ValoresData>(components, "valores");
+
+const milestones = milestonesData?.lista_milestones ?? [
+  { txt_year: "1924", txt_descripcion: "Nace una historia ligada al campo argentino." },
+  { txt_year: "1978", txt_descripcion: "El conocimiento técnico se convierte en acompañamiento cercano." },
+  { txt_year: "2008", txt_descripcion: "Alfaterra amplía su red y suma nuevas marcas internacionales." },
+  { txt_year: "Hoy",  txt_descripcion: "Seguimos conectando tecnología, personas y territorio." },
+];
+const valores = valoresData?.lista_valores ?? [
+  { txt_titulo: "Misión",  txt_descripcion: "Acercar tecnología confiable y acompañamiento experto a cada productor." },
+  { txt_titulo: "Visión",  txt_descripcion: "Ser el socio estratégico de referencia para una agricultura más eficiente." },
+  { txt_titulo: "Valores", txt_descripcion: "Construimos vínculos con compromiso, conocimiento y transparencia." },
 ];
 ---
 
@@ -41,11 +55,11 @@ const milestones = [
         </div>
       </div><div class="timeline">
         {
-          milestones.map(([year, text]) => (
+          milestones.map((m) => (
             <div class="timeline-item">
               <>
-                <strong>{year}</strong>
-                <p>{text}</p>
+                <strong>{m.txt_year}</strong>
+                <p>{m.txt_descripcion}</p>
               </>
             </div>
           ))
@@ -61,21 +75,11 @@ const milestones = [
           </h2>
         </div>
       </div><div class="brand-grid">
-        <div class="brand-card">
-          <h3>Misión</h3><p>
-            Acercar tecnología confiable y acompañamiento experto a cada
-            productor.
-          </p>
-        </div><div class="brand-card">
-          <h3>Visión</h3><p>
-            Ser el socio estratégico de referencia para una agricultura más
-            eficiente.
-          </p>
-        </div><div class="brand-card">
-          <h3>Valores</h3><p>
-            Construimos vínculos con compromiso, conocimiento y transparencia.
-          </p>
-        </div>
+        {valores.map((v) => (
+          <div class="brand-card">
+            <h3>{v.txt_titulo}</h3><p>{v.txt_descripcion}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section></BaseLayout

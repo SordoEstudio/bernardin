@@ -1,6 +1,17 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import site from "../../data/site.json";
+import { cms } from "../../lib/cms";
+
+interface CMSContactItem { icon_contacto?: string; txt_label: string; link_destino: string; txt_valor?: string; }
+interface ContactoInfoData { lista_contacto?: CMSContactItem[]; }
+
+const { components } = await cms.components.list({ page_filter: "Contacto", locale: "en" }).catch(() => ({ components: [] }));
+const contactoInfo = cms.components.getByType<ContactoInfoData>(components, "contacto_info");
+const contactLinks = contactoInfo?.lista_contacto ?? [
+  { txt_label: "WhatsApp", link_destino: `https://wa.me/${site.contact.whatsapp}`, txt_valor: "+54 9 3492 597277" },
+  { txt_label: "Email", link_destino: `mailto:${site.contact.email}`, txt_valor: site.contact.email },
+];
 ---
 
 <BaseLayout locale="en" title="Contact | Bernardin"
@@ -18,23 +29,18 @@ import site from "../../data/site.json";
                 </h2><p>
                     Tell us what you are looking for and our team will get in
                     touch.
-                </p><div class="contact-card">
-                    <strong>WhatsApp</strong><a
-                        href={`https://wa.me/${site.contact.whatsapp}`}
-                        >+54 9 3492 597277 →</a
-                    >
-                </div><div class="contact-card">
-                    <strong>Email</strong><a
-                        href={`mailto:${site.contact.email}`}
-                        >{site.contact.email}</a
-                    >
-                </div>
-            </div><form class="form contact-card">
+                </p>
+                {contactLinks.map((c) => (
+                  <div class="contact-card">
+                    <strong>{c.txt_label}</strong><a href={c.link_destino}>{c.txt_valor ?? c.link_destino} →</a>
+                  </div>
+                ))}
+            </div><form id="contact-form" class="form contact-card">
                 <div class="form-field">
-                    <label for="name">Name</label><input
-                        id="name"
+                    <label for="nombre">Name</label><input
+                        id="nombre"
                         required
-                        name="name"
+                        name="nombre"
                         placeholder="Your name"
                     />
                 </div><div class="form-field">
@@ -46,10 +52,10 @@ import site from "../../data/site.json";
                         placeholder="you@email.com"
                     />
                 </div><div class="form-field">
-                    <label for="message">Message</label><textarea
-                        id="message"
+                    <label for="mensaje">Message</label><textarea
+                        id="mensaje"
                         required
-                        name="message"
+                        name="mensaje"
                         placeholder="How can we help?"></textarea>
                 </div><button class="btn" type="submit">Send inquiry →</button>
             </form>
@@ -102,5 +108,21 @@ import site from "../../data/site.json";
                 grid-column: auto;
             }
         }
-    </style></BaseLayout
+    </style>
+<script is:inline define:vars={{ endpoint: `${import.meta.env.PUBLIC_CMS_API}/forms/contacto/submit` }}>
+  document.getElementById('contact-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.currentTarget.querySelector('[type="submit"]');
+    btn.disabled = true;
+    const body = Object.fromEntries(new FormData(e.currentTarget));
+    try {
+      const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      const json = await res.json();
+      if (json.success) {
+        e.currentTarget.innerHTML = `<p style="color:var(--green);padding:24px">${json.data?.message ?? 'Message sent!'}</p>`;
+      } else { btn.disabled = false; alert('Error sending. Please try again.'); }
+    } catch { btn.disabled = false; alert('Connection error. Please try again.'); }
+  });
+</script>
+</BaseLayout
 >

@@ -1,23 +1,36 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import site from "../data/site.json";
+import { cms } from "../lib/cms";
+
+interface CMSBtnField { txt_label: string; link_url: string; link_tipo?: string; }
+interface HeroData { txt_eyebrow?: string; txt_titulo?: string; txt_texto?: string; btn_cta?: CMSBtnField; }
+interface StatsData { lista_stats?: { txt_numero: string; txt_label: string }[]; }
+interface StoryData { txt_eyebrow?: string; txt_titulo?: string; txt_descripcion?: string; }
+
+const { components } = await cms.components.list({ page_filter: "Inicio", locale: "es" }).catch(() => ({ components: [] }));
+const hero = cms.components.getByType<HeroData>(components, "hero");
+const stats = cms.components.getByType<StatsData>(components, "stats");
+const story = cms.components.getByType<StoryData>(components, "story_panel");
+
 const d = site.hero.es;
+const statsList = stats?.lista_stats ?? site.stats.map(([txt_numero, txt_label]) => ({ txt_numero, txt_label }));
 ---
 
 <BaseLayout title="Bernardin | Tecnología agrícola" locale="es"
   ><section class="hero">
     <div class="hero-art"></div><div class="container hero-content">
-      <span class="eyebrow">{d.eyebrow}</span><h1>{d.title}</h1><p>
-        {d.text}
-      </p><a class="btn" href="/productos">{d.cta} <span>→</span></a>
+      <span class="eyebrow">{hero?.txt_eyebrow ?? d.eyebrow}</span><h1>{hero?.txt_titulo ?? d.title}</h1><p>
+        {hero?.txt_texto ?? d.text}
+      </p><a class="btn" href={hero?.btn_cta?.link_url ?? "/productos"}>{hero?.btn_cta?.txt_label ?? d.cta} <span>→</span></a>
     </div>
   </section><section class="stats">
     {
-      site.stats.map(([value, label]) => (
+      statsList.map((s) => (
         <div class="stat container">
           <>
-            <strong>{value}</strong>
-            <span>{label}</span>
+            <strong>{s.txt_numero}</strong>
+            <span>{s.txt_label}</span>
           </>
         </div>
       ))
@@ -61,11 +74,10 @@ const d = site.hero.es;
           estamos cerca de quienes hacen crecer la producción argentina.
         </p><a class="btn alt" href="/empresa">Conocé Bernardin</a>
       </div><div class="story-panel">
-        <span class="eyebrow">Desde 1924</span><h2>
-          100 años mirando hacia adelante.
+        <span class="eyebrow">{story?.txt_eyebrow ?? "Desde 1924"}</span><h2>
+          {story?.txt_titulo ?? "100 años mirando hacia adelante."}
         </h2><p>
-          Una historia construida con trabajo, territorio y relaciones que
-          perduran.
+          {story?.txt_descripcion ?? "Una historia construida con trabajo, territorio y relaciones que perduran."}
         </p>
       </div>
     </div>

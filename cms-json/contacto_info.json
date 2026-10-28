@@ -1,0 +1,23 @@
+{
+  "name": "Contacto Info",
+  "key": "contacto_info",
+  "page": "Contacto",
+  "type": "contacto_info",
+  "componentPath": "pages/contacto",
+  "data": {
+    "lista_contacto": [
+      {
+        "icon_contacto": "FaWhatsapp",
+        "txt_label": "WhatsApp",
+        "link_destino": "https://wa.me/5493492597277",
+        "txt_valor": "+54 9 3492 597277"
+      },
+      {
+        "icon_contacto": "FaEnvelope",
+        "txt_label": "Email",
+        "link_destino": "mailto:info@bernardin.com.ar",
+        "txt_valor": "info@bernardin.com.ar"
+      }
+    ]
+  }
+}

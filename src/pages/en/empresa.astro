@@ -1,6 +1,25 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
-const milestones=[['1924','A story rooted in Argentine agriculture begins.'],['1978','Technical knowledge becomes close, practical support.'],['2008','Alfaterra expands its network and adds international brands.'],['Today','We keep connecting technology, people and territory.']]
+import { cms } from '../../lib/cms'
+
+interface MilestonesData { lista_milestones?: { txt_year: string; txt_descripcion: string }[]; }
+interface ValoresData { lista_valores?: { txt_titulo: string; txt_descripcion: string }[]; }
+
+const { components } = await cms.components.list({ page_filter: 'Empresa', locale: 'en' }).catch(() => ({ components: [] }));
+const milestonesData = cms.components.getByType<MilestonesData>(components, 'milestones');
+const valoresData = cms.components.getByType<ValoresData>(components, 'valores');
+
+const milestones = milestonesData?.lista_milestones ?? [
+  { txt_year: '1924', txt_descripcion: 'A story rooted in Argentine agriculture begins.' },
+  { txt_year: '1978', txt_descripcion: 'Technical knowledge becomes close, practical support.' },
+  { txt_year: '2008', txt_descripcion: 'Alfaterra expands its network and adds international brands.' },
+  { txt_year: 'Today', txt_descripcion: 'We keep connecting technology, people and territory.' },
+];
+const valores = valoresData?.lista_valores ?? [
+  { txt_titulo: 'Mission', txt_descripcion: 'Bring trusted technology and expert support to every farmer.' },
+  { txt_titulo: 'Vision', txt_descripcion: 'Be the reference strategic partner for more efficient agriculture.' },
+  { txt_titulo: 'Values', txt_descripcion: 'We build relationships through commitment, knowledge and transparency.' },
+];
 ---
-<BaseLayout locale="en" title="Company | Alfaterra"><section class="page-hero"><div class="container"><div class="breadcrumbs">Home / Company</div><h1>A history of farming, innovation and trust.</h1></div></section><section class="section"><div class="container split"><div><span class="eyebrow">About us</span><h2>We know farming because we are part of it.</h2></div><div><p class="quote">“The best technology is the one that becomes tangible results.”</p><p>Alfaterra connects Argentine farmers with first-class agricultural machinery. Our team combines commercial experience, technical knowledge and a long-term perspective.</p></div></div></section><section class="section soft"><div class="container"><div class="section-head"><div><span class="eyebrow">Our history</span><h2>A path that keeps growing</h2></div></div><div class="timeline">{milestones.map(([year,text])=><div class="timeline-item"><strong>{year}</strong><p>{text}</p></div>)}</div></div></section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">Our principles</span><h2>What drives us</h2></div></div><div class="brand-grid"><div class="brand-card"><h3>Mission</h3><p>Bring trusted technology and expert support to every farmer.</p></div><div class="brand-card"><h3>Vision</h3><p>Be the reference strategic partner for more efficient agriculture.</p></div><div class="brand-card"><h3>Values</h3><p>We build relationships through commitment, knowledge and transparency.</p></div></div></div></section></BaseLayout>
+<BaseLayout locale="en" title="Company | Alfaterra"><section class="page-hero"><div class="container"><div class="breadcrumbs">Home / Company</div><h1>A history of farming, innovation and trust.</h1></div></section><section class="section"><div class="container split"><div><span class="eyebrow">About us</span><h2>We know farming because we are part of it.</h2></div><div><p class="quote">“The best technology is the one that becomes tangible results.”</p><p>Alfaterra connects Argentine farmers with first-class agricultural machinery. Our team combines commercial experience, technical knowledge and a long-term perspective.</p></div></div></section><section class="section soft"><div class="container"><div class="section-head"><div><span class="eyebrow">Our history</span><h2>A path that keeps growing</h2></div></div><div class="timeline">{milestones.map((m)=><div class="timeline-item"><strong>{m.txt_year}</strong><p>{m.txt_descripcion}</p></div>)}</div></div></section><section class="section"><div class="container"><div class="section-head"><div><span class="eyebrow">Our principles</span><h2>What drives us</h2></div></div><div class="brand-grid">{valores.map((v)=><div class="brand-card"><h3>{v.txt_titulo}</h3><p>{v.txt_descripcion}</p></div>)}</div></div></section></BaseLayout>
 <style>.timeline{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--green);gap:24px}.timeline-item{position:relative;padding-top:28px}.timeline-item:before{content:'';position:absolute;top:-9px;width:15px;height:15px;border-radius:50%;background:var(--green);border:3px solid var(--pale)}.timeline-item strong{font:700 2rem var(--display);color:var(--blue)}.timeline-item p{max-width:210px}@media(max-width:700px){.timeline{grid-template-columns:1fr;border-top:0;border-left:2px solid var(--green);padding-left:24px}.timeline-item{padding-top:0;padding-bottom:22px}.timeline-item:before{left:-33px;top:4px}}</style></BaseLayout>
