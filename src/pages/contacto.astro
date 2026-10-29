@@ -19,7 +19,7 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
 <BaseLayout locale="es" title="Contacto | Alfaterra">
   <section class="page-hero">
     <div class="container">
-      <div class="breadcrumbs">Inicio / Contacto</div>
+      <div class="breadcrumbs"><a href="/">Inicio</a> / Contacto</div>
       <h1>{contactoInfo?.txt_h1}</h1>
     </div>
   </section>
@@ -55,7 +55,53 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
   </section>
 </BaseLayout>
 <style>
-.contact-card{width:100%;max-width:820px;margin-inline:auto;padding:clamp(24px,4vw,42px)}.form.contact-card{max-width:820px}.contact-card label{display:block;margin:0 0 8px;font:700 .78rem var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--green)}.contact-card input,.contact-card textarea{width:100%;border:1px solid var(--line);border-radius:3px;padding:13px 15px;background:#fff;color:var(--ink);margin-bottom:18px}.contact-card textarea{min-height:150px;resize:vertical}.contact-card .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.contact-card .form-grid .full{grid-column:1/-1}@media(max-width:640px){.contact-card .form-grid{grid-template-columns:1fr}.contact-card .form-grid .full{grid-column:auto}}
+    .contact-card {
+        width: 100%;
+        max-width: 820px;
+        margin-inline: auto;
+        padding: clamp(24px, 4vw, 42px);
+    }
+    .form.contact-card {
+        max-width: 820px;
+    }
+    .contact-card label {
+        display: block;
+        margin: 0 0 8px;
+        font: 700 0.78rem var(--display);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--green);
+    }
+    .contact-card input,
+    .contact-card textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 13px 15px;
+        background: #fff;
+        color: var(--ink);
+        margin-bottom: 18px;
+    }
+    .contact-card textarea {
+        min-height: 150px;
+        resize: vertical;
+    }
+    .contact-card .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 20px;
+    }
+    .contact-card .form-grid .full {
+        grid-column: 1 / -1;
+    }
+    @media (max-width: 640px) {
+        .contact-card .form-grid {
+            grid-template-columns: 1fr;
+        }
+        .contact-card .form-grid .full {
+            grid-column: auto;
+        }
+    }
 </style>
 <script is:inline define:vars={{ endpoint: `${import.meta.env.PUBLIC_CMS_API}/forms/contacto/submit` }}>
   document.getElementById('contact-form').addEventListener('submit', async (e) => {
