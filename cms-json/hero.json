@@ -5,23 +5,25 @@
   "type": "hero",
   "componentPath": "pages/index",
   "data": {
-    "txt_eyebrow": "Tecnología que mueve el campo",
-    "txt_titulo": "El futuro de la agricultura empieza hoy",
-    "txt_texto": "Distribuidores oficiales de maquinaria agrícola internacional para producir más, mejor y de manera sostenible.",
-    "btn_cta": {
-      "txt_label": "Conocé nuestros productos",
-      "link_url": "/productos",
-      "link_tipo": "internal"
-    }
-  },
-  "_en": {
-    "txt_eyebrow": "Technology that moves the field",
-    "txt_titulo": "The future of agriculture starts today",
-    "txt_texto": "Official distributors of international agricultural machinery to produce more, better and sustainably.",
-    "btn_cta": {
-      "txt_label": "Explore our products",
-      "link_url": "/en/productos",
-      "link_tipo": "internal"
+    "es": {
+      "txt_eyebrow": "Tecnología que mueve el campo",
+      "txt_titulo": "El futuro de la agricultura empieza hoy",
+      "txt_texto": "Distribuidores oficiales de maquinaria agrícola internacional para producir más, mejor y de manera sostenible.",
+      "btn_cta": {
+        "txt_label": "Conocé nuestros productos",
+        "link_url": "/productos",
+        "link_tipo": "internal"
+      }
+    },
+    "en": {
+      "txt_eyebrow": "Technology that moves the field",
+      "txt_titulo": "The future of agriculture starts today",
+      "txt_texto": "Official distributors of international agricultural machinery to produce more, better and sustainably.",
+      "btn_cta": {
+        "txt_label": "Explore our products",
+        "link_url": "/en/productos",
+        "link_tipo": "internal"
+      }
     }
   }
 }

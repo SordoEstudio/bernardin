@@ -5,9 +5,11 @@
   "type": "empresa_hero",
   "componentPath": "pages/empresa",
   "data": {
-    "txt_h1": "Una historia de campo, innovación y confianza."
-  },
-  "_en": {
-    "txt_h1": "A history of farming, innovation and trust."
+    "es": {
+      "txt_h1": "Una historia de campo, innovación y confianza."
+    },
+    "en": {
+      "txt_h1": "A history of farming, innovation and trust."
+    }
   }
 }

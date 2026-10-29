@@ -5,17 +5,19 @@
   "type": "noticias_header",
   "componentPath": "pages/noticias",
   "data": {
-    "txt_eyebrow": "Alfaterra al día",
-    "txt_h1": "Noticias",
-    "txt_descripcion": "Ideas, novedades y todo lo que pasa cerca del campo.",
-    "txt_leer_noticia": "Leer noticia",
-    "txt_volver": "Volver a noticias"
-  },
-  "_en": {
-    "txt_eyebrow": "Alfaterra today",
-    "txt_h1": "News",
-    "txt_descripcion": "Ideas, updates and everything happening close to the field.",
-    "txt_leer_noticia": "Read article",
-    "txt_volver": "Back to news"
+    "es": {
+      "txt_eyebrow": "Alfaterra al día",
+      "txt_h1": "Noticias",
+      "txt_descripcion": "Ideas, novedades y todo lo que pasa cerca del campo.",
+      "txt_leer_noticia": "Leer noticia",
+      "txt_volver": "Volver a noticias"
+    },
+    "en": {
+      "txt_eyebrow": "Alfaterra today",
+      "txt_h1": "News",
+      "txt_descripcion": "Ideas, updates and everything happening close to the field.",
+      "txt_leer_noticia": "Read article",
+      "txt_volver": "Back to news"
+    }
   }
 }

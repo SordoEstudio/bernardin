@@ -5,23 +5,25 @@
   "type": "milestones",
   "componentPath": "pages/empresa",
   "data": {
-    "txt_eyebrow_seccion": "Nuestra historia",
-    "txt_h2_seccion": "Un camino que sigue creciendo",
-    "lista_milestones": [
-      { "txt_year": "1924", "txt_descripcion": "Nace una historia ligada al campo argentino." },
-      { "txt_year": "1978", "txt_descripcion": "El conocimiento técnico se convierte en acompañamiento cercano." },
-      { "txt_year": "2008", "txt_descripcion": "Alfaterra amplía su red y suma nuevas marcas internacionales." },
-      { "txt_year": "Hoy",  "txt_descripcion": "Seguimos conectando tecnología, personas y territorio." }
-    ]
-  },
-  "_en": {
-    "txt_eyebrow_seccion": "Our history",
-    "txt_h2_seccion": "A path that keeps growing",
-    "lista_milestones": [
-      { "txt_year": "1924", "txt_descripcion": "A story linked to the Argentine countryside is born." },
-      { "txt_year": "1978", "txt_descripcion": "Technical knowledge becomes close accompaniment." },
-      { "txt_year": "2008", "txt_descripcion": "Alfaterra expands its network and adds new international brands." },
-      { "txt_year": "Today", "txt_descripcion": "We keep connecting technology, people and territory." }
-    ]
+    "es": {
+      "txt_eyebrow_seccion": "Nuestra historia",
+      "txt_h2_seccion": "Un camino que sigue creciendo",
+      "lista_milestones": [
+        { "txt_year": "1924", "txt_descripcion": "Nace una historia ligada al campo argentino." },
+        { "txt_year": "1978", "txt_descripcion": "El conocimiento técnico se convierte en acompañamiento cercano." },
+        { "txt_year": "2008", "txt_descripcion": "Alfaterra amplía su red y suma nuevas marcas internacionales." },
+        { "txt_year": "Hoy",  "txt_descripcion": "Seguimos conectando tecnología, personas y territorio." }
+      ]
+    },
+    "en": {
+      "txt_eyebrow_seccion": "Our history",
+      "txt_h2_seccion": "A path that keeps growing",
+      "lista_milestones": [
+        { "txt_year": "1924",  "txt_descripcion": "A story linked to the Argentine countryside is born." },
+        { "txt_year": "1978",  "txt_descripcion": "Technical knowledge becomes close accompaniment." },
+        { "txt_year": "2008",  "txt_descripcion": "Alfaterra expands its network and adds new international brands." },
+        { "txt_year": "Today", "txt_descripcion": "We keep connecting technology, people and territory." }
+      ]
+    }
   }
 }

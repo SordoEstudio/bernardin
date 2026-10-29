@@ -5,13 +5,15 @@
   "type": "story_panel",
   "componentPath": "pages/index",
   "data": {
-    "txt_eyebrow": "Desde 1924",
-    "txt_titulo": "100 años mirando hacia adelante.",
-    "txt_descripcion": "Una historia construida con trabajo, territorio y relaciones que perduran."
-  },
-  "_en": {
-    "txt_eyebrow": "Since 1924",
-    "txt_titulo": "100 years looking ahead.",
-    "txt_descripcion": "A history built with work, territory and enduring relationships."
+    "es": {
+      "txt_eyebrow": "Desde 1924",
+      "txt_titulo": "100 años mirando hacia adelante.",
+      "txt_descripcion": "Una historia construida con trabajo, territorio y relaciones que perduran."
+    },
+    "en": {
+      "txt_eyebrow": "Since 1924",
+      "txt_titulo": "100 years looking ahead.",
+      "txt_descripcion": "A history built with work, territory and enduring relationships."
+    }
   }
 }

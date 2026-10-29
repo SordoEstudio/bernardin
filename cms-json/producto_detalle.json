@@ -5,11 +5,13 @@
   "type": "producto_detalle",
   "componentPath": "pages/productos/[marca]/[producto]",
   "data": {
-    "txt_h2": "Una solución pensada para tu campo.",
-    "txt_cta_label": "Consultar por este producto"
-  },
-  "_en": {
-    "txt_h2": "A solution designed for your farm.",
-    "txt_cta_label": "Ask about this product"
+    "es": {
+      "txt_h2": "Una solución pensada para tu campo.",
+      "txt_cta_label": "Consultar por este producto"
+    },
+    "en": {
+      "txt_h2": "A solution designed for your farm.",
+      "txt_cta_label": "Ask about this product"
+    }
   }
 }

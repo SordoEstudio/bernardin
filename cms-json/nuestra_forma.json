@@ -5,21 +5,23 @@
   "type": "nuestra_forma",
   "componentPath": "pages/index",
   "data": {
-    "txt_eyebrow": "Nuestra forma de hacer",
-    "txt_h2": "Más que maquinaria. Un socio para tu campo.",
-    "txt_descripcion": "Desde la selección del equipo hasta el acompañamiento post venta, estamos cerca de quienes hacen crecer la producción argentina.",
-    "btn_cta": {
-      "txt_label": "Conocé Bernardin",
-      "link_url": "/empresa"
-    }
-  },
-  "_en": {
-    "txt_eyebrow": "Our way of working",
-    "txt_h2": "More than machinery. A partner for your farm.",
-    "txt_descripcion": "From choosing the right equipment to after-sales support, we stay close to those growing Argentina's production.",
-    "btn_cta": {
-      "txt_label": "Discover Bernardin",
-      "link_url": "/en/empresa"
+    "es": {
+      "txt_eyebrow": "Nuestra forma de hacer",
+      "txt_h2": "Más que maquinaria. Un socio para tu campo.",
+      "txt_descripcion": "Desde la selección del equipo hasta el acompañamiento post venta, estamos cerca de quienes hacen crecer la producción argentina.",
+      "btn_cta": {
+        "txt_label": "Conocé Bernardin",
+        "link_url": "/empresa"
+      }
+    },
+    "en": {
+      "txt_eyebrow": "Our way of working",
+      "txt_h2": "More than machinery. A partner for your farm.",
+      "txt_descripcion": "From choosing the right equipment to after-sales support, we stay close to those growing Argentina's production.",
+      "btn_cta": {
+        "txt_label": "Discover Bernardin",
+        "link_url": "/en/empresa"
+      }
     }
   }
 }

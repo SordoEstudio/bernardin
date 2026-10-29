@@ -5,19 +5,21 @@
   "type": "stats",
   "componentPath": "pages/index",
   "data": {
-    "lista_stats": [
-      { "txt_numero": "100+", "txt_label": "años de experiencia" },
-      { "txt_numero": "5",    "txt_label": "marcas líderes" },
-      { "txt_numero": "24/7", "txt_label": "acompañamiento" },
-      { "txt_numero": "Argentina", "txt_label": "raíces y territorio" }
-    ]
-  },
-  "_en": {
-    "lista_stats": [
-      { "txt_numero": "100+", "txt_label": "years of experience" },
-      { "txt_numero": "5",    "txt_label": "leading brands" },
-      { "txt_numero": "24/7", "txt_label": "support" },
-      { "txt_numero": "Argentina", "txt_label": "roots and territory" }
-    ]
+    "es": {
+      "lista_stats": [
+        { "txt_numero": "100+",      "txt_label": "años de experiencia" },
+        { "txt_numero": "5",         "txt_label": "marcas líderes" },
+        { "txt_numero": "24/7",      "txt_label": "acompañamiento" },
+        { "txt_numero": "Argentina", "txt_label": "raíces y territorio" }
+      ]
+    },
+    "en": {
+      "lista_stats": [
+        { "txt_numero": "100+",      "txt_label": "years of experience" },
+        { "txt_numero": "5",         "txt_label": "leading brands" },
+        { "txt_numero": "24/7",      "txt_label": "support" },
+        { "txt_numero": "Argentina", "txt_label": "roots and territory" }
+      ]
+    }
   }
 }

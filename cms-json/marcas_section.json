@@ -5,15 +5,17 @@
   "type": "marcas_section",
   "componentPath": "pages/index",
   "data": {
-    "txt_eyebrow": "Nuestras marcas",
-    "txt_h2": "Equipos para cada desafío",
-    "txt_descripcion": "Representamos marcas internacionales que comparten nuestra obsesión por la precisión, la innovación y el servicio.",
-    "txt_cta_brands": "Explorar catálogo →"
-  },
-  "_en": {
-    "txt_eyebrow": "Our brands",
-    "txt_h2": "Equipment for every challenge",
-    "txt_descripcion": "We represent international brands that share our passion for precision, innovation and service.",
-    "txt_cta_brands": "Explore catalog →"
+    "es": {
+      "txt_eyebrow": "Nuestras marcas",
+      "txt_h2": "Equipos para cada desafío",
+      "txt_descripcion": "Representamos marcas internacionales que comparten nuestra obsesión por la precisión, la innovación y el servicio.",
+      "txt_cta_brands": "Explorar catálogo →"
+    },
+    "en": {
+      "txt_eyebrow": "Our brands",
+      "txt_h2": "Equipment for every challenge",
+      "txt_descripcion": "We represent international brands that share our passion for precision, innovation and service.",
+      "txt_cta_brands": "Explore catalog →"
+    }
   }
 }
