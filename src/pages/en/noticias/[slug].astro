@@ -3,12 +3,16 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { cms } from '../../../lib/cms';
 import type { NewsItem } from '../../../lib/cms/types';
 
+interface NoticiasHeaderData { txt_eyebrow?: string; txt_volver?: string; }
+
 export async function getStaticPaths() {
     const { items } = await cms.news.list({ limit: 100, locale: 'en' } as Parameters<typeof cms.news.list>[0]);
     return items.map((n) => ({ params: { slug: n.slug }, props: { article: n } }));
 }
 
 const { article } = Astro.props as { article: NewsItem };
+const { components } = await cms.components.list({ page_filter: 'Noticias', locale: 'en' }).catch(() => ({ components: [] }));
+const noticiasHeader = cms.components.getByType<NoticiasHeaderData>(components, 'noticias_header');
 const fmtDate = (item: NewsItem) =>
     new Date(item.publishedAt ?? item.createdAt).toLocaleDateString('en-US', {
         day: '2-digit',
@@ -20,7 +24,7 @@ const fmtDate = (item: NewsItem) =>
     <section class="page-hero">
         <div class="container">
             <div class="breadcrumbs"><a href="/en/noticias">News</a> / {fmtDate(article)}</div>
-            <span class="eyebrow">Alfaterra today</span>
+            <span class="eyebrow">{noticiasHeader?.txt_eyebrow}</span>
             <h1>{article.title}</h1>
             <p>{article.summary ?? ''}</p>
         </div>
@@ -49,7 +53,7 @@ const fmtDate = (item: NewsItem) =>
                         )}
                     </div>
                 )}
-                <a class="btn" href="/en/noticias">Back to news</a>
+                <a class="btn" href="/en/noticias">{noticiasHeader?.txt_volver}</a>
             </div>
         </div>
     </article>

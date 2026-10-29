@@ -29,12 +29,17 @@ const { product, brandId } = Astro.props as {
     brandId: string;
 };
 const brand = site.brands.find((b) => b.id === brandId)!;
-const allCategories = await cms.categories.list().catch(() => []);
+const [allCategories, { components: prodComponents }] = await Promise.all([
+    cms.categories.list().catch(() => []),
+    cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] })),
+]);
+
+interface ProductoDetalleData { txt_h2?: string; txt_cta_label?: string; }
+const productoDetalle = cms.components.getByType<ProductoDetalleData>(prodComponents, "producto_detalle");
 const category = allCategories.find((c) => c.slug === product.productType);
 const images = product.images?.length ? product.images : [brand.logo];
 const productName = product.locale?.title ?? product.slug;
-const productDesc =
-    product.locale?.description ?? category?.description ?? "";
+const productDesc = product.locale?.description ?? category?.description ?? "";
 ---
 
 <BaseLayout locale="en" title={`${productName} | ${brand.name} | Bernardin`}>
@@ -71,16 +76,13 @@ const productDesc =
                 }
             </div><div class="product-copy">
                 <span class="eyebrow">{category?.name ?? ""}</span><h2>
-                    A solution designed for your farm.
+                    {productoDetalle?.txt_h2}
                 </h2><p>
-                    {
-                        productDesc ||
-                            `Discover ${productName}, a ${brand.name} solution designed for precision, performance and technical support.`
-                    }
+                    {productDesc}
                 </p><a
                     class="btn"
                     href={`/en/contacto?producto=${encodeURIComponent(productName)}`}
-                    >Ask about this product <span>→</span></a
+                    >{productoDetalle?.txt_cta_label} <span>→</span></a
                 >
             </div>
         </div>

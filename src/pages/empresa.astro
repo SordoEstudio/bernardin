@@ -2,46 +2,36 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { cms } from "../lib/cms";
 
-interface MilestonesData { lista_milestones?: { txt_year: string; txt_descripcion: string }[]; }
-interface ValoresData { lista_valores?: { txt_titulo: string; txt_descripcion: string }[]; }
+interface EmpresaHeroData { txt_h1?: string; }
+interface EmpresaIntroData { txt_eyebrow?: string; txt_h2?: string; txt_quote?: string; txt_descripcion?: string; }
+interface MilestonesData { txt_eyebrow_seccion?: string; txt_h2_seccion?: string; lista_milestones?: { txt_year: string; txt_descripcion: string }[]; }
+interface ValoresData { txt_eyebrow_seccion?: string; txt_h2_seccion?: string; lista_valores?: { txt_titulo: string; txt_descripcion: string }[]; }
 
 const { components } = await cms.components.list({ page_filter: "Empresa", locale: "es" }).catch(() => ({ components: [] }));
+const empresaHero = cms.components.getByType<EmpresaHeroData>(components, "empresa_hero");
+const empresaIntro = cms.components.getByType<EmpresaIntroData>(components, "empresa_intro");
 const milestonesData = cms.components.getByType<MilestonesData>(components, "milestones");
 const valoresData = cms.components.getByType<ValoresData>(components, "valores");
-
-const milestones = milestonesData?.lista_milestones ?? [
-  { txt_year: "1924", txt_descripcion: "Nace una historia ligada al campo argentino." },
-  { txt_year: "1978", txt_descripcion: "El conocimiento técnico se convierte en acompañamiento cercano." },
-  { txt_year: "2008", txt_descripcion: "Alfaterra amplía su red y suma nuevas marcas internacionales." },
-  { txt_year: "Hoy",  txt_descripcion: "Seguimos conectando tecnología, personas y territorio." },
-];
-const valores = valoresData?.lista_valores ?? [
-  { txt_titulo: "Misión",  txt_descripcion: "Acercar tecnología confiable y acompañamiento experto a cada productor." },
-  { txt_titulo: "Visión",  txt_descripcion: "Ser el socio estratégico de referencia para una agricultura más eficiente." },
-  { txt_titulo: "Valores", txt_descripcion: "Construimos vínculos con compromiso, conocimiento y transparencia." },
-];
 ---
 
 <BaseLayout locale="es" title="Empresa | Alfaterra"
   ><section class="page-hero">
     <div class="container">
       <div class="breadcrumbs">Inicio / Empresa</div><h1>
-        Una historia de campo, innovación y confianza.
+        {empresaHero?.txt_h1}
       </h1>
     </div>
   </section><section class="section">
     <div class="container split">
       <div>
-        <span class="eyebrow">Quiénes somos</span><h2>
-          Conocemos el campo porque somos parte de él.
+        <span class="eyebrow">{empresaIntro?.txt_eyebrow}</span><h2>
+          {empresaIntro?.txt_h2}
         </h2>
       </div><div>
         <p class="quote">
-          “La mejor tecnología es la que se convierte en resultados concretos.”
+          {empresaIntro?.txt_quote}
         </p><p>
-          Alfaterra conecta a productores argentinos con maquinaria agrícola de
-          primer nivel. Nuestro equipo combina experiencia comercial,
-          conocimiento técnico y una mirada de largo plazo.
+          {empresaIntro?.txt_descripcion}
         </p>
       </div>
     </div>
@@ -49,13 +39,13 @@ const valores = valoresData?.lista_valores ?? [
     <div class="container">
       <div class="section-head">
         <div>
-          <span class="eyebrow">Nuestra historia</span><h2>
-            Un camino que sigue creciendo
+          <span class="eyebrow">{milestonesData?.txt_eyebrow_seccion}</span><h2>
+            {milestonesData?.txt_h2_seccion}
           </h2>
         </div>
       </div><div class="timeline">
         {
-          milestones.map((m) => (
+          (milestonesData?.lista_milestones ?? []).map((m) => (
             <div class="timeline-item">
               <>
                 <strong>{m.txt_year}</strong>
@@ -70,12 +60,12 @@ const valores = valoresData?.lista_valores ?? [
     <div class="container">
       <div class="section-head">
         <div>
-          <span class="eyebrow">Nuestros principios</span><h2>
-            Lo que nos mueve
+          <span class="eyebrow">{valoresData?.txt_eyebrow_seccion}</span><h2>
+            {valoresData?.txt_h2_seccion}
           </h2>
         </div>
       </div><div class="brand-grid">
-        {valores.map((v) => (
+        {(valoresData?.lista_valores ?? []).map((v) => (
           <div class="brand-card">
             <h3>{v.txt_titulo}</h3><p>{v.txt_descripcion}</p>
           </div>

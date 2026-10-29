@@ -1,0 +1,19 @@
+{
+  "name": "Intro Quiénes somos",
+  "key": "empresa_intro",
+  "page": "Empresa",
+  "type": "empresa_intro",
+  "componentPath": "pages/empresa",
+  "data": {
+    "txt_eyebrow": "Quiénes somos",
+    "txt_h2": "Conocemos el campo porque somos parte de él.",
+    "txt_quote": "\"La mejor tecnología es la que se convierte en resultados concretos.\"",
+    "txt_descripcion": "Alfaterra conecta a productores argentinos con maquinaria agrícola de primer nivel. Nuestro equipo combina experiencia comercial, conocimiento técnico y una mirada de largo plazo."
+  },
+  "_en": {
+    "txt_eyebrow": "About us",
+    "txt_h2": "We know farming because we are part of it.",
+    "txt_quote": "\"The best technology is the one that becomes tangible results.\"",
+    "txt_descripcion": "Alfaterra connects Argentine farmers with first-class agricultural machinery. Our team combines commercial experience, technical knowledge and a long-term perspective."
+  }
+}

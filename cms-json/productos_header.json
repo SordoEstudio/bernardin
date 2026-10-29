@@ -1,0 +1,17 @@
+{
+  "name": "Header Productos",
+  "key": "productos_header",
+  "page": "Productos",
+  "type": "productos_header",
+  "componentPath": "pages/productos",
+  "data": {
+    "txt_h1": "Marcas que trabajan con vos.",
+    "txt_descripcion": "Alfaterra comercializa cinco marcas internacionales, cada una con soluciones específicas para el campo.",
+    "txt_ver_productos": "Ver productos →"
+  },
+  "_en": {
+    "txt_h1": "Brands that work with you.",
+    "txt_descripcion": "Bernardin represents five international brands, each with specific solutions for agriculture.",
+    "txt_ver_productos": "View products →"
+  }
+}

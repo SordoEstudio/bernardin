@@ -70,9 +70,16 @@ export const cms = createCMSClient({
 | `hero` | `src/pages/index.astro` | `Inicio` |
 | `stats` | `src/pages/index.astro` | `Inicio` |
 | `story_panel` | `src/pages/index.astro` | `Inicio` |
+| `marcas_section` | `src/pages/index.astro` | `Inicio` |
+| `nuestra_forma` | `src/pages/index.astro` | `Inicio` |
+| `empresa_hero` | `src/pages/empresa.astro` | `Empresa` |
+| `empresa_intro` | `src/pages/empresa.astro` | `Empresa` |
 | `milestones` | `src/pages/empresa.astro` | `Empresa` |
 | `valores` | `src/pages/empresa.astro` | `Empresa` |
 | `contacto_info` | `src/pages/contacto.astro` | `Contacto` |
+| `noticias_header` | `src/pages/noticias/index.astro` + `[slug].astro` | `Noticias` |
+| `productos_header` | `src/pages/productos/index.astro` | `Productos` |
+| `producto_detalle` | `src/pages/productos/[marca]/[producto].astro` | `Productos` |
 
 CMS admin: **Nombre** y **Página** en español, mayúscula inicial. `type` = clave técnica (snake_case).
 

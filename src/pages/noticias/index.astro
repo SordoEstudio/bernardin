@@ -2,8 +2,16 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { cms } from "../../lib/cms";
 import type { NewsItem } from "../../lib/cms/types";
+
+interface NoticiasHeaderData { txt_eyebrow?: string; txt_h1?: string; txt_descripcion?: string; txt_leer_noticia?: string; }
+
 const locale = "es";
-const { items: articles } = await cms.news.list({ limit: 100 });
+const [{ items: articles }, { components }] = await Promise.all([
+    cms.news.list({ limit: 100 }),
+    cms.components.list({ page_filter: "Noticias", locale: "es" }).catch(() => ({ components: [] })),
+]);
+const noticiasHeader = cms.components.getByType<NoticiasHeaderData>(components, "noticias_header");
+
 const fmtDate = (item: NewsItem) =>
     new Date(item.publishedAt ?? item.createdAt).toLocaleDateString("es-AR", {
         day: "2-digit",
@@ -15,8 +23,8 @@ const fmtDate = (item: NewsItem) =>
 <BaseLayout title="Noticias | Alfaterra" locale={locale}>
     <section class="page-hero">
         <div class="container">
-            <span class="eyebrow">Alfaterra al día</span><h1>Noticias</h1><p>
-                Ideas, novedades y todo lo que pasa cerca del campo.
+            <span class="eyebrow">{noticiasHeader?.txt_eyebrow}</span><h1>{noticiasHeader?.txt_h1}</h1><p>
+                {noticiasHeader?.txt_descripcion}
             </p>
         </div>
     </section>
@@ -36,7 +44,7 @@ const fmtDate = (item: NewsItem) =>
                                 <>
                                     <div class="news-image">
                                         <>
-                                            <span>Alfaterra al día</span>
+                                            <span>{noticiasHeader?.txt_eyebrow}</span>
                                             <strong>
                                                 {String(index + 1).padStart(
                                                     2,
@@ -53,7 +61,7 @@ const fmtDate = (item: NewsItem) =>
                                             <a
                                                 href={`/noticias/${article.slug}`}
                                             >
-                                                Leer noticia <span>→</span>
+                                                {noticiasHeader?.txt_leer_noticia} <span>→</span>
                                             </a>
                                         </>
                                     </div>

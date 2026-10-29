@@ -7,26 +7,27 @@ interface CMSBtnField { txt_label: string; link_url: string; link_tipo?: string;
 interface HeroData { txt_eyebrow?: string; txt_titulo?: string; txt_texto?: string; btn_cta?: CMSBtnField; }
 interface StatsData { lista_stats?: { txt_numero: string; txt_label: string }[]; }
 interface StoryData { txt_eyebrow?: string; txt_titulo?: string; txt_descripcion?: string; }
+interface MarcasData { txt_eyebrow?: string; txt_h2?: string; txt_descripcion?: string; txt_cta_brands?: string; }
+interface NuestraFormaData { txt_eyebrow?: string; txt_h2?: string; txt_descripcion?: string; btn_cta?: CMSBtnField; }
 
 const { components } = await cms.components.list({ page_filter: "Inicio", locale: "es" }).catch(() => ({ components: [] }));
 const hero = cms.components.getByType<HeroData>(components, "hero");
 const stats = cms.components.getByType<StatsData>(components, "stats");
 const story = cms.components.getByType<StoryData>(components, "story_panel");
-
-const d = site.hero.es;
-const statsList = stats?.lista_stats ?? site.stats.map(([txt_numero, txt_label]) => ({ txt_numero, txt_label }));
+const marcas = cms.components.getByType<MarcasData>(components, "marcas_section");
+const nuestra = cms.components.getByType<NuestraFormaData>(components, "nuestra_forma");
 ---
 
 <BaseLayout title="Bernardin | Tecnología agrícola" locale="es"
   ><section class="hero">
     <div class="hero-art"></div><div class="container hero-content">
-      <span class="eyebrow">{hero?.txt_eyebrow ?? d.eyebrow}</span><h1>{hero?.txt_titulo ?? d.title}</h1><p>
-        {hero?.txt_texto ?? d.text}
-      </p><a class="btn" href={hero?.btn_cta?.link_url ?? "/productos"}>{hero?.btn_cta?.txt_label ?? d.cta} <span>→</span></a>
+      <span class="eyebrow">{hero?.txt_eyebrow}</span><h1>{hero?.txt_titulo}</h1><p>
+        {hero?.txt_texto}
+      </p>{hero?.btn_cta && <a class="btn" href={hero.btn_cta.link_url}>{hero.btn_cta.txt_label} <span>→</span></a>}
     </div>
   </section><section class="stats">
     {
-      statsList.map((s) => (
+      (stats?.lista_stats ?? []).map((s) => (
         <div class="stat container">
           <>
             <strong>{s.txt_numero}</strong>
@@ -39,12 +40,11 @@ const statsList = stats?.lista_stats ?? site.stats.map(([txt_numero, txt_label])
     <div class="container">
       <div class="section-head">
         <div>
-          <span class="eyebrow">Nuestras marcas</span><h2>
-            Equipos para cada desafío
+          <span class="eyebrow">{marcas?.txt_eyebrow}</span><h2>
+            {marcas?.txt_h2}
           </h2>
         </div><p>
-          Representamos marcas internacionales que comparten nuestra obsesión
-          por la precisión, la innovación y el servicio.
+          {marcas?.txt_descripcion}
         </p>
       </div><div class="brand-grid">
         {
@@ -57,7 +57,7 @@ const statsList = stats?.lista_stats ?? site.stats.map(([txt_numero, txt_label])
                     <p>{b.tag}</p>
                   </>
                 </div>
-                <span class="arrow">Explorar catálogo →</span>
+                <span class="arrow">{marcas?.txt_cta_brands}</span>
               </>
             </a>
           ))
@@ -67,17 +67,16 @@ const statsList = stats?.lista_stats ?? site.stats.map(([txt_numero, txt_label])
   </section><section class="section soft">
     <div class="container split">
       <div>
-        <span class="eyebrow">Nuestra forma de hacer</span><h2>
-          Más que maquinaria. Un socio para tu campo.
+        <span class="eyebrow">{nuestra?.txt_eyebrow}</span><h2>
+          {nuestra?.txt_h2}
         </h2><p>
-          Desde la selección del equipo hasta el acompañamiento post venta,
-          estamos cerca de quienes hacen crecer la producción argentina.
-        </p><a class="btn alt" href="/empresa">Conocé Bernardin</a>
+          {nuestra?.txt_descripcion}
+        </p>{nuestra?.btn_cta && <a class="btn alt" href={nuestra.btn_cta.link_url}>{nuestra.btn_cta.txt_label}</a>}
       </div><div class="story-panel">
-        <span class="eyebrow">{story?.txt_eyebrow ?? "Desde 1924"}</span><h2>
-          {story?.txt_titulo ?? "100 años mirando hacia adelante."}
+        <span class="eyebrow">{story?.txt_eyebrow}</span><h2>
+          {story?.txt_titulo}
         </h2><p>
-          {story?.txt_descripcion ?? "Una historia construida con trabajo, territorio y relaciones que perduran."}
+          {story?.txt_descripcion}
         </p>
       </div>
     </div>

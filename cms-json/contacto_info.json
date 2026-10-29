@@ -5,6 +5,32 @@
   "type": "contacto_info",
   "componentPath": "pages/contacto",
   "data": {
+    "txt_h1": "Hablemos de tu próximo desafío.",
+    "txt_eyebrow": "Contacto directo",
+    "txt_h2": "Estamos para ayudarte.",
+    "txt_descripcion": "Contanos qué estás buscando y nuestro equipo se pondrá en contacto.",
+    "txt_btn_submit": "Enviar consulta →",
+    "lista_contacto": [
+      {
+        "icon_contacto": "FaWhatsapp",
+        "txt_label": "WhatsApp",
+        "link_destino": "https://wa.me/5493492597277",
+        "txt_valor": "+54 9 3492 597277"
+      },
+      {
+        "icon_contacto": "FaEnvelope",
+        "txt_label": "Email",
+        "link_destino": "mailto:info@bernardin.com.ar",
+        "txt_valor": "info@bernardin.com.ar"
+      }
+    ]
+  },
+  "_en": {
+    "txt_h1": "Let's talk about your next challenge.",
+    "txt_eyebrow": "Direct contact",
+    "txt_h2": "We are here to help.",
+    "txt_descripcion": "Tell us what you are looking for and our team will get in touch.",
+    "txt_btn_submit": "Send inquiry →",
     "lista_contacto": [
       {
         "icon_contacto": "FaWhatsapp",

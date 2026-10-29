@@ -2,8 +2,16 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { cms } from "../../../lib/cms";
 import type { NewsItem } from "../../../lib/cms/types";
+
+interface NoticiasHeaderData { txt_eyebrow?: string; txt_h1?: string; txt_descripcion?: string; txt_leer_noticia?: string; }
+
 const locale = "en";
-const { items: articles } = await cms.news.list({ limit: 100, locale: 'en' } as Parameters<typeof cms.news.list>[0]);
+const [{ items: articles }, { components }] = await Promise.all([
+    cms.news.list({ limit: 100, locale: 'en' } as Parameters<typeof cms.news.list>[0]),
+    cms.components.list({ page_filter: "Noticias", locale: "en" }).catch(() => ({ components: [] })),
+]);
+const noticiasHeader = cms.components.getByType<NoticiasHeaderData>(components, "noticias_header");
+
 const fmtDate = (item: NewsItem) =>
     new Date(item.publishedAt ?? item.createdAt).toLocaleDateString("en-US", {
         day: "2-digit",
@@ -15,8 +23,8 @@ const fmtDate = (item: NewsItem) =>
 <BaseLayout title="News | Alfaterra" locale={locale}>
     <section class="page-hero">
         <div class="container">
-            <span class="eyebrow">Alfaterra today</span><h1>News</h1><p>
-                Ideas, updates and everything happening close to the field.
+            <span class="eyebrow">{noticiasHeader?.txt_eyebrow}</span><h1>{noticiasHeader?.txt_h1}</h1><p>
+                {noticiasHeader?.txt_descripcion}
             </p>
         </div>
     </section>
@@ -36,7 +44,7 @@ const fmtDate = (item: NewsItem) =>
                                 <>
                                     <div class="news-image">
                                         <>
-                                            <span>Alfaterra today</span>
+                                            <span>{noticiasHeader?.txt_eyebrow}</span>
                                             <strong>
                                                 {String(index + 1).padStart(
                                                     2,
@@ -53,7 +61,7 @@ const fmtDate = (item: NewsItem) =>
                                             <a
                                                 href={`/en/noticias/${article.slug}`}
                                             >
-                                                Read article <span>→</span>
+                                                {noticiasHeader?.txt_leer_noticia} <span>→</span>
                                             </a>
                                         </>
                                     </div>
@@ -168,10 +176,6 @@ const fmtDate = (item: NewsItem) =>
         text-transform: uppercase;
         letter-spacing: 0.08em;
     }
-
-    /* ---------- Pagination ----------
-       The content is inserted with innerHTML from the script, so the
-       children use :global() (Astro doesn't add its scope attribute to them). */
     .pagination {
         display: flex;
         flex-wrap: wrap;
@@ -202,7 +206,6 @@ const fmtDate = (item: NewsItem) =>
         background: var(--pale);
         color: var(--green);
     }
-    /* Current page: green fill, slightly larger, with a halo */
     .pagination :global(.pg-number.is-current) {
         min-width: 54px;
         height: 54px;
@@ -215,7 +218,6 @@ const fmtDate = (item: NewsItem) =>
             0 0 0 4px rgba(37, 116, 70, 0.18),
             0 6px 16px rgba(37, 116, 70, 0.28);
     }
-    /* Disabled arrows (first / last page) */
     .pagination :global(.pg-arrow.is-disabled) {
         opacity: 0.4;
         background: var(--pale);

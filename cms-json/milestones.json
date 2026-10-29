@@ -5,6 +5,8 @@
   "type": "milestones",
   "componentPath": "pages/empresa",
   "data": {
+    "txt_eyebrow_seccion": "Nuestra historia",
+    "txt_h2_seccion": "Un camino que sigue creciendo",
     "lista_milestones": [
       { "txt_year": "1924", "txt_descripcion": "Nace una historia ligada al campo argentino." },
       { "txt_year": "1978", "txt_descripcion": "El conocimiento técnico se convierte en acompañamiento cercano." },
@@ -13,6 +15,8 @@
     ]
   },
   "_en": {
+    "txt_eyebrow_seccion": "Our history",
+    "txt_h2_seccion": "A path that keeps growing",
     "lista_milestones": [
       { "txt_year": "1924", "txt_descripcion": "A story linked to the Argentine countryside is born." },
       { "txt_year": "1978", "txt_descripcion": "Technical knowledge becomes close accompaniment." },

@@ -5,6 +5,8 @@
   "type": "valores",
   "componentPath": "pages/empresa",
   "data": {
+    "txt_eyebrow_seccion": "Nuestros principios",
+    "txt_h2_seccion": "Lo que nos mueve",
     "lista_valores": [
       { "txt_titulo": "Misión",  "txt_descripcion": "Acercar tecnología confiable y acompañamiento experto a cada productor." },
       { "txt_titulo": "Visión",  "txt_descripcion": "Ser el socio estratégico de referencia para una agricultura más eficiente." },
@@ -12,6 +14,8 @@
     ]
   },
   "_en": {
+    "txt_eyebrow_seccion": "Our principles",
+    "txt_h2_seccion": "What drives us",
     "lista_valores": [
       { "txt_titulo": "Mission", "txt_descripcion": "Bringing reliable technology and expert support to every producer." },
       { "txt_titulo": "Vision",  "txt_descripcion": "To be the go-to strategic partner for more efficient agriculture." },

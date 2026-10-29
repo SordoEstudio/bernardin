@@ -1,16 +1,21 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import site from "../../data/site.json";
+import { cms } from "../../lib/cms";
+
+interface ProductosHeaderData { txt_h1?: string; txt_descripcion?: string; txt_ver_productos?: string; }
+
+const { components } = await cms.components.list({ page_filter: "Productos", locale: "es" }).catch(() => ({ components: [] }));
+const productosHeader = cms.components.getByType<ProductosHeaderData>(components, "productos_header");
 ---
 
 <BaseLayout locale="es" title="Productos | Alfaterra"
     ><section class="page-hero">
         <div class="container">
             <div class="breadcrumbs">Inicio / Productos</div><h1>
-                Marcas que trabajan con vos.
+                {productosHeader?.txt_h1}
             </h1><p>
-                Alfaterra comercializa cinco marcas internacionales, cada una
-                con soluciones específicas para el campo.
+                {productosHeader?.txt_descripcion}
             </p>
         </div>
     </section><section class="section">
@@ -25,7 +30,7 @@ import site from "../../data/site.json";
                             <>
                                 <img src={b.logo} alt={`Logo de ${b.name}`} />
                                 <p>{b.tag}</p>
-                                <span class="arrow">Ver productos →</span>
+                                <span class="arrow">{productosHeader?.txt_ver_productos}</span>
                             </>
                         </a>
                     ))
