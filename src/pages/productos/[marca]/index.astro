@@ -12,10 +12,13 @@ export function getStaticPaths() {
 }
 
 const { brand } = Astro.props;
-const [{ products }, allCategories] = await Promise.all([
-    cms.products.list({ locale: "es", category: brand.id, limit: 100 }),
+const brandTypes: string[] = (brand as any).productTypes ?? [];
+const [allProductsRes, allCategories] = await Promise.all([
+    cms.products.list({ locale: "es", limit: 100 }),
     cms.categories.list(),
 ]).catch(() => [{ products: [] as import("../../../lib/cms/types").Product[] }, [] as import("../../../lib/cms/types").Category[]]);
+const products = (allProductsRes as { products: import("../../../lib/cms/types").Product[] }).products
+    .filter((p) => brandTypes.includes(p.productType ?? ""));
 const uniqueTypes = [
     ...new Set(products.map((p) => p.productType).filter(Boolean)),
 ] as string[];

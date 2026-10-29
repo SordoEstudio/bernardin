@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import site from "../data/site.json";
+import { cms } from "../lib/cms";
 
 type Locale = "es" | "en";
 type NavItem = [label: string, href: string];
@@ -21,6 +22,18 @@ const {
 };
 const currentLocale: Locale = locale;
 const nav = site.nav[currentLocale] as NavItem[];
+
+interface ContactItem { txt_label: string; link_destino: string; txt_valor?: string; }
+interface ContactoInfoData { lista_contacto?: ContactItem[]; }
+const { components: _contactComponents } = await cms.components
+  .list({ page_filter: "Contacto", locale: currentLocale })
+  .catch(() => ({ components: [] }));
+const _contactoInfo = cms.components.getByType<ContactoInfoData>(_contactComponents, "contacto_info");
+const _contactItems = _contactoInfo?.lista_contacto ?? [];
+const _emailItem = _contactItems.find((c) => c.link_destino.startsWith("mailto:"));
+const _waItem = _contactItems.find((c) => c.link_destino.startsWith("https://wa.me/"));
+const contactEmail = _emailItem?.txt_valor ?? _emailItem?.link_destino.replace("mailto:", "") ?? site.contact.email;
+const contactWa = _waItem?.link_destino.replace("https://wa.me/", "") ?? site.contact.whatsapp;
 const home = currentLocale === "en" ? "/en/" : "/";
 const path = Astro.url.pathname;
 const translations: Record<string, string> = {
@@ -75,7 +88,7 @@ const jsonLd = {
       name: siteName,
       url: abs("/"),
       logo: abs(site.theme.logo),
-      email: site.contact.email,
+      email: contactEmail,
       address: site.contact.address,
       foundingDate: "1924",
     },
@@ -205,7 +218,7 @@ const jsonLd = {
     <main><slot /></main>
     <a
       class="whatsapp"
-      href={`https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(locale === "es" ? "Hola Bernardin, me comunico desde el sitio web." : "Hi Bernardin, I am contacting you from the website.")}`}
+      href={`https://wa.me/${contactWa}?text=${encodeURIComponent(locale === "es" ? "Hola Bernardin, me comunico desde el sitio web." : "Hi Bernardin, I am contacting you from the website.")}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={locale === "es"
@@ -239,8 +252,8 @@ const jsonLd = {
         </div>
         <div>
           <h3>{locale === "es" ? "Contacto" : "Contact"}</h3><a
-            href={`mailto:${site.contact.email}`}>{site.contact.email}</a
-          ><a href={`https://wa.me/${site.contact.whatsapp}`} target="_blank"
+            href={`mailto:${contactEmail}`}>{contactEmail}</a
+          ><a href={`https://wa.me/${contactWa}`} target="_blank"
             >WhatsApp</a
           >
         </div>

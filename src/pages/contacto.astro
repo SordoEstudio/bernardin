@@ -12,9 +12,17 @@ interface ContactoInfoData {
   lista_contacto?: CMSContactItem[];
 }
 
-const { components } = await cms.components.list({ page_filter: 'Contacto', locale: 'es' }).catch(() => ({ components: [] }));
+const [{ components }, formSchema] = await Promise.all([
+  cms.components.list({ page_filter: 'Contacto', locale: 'es' }).catch(() => ({ components: [] })),
+  cms.forms.schema('contacto', 'es').catch(() => null),
+]);
 const contactoInfo = cms.components.getByType<ContactoInfoData>(components, 'contacto_info');
 const contactLinks = contactoInfo?.lista_contacto ?? [];
+const fFields = formSchema?.fields ?? [];
+const fNombre = fFields.find(f => f.id === 'campo_1');
+const fEmail  = fFields.find(f => f.id === 'campo_2');
+const fMensaje = fFields.find(f => f.id === 'campo_3');
+const successMsg = formSchema?.settings?.success_message ?? '¡Mensaje enviado!';
 ---
 <BaseLayout locale="es" title="Contacto | Bernardin">
   <section class="page-hero">
@@ -38,16 +46,16 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
       </div>
       <form id="contact-form" class="form contact-card">
         <div class="form-field">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" required name="nombre" placeholder="Tu nombre" />
+          <label for="nombre">{fNombre?.label ?? 'Nombre'}</label>
+          <input id="nombre" required name="nombre" placeholder={fNombre?.placeholder ?? 'Tu nombre'} />
         </div>
         <div class="form-field">
-          <label for="email">Email</label>
-          <input id="email" required type="email" name="email" placeholder="tu@email.com" />
+          <label for="email">{fEmail?.label ?? 'Email'}</label>
+          <input id="email" required type="email" name="email" placeholder={fEmail?.placeholder ?? 'tu@email.com'} />
         </div>
         <div class="form-field">
-          <label for="mensaje">Mensaje</label>
-          <textarea id="mensaje" required name="mensaje" placeholder="¿En qué podemos ayudarte?"></textarea>
+          <label for="mensaje">{fMensaje?.label ?? 'Mensaje'}</label>
+          <textarea id="mensaje" required name="mensaje" placeholder={fMensaje?.placeholder ?? '¿En qué podemos ayudarte?'}></textarea>
         </div>
         <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Enviar consulta'}</button>
       </form>
@@ -103,17 +111,18 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
         }
     }
 </style>
-<script is:inline define:vars={{ endpoint: `${import.meta.env.PUBLIC_CMS_API}/forms/contacto/submit` }}>
+<script is:inline define:vars={{ endpoint: `${import.meta.env.PUBLIC_CMS_API}/forms/contacto/submit?clientSlug=${import.meta.env.PUBLIC_CLIENT_SLUG}`, successMsg, fIdNombre: fNombre?.id ?? 'campo_1', fIdEmail: fEmail?.id ?? 'campo_2', fIdMensaje: fMensaje?.id ?? 'campo_3' }}>
   document.getElementById('contact-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.currentTarget.querySelector('[type="submit"]');
     btn.disabled = true;
-    const body = Object.fromEntries(new FormData(e.currentTarget));
+    const raw = Object.fromEntries(new FormData(e.currentTarget));
+    const body = { [fIdNombre]: raw.nombre, [fIdEmail]: raw.email, [fIdMensaje]: raw.mensaje };
     try {
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       const json = await res.json();
       if (json.success) {
-        e.currentTarget.innerHTML = `<p style="color:var(--green);padding:24px">${json.data?.message ?? '¡Mensaje enviado!'}</p>`;
+        e.currentTarget.innerHTML = `<p style="color:var(--green);padding:24px">${json.data?.message ?? successMsg}</p>`;
       } else { btn.disabled = false; alert('Error al enviar. Intente nuevamente.'); }
     } catch { btn.disabled = false; alert('Error de conexión. Intente nuevamente.'); }
   });
