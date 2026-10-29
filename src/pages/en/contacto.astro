@@ -111,7 +111,7 @@ const successMsg = formSchema?.settings?.success_message ?? 'Message sent!';
       }
     }
   </style>
-  <script is:inline define:vars={{ endpoint: `${import.meta.env.PUBLIC_CMS_API}/forms/contacto/submit?clientSlug=${import.meta.env.PUBLIC_CLIENT_SLUG}`, successMsg, fIdNombre: fNombre?.id ?? 'campo_1', fIdEmail: fEmail?.id ?? 'campo_2', fIdMensaje: fMensaje?.id ?? 'campo_3' }}>
+  <script is:inline define:vars={{ endpoint: `/api/cms/forms/contacto/submit?clientSlug=${import.meta.env.PUBLIC_CLIENT_SLUG}`, successMsg, fIdNombre: fNombre?.id ?? 'campo_1', fIdEmail: fEmail?.id ?? 'campo_2', fIdMensaje: fMensaje?.id ?? 'campo_3' }}>
     document.getElementById('contact-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = e.currentTarget.querySelector('[type="submit"]');
