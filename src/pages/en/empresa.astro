@@ -13,7 +13,7 @@ const empresaIntro = cms.components.getByType<EmpresaIntroData>(components, 'emp
 const milestonesData = cms.components.getByType<MilestonesData>(components, 'milestones');
 const valoresData = cms.components.getByType<ValoresData>(components, 'valores');
 ---
-<BaseLayout locale="en" title="Company | Alfaterra">
+<BaseLayout locale="en" title="Company | Bernardin">
   <section class="page-hero">
     <div class="container">
       <div class="breadcrumbs"><a href="/en">Home</a> / Company</div>
@@ -79,5 +79,13 @@ const valoresData = cms.components.getByType<ValoresData>(components, 'valores')
     .timeline{grid-template-columns:1fr;border-top:0;border-left:2px solid var(--green);padding-left:24px}
     .timeline-item{padding-top:0;padding-bottom:22px}
     .timeline-item:before{left:-33px;top:4px}
+  }
+  .brand-card {
+    transition: none;
+    cursor: default;
+  }
+  .brand-card:hover {
+    transform: none;
+    border-color: var(--line);
   }
 </style>

@@ -243,12 +243,6 @@ const jsonLd = {
           ><a href={`https://wa.me/${site.contact.whatsapp}`} target="_blank"
             >WhatsApp</a
           >
-          <a
-            href={`https://maps.google.com/?q=${encodeURIComponent(site.contact.address)}`}
-            target="_blank"
-          >
-            <span>{site.contact.address}</span>
-          </a>
         </div>
       </div>
       <div class="container">
@@ -349,6 +343,9 @@ const jsonLd = {
     color: var(--lime);
     transform: none;
     text-decoration-color: currentColor;
+  }
+  .footer .logo:hover {
+    transform: none;
   }
   @media (max-width: 700px) {
     .navlinks {

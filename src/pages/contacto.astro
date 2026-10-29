@@ -16,7 +16,7 @@ const { components } = await cms.components.list({ page_filter: 'Contacto', loca
 const contactoInfo = cms.components.getByType<ContactoInfoData>(components, 'contacto_info');
 const contactLinks = contactoInfo?.lista_contacto ?? [];
 ---
-<BaseLayout locale="es" title="Contacto | Alfaterra">
+<BaseLayout locale="es" title="Contacto | Bernardin">
   <section class="page-hero">
     <div class="container">
       <div class="breadcrumbs"><a href="/">Inicio</a> / Contacto</div>
@@ -32,7 +32,7 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
         {contactLinks.map((c) => (
           <div class="contact-card">
             <strong>{c.txt_label}</strong>
-            <a href={c.link_destino}>{c.txt_valor ?? c.link_destino} →</a>
+            <a href={c.link_destino}>{c.txt_valor ?? c.link_destino}</a>
           </div>
         ))}
       </div>
@@ -49,7 +49,7 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
           <label for="mensaje">Mensaje</label>
           <textarea id="mensaje" required name="mensaje" placeholder="¿En qué podemos ayudarte?"></textarea>
         </div>
-        <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Enviar consulta →'}</button>
+        <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Enviar consulta'}</button>
       </form>
     </div>
   </section>

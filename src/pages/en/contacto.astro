@@ -33,7 +33,7 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
         {contactLinks.map((c) => (
           <div class="contact-card">
             <strong>{c.txt_label}</strong>
-            <a href={c.link_destino}>{c.txt_valor ?? c.link_destino} →</a>
+            <a href={c.link_destino}>{c.txt_valor ?? c.link_destino}</a>
           </div>
         ))}
       </div>
@@ -50,7 +50,7 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
           <label for="mensaje">Message</label>
           <textarea id="mensaje" required name="mensaje" placeholder="How can we help?"></textarea>
         </div>
-        <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Send inquiry →'}</button>
+        <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Send inquiry'}</button>
       </form>
     </div>
   </section>

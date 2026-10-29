@@ -14,7 +14,7 @@ const milestonesData = cms.components.getByType<MilestonesData>(components, "mil
 const valoresData = cms.components.getByType<ValoresData>(components, "valores");
 ---
 
-<BaseLayout locale="es" title="Empresa | Alfaterra"
+<BaseLayout locale="es" title="Empresa | Bernardin"
   ><section class="page-hero">
     <div class="container">
       <div class="breadcrumbs"><a href="/">Inicio</a> / Empresa</div><h1>
@@ -117,5 +117,13 @@ const valoresData = cms.components.getByType<ValoresData>(components, "valores")
       left: -33px;
       top: 4px;
     }
+  }
+  .brand-card {
+    transition: none;
+    cursor: default;
+  }
+  .brand-card:hover {
+    transform: none;
+    border-color: var(--line);
   }
 </style>
