@@ -120,9 +120,10 @@ const successMsg = formSchema?.settings?.success_message ?? 'Message sent!';
       const body = { [fIdNombre]: raw.nombre, [fIdEmail]: raw.email, [fIdMensaje]: raw.mensaje };
       try {
         const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        const json = await res.json();
-        if (json.success) {
-          e.currentTarget.innerHTML = `<p style="color:var(--green);padding:24px">${json.data?.message ?? successMsg}</p>`;
+        let json = null;
+        try { json = await res.json(); } catch {}
+        if (res.ok || json?.success) {
+          e.currentTarget.innerHTML = `<p style="color:var(--green);padding:24px">${json?.data?.message ?? successMsg}</p>`;
         } else { btn.disabled = false; alert('Error sending. Please try again.'); }
       } catch { btn.disabled = false; alert('Connection error. Please try again.'); }
     });
