@@ -11,12 +11,19 @@ const { components } = await cms.components.list({ page_filter: 'Empresa', local
 const empresaHero = cms.components.getByType<EmpresaHeroData>(components, 'empresa_hero');
 const empresaIntro = cms.components.getByType<EmpresaIntroData>(components, 'empresa_intro');
 const milestonesData = cms.components.getByType<MilestonesData>(components, 'milestones');
+const milestones = milestonesData?.lista_milestones ?? [];
+const TL_PITCH = 240, TL_ITEM_W = 190, TL_X = 20;
+const tlW = milestones.length ? (() => {
+  const li = milestones.length - 1, lp = Math.floor(li / 2);
+  const lx = li % 2 === 0 ? TL_X + lp * TL_PITCH : TL_X + TL_PITCH / 2 + lp * TL_PITCH;
+  return lx + TL_ITEM_W + TL_X;
+})() : 0;
 const valoresData = cms.components.getByType<ValoresData>(components, 'valores');
 ---
-<BaseLayout locale="en" title="Company | Alfaterra">
+<BaseLayout locale="en" title="Company | Bernardin">
   <section class="page-hero">
     <div class="container">
-      <div class="breadcrumbs">Home / Company</div>
+      <div class="breadcrumbs"><a href="/en">Home</a> / Company</div>
       <h1>{empresaHero?.txt_h1}</h1>
     </div>
   </section>
@@ -40,13 +47,25 @@ const valoresData = cms.components.getByType<ValoresData>(components, 'valores')
           <h2>{milestonesData?.txt_h2_seccion}</h2>
         </div>
       </div>
-      <div class="timeline">
-        {(milestonesData?.lista_milestones ?? []).map((m) => (
-          <div class="timeline-item">
-            <strong>{m.txt_year}</strong>
-            <p>{m.txt_descripcion}</p>
+      <div class="tl-wrapper">
+        <button class="tl-btn tl-btn-l" id="tlL" aria-label="Previous">&#8249;</button>
+        <button class="tl-btn tl-btn-r" id="tlR" aria-label="Next">&#8250;</button>
+        <div class="tl-scroll" id="tlS">
+          <div class="tl-track" style={`width:${tlW}px`}>
+            {milestones.map((m, i) => {
+              const ab = i % 2 === 0;
+              const lx = TL_X + (ab ? Math.floor(i/2)*TL_PITCH : TL_PITCH/2 + Math.floor(i/2)*TL_PITCH);
+              return (
+                <div class:list={['tl-item', ab ? 'ab' : 'bl']} style={`left:${lx}px`}>
+                  <div class="tl-dot"></div>
+                  <div class="tl-stem"></div>
+                  <strong>{m.txt_year}</strong>
+                  <p>{m.txt_descripcion}</p>
+                </div>
+              );
+            })}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   </section>
@@ -68,16 +87,60 @@ const valoresData = cms.components.getByType<ValoresData>(components, 'valores')
       </div>
     </div>
   </section>
+  <script is:inline>
+  (function(){
+    var s=document.getElementById('tlS'),L=document.getElementById('tlL'),R=document.getElementById('tlR');
+    if(!s||!L||!R)return;
+    function u(){
+      L.classList.toggle('off',s.scrollLeft<=2);
+      R.classList.toggle('off',s.scrollLeft>=s.scrollWidth-s.clientWidth-2);
+    }
+    L.onclick=function(){s.scrollBy({left:-240,behavior:'smooth'})};
+    R.onclick=function(){s.scrollBy({left:240,behavior:'smooth'})};
+    s.addEventListener('scroll',u,{passive:true});
+    u();
+  })();
+  </script>
 </BaseLayout>
 <style>
-  .timeline{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--green);gap:24px}
-  .timeline-item{position:relative;padding-top:28px}
-  .timeline-item:before{content:'';position:absolute;top:-9px;width:15px;height:15px;border-radius:50%;background:var(--green);border:3px solid var(--pale)}
-  .timeline-item strong{font:700 2rem var(--display);color:var(--blue)}
-  .timeline-item p{max-width:210px}
+  .tl-wrapper{position:relative;padding:0 40px}
+  .tl-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:40px;height:40px;border-radius:50%;border:2px solid var(--green);background:var(--pale);color:var(--green);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s,opacity .18s}
+  .tl-btn:hover{background:var(--green);color:var(--pale)}
+  .tl-btn.off{opacity:0;pointer-events:none}
+  .tl-btn-l{left:0}.tl-btn-r{right:0}
+  .tl-scroll{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+  .tl-scroll::-webkit-scrollbar{display:none}
+  .tl-track{position:relative;height:320px}
+  .tl-track::before{content:'';position:absolute;top:50%;left:0;right:0;height:2px;background:var(--green);transform:translateY(-50%)}
+  .tl-item{position:absolute;width:190px}
+  .tl-item.ab{bottom:50%;padding-bottom:59px}
+  .tl-item.bl{top:50%;padding-top:59px}
+  .tl-dot{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--green);border:3px solid var(--pale);left:50%;transform:translateX(-50%)}
+  .tl-item.ab .tl-dot{bottom:-7px}
+  .tl-item.bl .tl-dot{top:-7px}
+  .tl-stem{position:absolute;width:2px;background:var(--green);opacity:.3;left:calc(50% - 1px)}
+  .tl-item.ab .tl-stem{bottom:7px;height:52px}
+  .tl-item.bl .tl-stem{top:7px;height:52px}
+  .tl-item strong{display:block;font:700 2rem var(--display);color:var(--blue);line-height:1.1;margin-bottom:6px;text-align:center}
+  .tl-item p{font-size:.82rem;line-height:1.45;text-align:center;margin:0 auto;max-width:158px}
   @media(max-width:700px){
-    .timeline{grid-template-columns:1fr;border-top:0;border-left:2px solid var(--green);padding-left:24px}
-    .timeline-item{padding-top:0;padding-bottom:22px}
-    .timeline-item:before{left:-33px;top:4px}
+    .tl-wrapper{padding:0}
+    .tl-btn{display:none}
+    .tl-scroll{overflow:visible}
+    .tl-track{height:auto;width:auto!important;border-left:2px solid var(--green);padding-left:24px}
+    .tl-track::before{display:none}
+    .tl-item{position:relative;width:auto;left:auto!important;bottom:auto;top:auto;padding:0 0 22px!important}
+    .tl-dot{left:-33px!important;top:4px!important;bottom:auto!important;transform:none!important}
+    .tl-stem{display:none}
+    .tl-item strong,.tl-item p{text-align:left}
+    .tl-item p{max-width:none;margin:0}
+  }
+  .brand-card {
+    transition: none;
+    cursor: default;
+  }
+  .brand-card:hover {
+    transform: none;
+    border-color: var(--line);
   }
 </style>

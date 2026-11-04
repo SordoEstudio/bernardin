@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/cms/:path*", "destination": "https://micms.website/api/public/v1/:path*" }
+  ]
+}

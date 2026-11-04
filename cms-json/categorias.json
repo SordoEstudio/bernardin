@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "fertilizadoras",
+    "brand": "bernardin",
+    "es": { "name": "Fertilizadoras", "description": "Precisión y rendimiento para cada aplicación." },
+    "en": { "name": "Fertilizer spreaders", "description": "Precision and performance for every application." }
+  },
+  {
+    "slug": "vial",
+    "brand": "bernardin",
+    "es": { "name": "Equipos viales", "description": "Soluciones robustas para el mantenimiento de caminos." },
+    "en": { "name": "Road equipment", "description": "Robust solutions for road maintenance." }
+  },
+  {
+    "slug": "suelos",
+    "brand": "unia",
+    "es": { "name": "Acondicionadores de suelos", "description": "Preparación profesional para cada lote." },
+    "en": { "name": "Soil conditioners", "description": "Professional preparation for every field." }
+  },
+  {
+    "slug": "tractores",
+    "brand": "antonio-carraro",
+    "es": { "name": "Tractores especializados", "description": "Potencia compacta para tareas exigentes." },
+    "en": { "name": "Specialized tractors", "description": "Compact power for demanding tasks." }
+  },
+  {
+    "slug": "forraje",
+    "brand": "samasz",
+    "es": { "name": "Forraje", "description": "Corte y recolección con máxima eficiencia." },
+    "en": { "name": "Forage equipment", "description": "Cutting and harvesting with maximum efficiency." }
+  },
+  {
+    "slug": "equipos",
+    "brand": "casale",
+    "es": { "name": "Equipos agrícolas", "description": "Soluciones confiables para una producción eficiente." },
+    "en": { "name": "Agricultural equipment", "description": "Reliable solutions for efficient production." }
+  }
+]

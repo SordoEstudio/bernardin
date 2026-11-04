@@ -6,19 +6,16 @@ import type { Product } from "../../../../lib/cms/types";
 
 export async function getStaticPaths() {
     try {
-        const results = await Promise.all(
-            site.brands.map((b) =>
-                cms.products
-                    .list({ locale: "en", category: b.id, limit: 100 })
-                    .then(({ products }) =>
-                        products.map((p) => ({
-                            params: { marca: b.id, producto: p.slug },
-                            props: { product: p, brandId: b.id },
-                        })),
-                    ),
-            ),
-        );
-        return results.flat();
+        const { products } = await cms.products.list({ locale: "en", limit: 100 });
+        return products.map((p) => {
+            const brand = site.brands.find((b) =>
+                ((b as any).productTypes as string[] ?? []).includes(p.productType ?? "")
+            ) ?? site.brands[0];
+            return {
+                params: { marca: brand.id, producto: p.slug },
+                props: { product: p, brandId: brand.id },
+            };
+        });
     } catch {
         return [];
     }
