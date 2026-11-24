@@ -2,24 +2,35 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
-import type { Category } from "../../../lib/cms/types";
-import { BRAND_CATEGORY_ID, getTypeNamesForProduct, slugifyType } from "../../../lib/products-utils";
+import type { Product, Category } from "../../../lib/cms/types";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct } from "../../../lib/products-utils";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+    const [brandsData, allCategories] = await Promise.all([
+        Promise.all(
+            site.brands
+                .filter((b) => BRAND_CATEGORY_ID[b.id])
+                .map((b) =>
+                    cms.products
+                        .list({ locale: "es", category: BRAND_CATEGORY_ID[b.id], limit: 500 })
+                        .then(({ products }) => ({ brandId: b.id, products }))
+                        .catch(() => ({ brandId: b.id, products: [] as Product[] })),
+                ),
+        ),
+        cms.categories.list().catch(() => [] as Category[]),
+    ]);
+    const brandProductMap = new Map(brandsData.map(({ brandId, products }) => [brandId, products]));
     return site.brands.map((b) => ({
         params: { marca: b.id },
-        props: { brand: b },
+        props: { brand: b, products: brandProductMap.get(b.id) ?? [], allCategories },
     }));
 }
 
-const { brand } = Astro.props;
-const brandCatId = BRAND_CATEGORY_ID[brand.id];
-const [products, allCategories] = await Promise.all([
-    brandCatId
-        ? cms.products.list({ locale: "es", category: brandCatId, limit: 500 }).then((r) => r.products).catch(() => [])
-        : Promise.resolve([]),
-    cms.categories.list().catch(() => [] as Category[]),
-]);
+const { brand, products, allCategories } = Astro.props as {
+    brand: (typeof site.brands)[number];
+    products: Product[];
+    allCategories: Category[];
+};
 const uniqueTypes = [...new Set(products.flatMap((p) => getTypeNamesForProduct(p)))];
 const getCat = (name: string): Category | undefined =>
     allCategories.find((c) => c.name === name);
