@@ -3,20 +3,23 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
 import type { Product } from "../../../lib/cms/types";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct } from "../../../lib/products-utils";
 
 export async function getStaticPaths() {
     try {
         const results = await Promise.all(
-            site.brands.map((b) =>
-                cms.products
-                    .list({ locale: "es", category: b.id, limit: 100 })
-                    .then(({ products }) =>
-                        products.map((p) => ({
-                            params: { marca: b.id, producto: p.slug },
-                            props: { product: p, brandId: b.id },
-                        })),
-                    ),
-            ),
+            site.brands
+                .filter((b) => BRAND_CATEGORY_ID[b.id])
+                .map((b) =>
+                    cms.products
+                        .list({ locale: "es", category: BRAND_CATEGORY_ID[b.id], limit: 100 })
+                        .then(({ products }) =>
+                            products.map((p) => ({
+                                params: { marca: b.id, producto: p.slug },
+                                props: { product: p, brandId: b.id },
+                            })),
+                        ),
+                ),
         );
         return results.flat();
     } catch {
@@ -36,10 +39,11 @@ const [allCategories, { components: prodComponents }] = await Promise.all([
 
 interface ProductoDetalleData { txt_h2?: string; txt_cta_label?: string; }
 const productoDetalle = cms.components.getByType<ProductoDetalleData>(prodComponents, "producto_detalle");
-const category = allCategories.find((c) => c.slug === product.productType);
+const typeName = getTypeNamesForProduct(product)[0];
+const typeCategory = typeName ? allCategories.find((c) => c.name === typeName) : undefined;
 const images = product.images?.length ? product.images : [brand.logo];
 const productName = product.locale?.title ?? product.slug;
-const productDesc = product.locale?.description ?? category?.description ?? "";
+const productDesc = product.locale?.description ?? typeCategory?.description ?? "";
 ---
 
 <BaseLayout locale="es" title={`${productName} | ${brand.name} | Bernardin`}>
@@ -75,7 +79,7 @@ const productDesc = product.locale?.description ?? category?.description ?? "";
                     )
                 }
             </div><div class="product-copy">
-                <span class="eyebrow">{category?.name ?? ""}</span><h2>
+                <span class="eyebrow">{typeName ?? ""}</span><h2>
                     {productoDetalle?.txt_h2}
                 </h2><p>
                     {productDesc}

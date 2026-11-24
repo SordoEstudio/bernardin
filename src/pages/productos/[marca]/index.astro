@@ -3,6 +3,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
 import type { Category } from "../../../lib/cms/types";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct, slugifyType } from "../../../lib/products-utils";
 
 export function getStaticPaths() {
     return site.brands.map((b) => ({
@@ -12,15 +13,16 @@ export function getStaticPaths() {
 }
 
 const { brand } = Astro.props;
-const [{ products }, allCategories] = await Promise.all([
-    cms.products.list({ locale: "es", category: brand.id, limit: 100 }),
-    cms.categories.list(),
-]).catch(() => [{ products: [] as import("../../../lib/cms/types").Product[] }, [] as import("../../../lib/cms/types").Category[]]);
-const uniqueTypes = [
-    ...new Set(products.map((p) => p.productType).filter(Boolean)),
-] as string[];
-const getCat = (slug: string): Category | undefined =>
-    allCategories.find((c) => c.slug === slug);
+const brandCatId = BRAND_CATEGORY_ID[brand.id];
+const [products, allCategories] = await Promise.all([
+    brandCatId
+        ? cms.products.list({ locale: "es", category: brandCatId, limit: 100 }).then((r) => r.products).catch(() => [])
+        : Promise.resolve([]),
+    cms.categories.list().catch(() => [] as Category[]),
+]);
+const uniqueTypes = [...new Set(products.flatMap((p) => getTypeNamesForProduct(p)))];
+const getCat = (name: string): Category | undefined =>
+    allCategories.find((c) => c.name === name);
 ---
 
 <BaseLayout locale="es" title={`${brand.name} | Alfaterra`}>
@@ -56,17 +58,17 @@ const getCat = (slug: string): Category | undefined =>
 
             <div class="products-column">
                 {
-                    uniqueTypes.map((typeSlug) => {
-                        const cat = getCat(typeSlug);
-                        const items = products.filter(
-                            (p) => p.productType === typeSlug,
+                    uniqueTypes.map((typeName) => {
+                        const cat = getCat(typeName);
+                        const items = products.filter((p) =>
+                            getTypeNamesForProduct(p).includes(typeName),
                         );
                         return (
                             <article class="category">
                                 <header>
                                     <div>
                                         <span class="eyebrow">{brand.name}</span>
-                                        <h2>{cat?.name ?? typeSlug}</h2>
+                                        <h2>{typeName}</h2>
                                     </div>
                                 </header>
                                 <p>{cat?.description ?? ""}</p>
