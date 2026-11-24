@@ -188,9 +188,9 @@ const getCat = (name: string): Category | undefined =>
         var labelMore = toggle.dataset.labelMore;
         var labelLess = toggle.dataset.labelLess;
         toggle.addEventListener("click", function () {
-            var extras = chipsRow.querySelectorAll(".type-chip-extra");
+            var extras   = document.querySelectorAll(".type-chip-extra");
             var expanded = toggle.dataset.expanded === "1";
-            extras.forEach(function (e) { e.style.display = expanded ? "none" : ""; });
+            extras.forEach(function (e) { e.style.display = expanded ? "none" : "inline-block"; });
             toggle.dataset.expanded = expanded ? "0" : "1";
             toggle.textContent = expanded
                 ? labelMore + " (" + (total - 4) + ") ↓"
@@ -319,42 +319,38 @@ const getCat = (name: string): Category | undefined =>
     .brand-strip {
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
-        margin: 24px 0 0;
+        margin: 18px 0 0;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255,255,255,.22);
     }
 
     .brand-strip a {
         display: grid;
         place-items: center;
-        padding: 8px 14px;
-        background: rgba(255,255,255,.18);
-        border: 1px solid rgba(255,255,255,.35);
-        border-radius: 10px;
-        transition:
-            transform 180ms ease,
-            border-color 180ms ease,
-            background 180ms ease,
-            box-shadow 180ms ease;
+        padding: 5px 10px;
+        background: rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 8px;
+        transition: transform 160ms, border-color 160ms, background 160ms;
     }
 
     .brand-strip a:hover,
     .brand-strip a:focus-visible {
         transform: translateY(-2px);
-        background: rgba(255,255,255,.32);
-        border-color: rgba(255,255,255,.7);
-        box-shadow: 0 6px 16px rgba(25, 67, 40, 0.1);
+        background: rgba(255,255,255,.28);
+        border-color: rgba(255,255,255,.65);
     }
 
     .brand-strip a.active {
-        border: 2px solid #fff;
+        border: 1.5px solid #fff;
         background: #fff;
-        box-shadow: 0 6px 16px rgba(25, 67, 40, 0.14);
     }
 
     .brand-strip img {
-        width: 100px;
-        height: 28px;
+        width: 80px;
+        height: 22px;
         object-fit: contain;
     }
 
