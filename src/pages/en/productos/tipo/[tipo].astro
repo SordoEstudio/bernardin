@@ -6,7 +6,7 @@ import { getTypeNamesForProduct, getBrandIdForProduct, slugifyType } from "../..
 
 export async function getStaticPaths() {
     try {
-        const { products } = await cms.products.list({ locale: "en", limit: 200 });
+        const { products } = await cms.products.list({ locale: "en", limit: 500 });
         const typeMap = new Map<string, string>();
         for (const p of products) {
             for (const name of getTypeNamesForProduct(p)) {
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 }
 
 const { typeName } = Astro.props as { typeName: string };
-const { products: allProducts } = await cms.products.list({ locale: "en", limit: 200 }).catch(() => ({ products: [] }));
+const { products: allProducts } = await cms.products.list({ locale: "en", limit: 500 }).catch(() => ({ products: [] }));
 const products = allProducts.filter((p) => getTypeNamesForProduct(p).includes(typeName));
 const allCategories = await cms.categories.list().catch(() => []);
 const typeCategory = allCategories.find((c) => c.name === typeName);

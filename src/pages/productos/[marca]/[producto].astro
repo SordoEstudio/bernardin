@@ -12,7 +12,7 @@ export async function getStaticPaths() {
                 .filter((b) => BRAND_CATEGORY_ID[b.id])
                 .map((b) =>
                     cms.products
-                        .list({ locale: "es", category: BRAND_CATEGORY_ID[b.id], limit: 100 })
+                        .list({ locale: "es", category: BRAND_CATEGORY_ID[b.id], limit: 500 })
                         .then(({ products }) =>
                             products.map((p) => ({
                                 params: { marca: b.id, producto: p.slug },

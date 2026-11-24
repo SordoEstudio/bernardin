@@ -16,7 +16,7 @@ const { brand } = Astro.props;
 const brandCatId = BRAND_CATEGORY_ID[brand.id];
 const [products, allCategories] = await Promise.all([
     brandCatId
-        ? cms.products.list({ locale: "es", category: brandCatId, limit: 100 }).then((r) => r.products).catch(() => [])
+        ? cms.products.list({ locale: "es", category: brandCatId, limit: 500 }).then((r) => r.products).catch(() => [])
         : Promise.resolve([]),
     cms.categories.list().catch(() => [] as Category[]),
 ]);
