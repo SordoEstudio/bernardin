@@ -12,14 +12,22 @@ interface ContactoInfoData {
   lista_contacto?: CMSContactItem[];
 }
 
-const { components } = await cms.components.list({ page_filter: 'Contacto', locale: 'es' }).catch(() => ({ components: [] }));
+const [{ components }, formSchema] = await Promise.all([
+  cms.components.list({ page_filter: 'Contacto', locale: 'es' }).catch(() => ({ components: [] })),
+  cms.forms.schema('contacto', 'es').catch(() => null),
+]);
 const contactoInfo = cms.components.getByType<ContactoInfoData>(components, 'contacto_info');
 const contactLinks = contactoInfo?.lista_contacto ?? [];
+const fFields = formSchema?.fields ?? [];
+const fNombre = fFields.find(f => f.id === 'campo_1');
+const fEmail  = fFields.find(f => f.id === 'campo_2');
+const fMensaje = fFields.find(f => f.id === 'campo_3');
+const successMsg = formSchema?.settings?.success_message ?? '¡Mensaje enviado!';
 ---
-<BaseLayout locale="es" title="Contacto | Alfaterra">
+<BaseLayout locale="es" title="Contacto | Bernardin">
   <section class="page-hero">
     <div class="container">
-      <div class="breadcrumbs">Inicio / Contacto</div>
+      <div class="breadcrumbs"><a href="/">Inicio</a> / Contacto</div>
       <h1>{contactoInfo?.txt_h1}</h1>
     </div>
   </section>
@@ -32,42 +40,91 @@ const contactLinks = contactoInfo?.lista_contacto ?? [];
         {contactLinks.map((c) => (
           <div class="contact-card">
             <strong>{c.txt_label}</strong>
-            <a href={c.link_destino}>{c.txt_valor ?? c.link_destino} →</a>
+            <a href={c.link_destino}>{c.txt_valor ?? c.link_destino}</a>
           </div>
         ))}
       </div>
       <form id="contact-form" class="form contact-card">
         <div class="form-field">
-          <label for="nombre">Nombre</label>
-          <input id="nombre" required name="nombre" placeholder="Tu nombre" />
+          <label for="nombre">{fNombre?.label ?? 'Nombre'}</label>
+          <input id="nombre" required name="nombre" placeholder={fNombre?.placeholder ?? 'Tu nombre'} />
         </div>
         <div class="form-field">
-          <label for="email">Email</label>
-          <input id="email" required type="email" name="email" placeholder="tu@email.com" />
+          <label for="email">{fEmail?.label ?? 'Email'}</label>
+          <input id="email" required type="email" name="email" placeholder={fEmail?.placeholder ?? 'tu@email.com'} />
         </div>
         <div class="form-field">
-          <label for="mensaje">Mensaje</label>
-          <textarea id="mensaje" required name="mensaje" placeholder="¿En qué podemos ayudarte?"></textarea>
+          <label for="mensaje">{fMensaje?.label ?? 'Mensaje'}</label>
+          <textarea id="mensaje" required name="mensaje" placeholder={fMensaje?.placeholder ?? '¿En qué podemos ayudarte?'}></textarea>
         </div>
-        <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Enviar consulta →'}</button>
+        <button class="btn" type="submit">{contactoInfo?.txt_btn_submit ?? 'Enviar consulta'}</button>
       </form>
     </div>
   </section>
 </BaseLayout>
 <style>
-.contact-card{width:100%;max-width:820px;margin-inline:auto;padding:clamp(24px,4vw,42px)}.form.contact-card{max-width:820px}.contact-card label{display:block;margin:0 0 8px;font:700 .78rem var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--green)}.contact-card input,.contact-card textarea{width:100%;border:1px solid var(--line);border-radius:3px;padding:13px 15px;background:#fff;color:var(--ink);margin-bottom:18px}.contact-card textarea{min-height:150px;resize:vertical}.contact-card .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.contact-card .form-grid .full{grid-column:1/-1}@media(max-width:640px){.contact-card .form-grid{grid-template-columns:1fr}.contact-card .form-grid .full{grid-column:auto}}
+    .contact-card {
+        width: 100%;
+        max-width: 820px;
+        margin-inline: auto;
+        padding: clamp(24px, 4vw, 42px);
+    }
+    .form.contact-card {
+        max-width: 820px;
+    }
+    .contact-card label {
+        display: block;
+        margin: 0 0 8px;
+        font: 700 0.78rem var(--display);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--green);
+    }
+    .contact-card input,
+    .contact-card textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 13px 15px;
+        background: #fff;
+        color: var(--ink);
+        margin-bottom: 18px;
+    }
+    .contact-card textarea {
+        min-height: 150px;
+        resize: vertical;
+    }
+    .contact-card .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 20px;
+    }
+    .contact-card .form-grid .full {
+        grid-column: 1 / -1;
+    }
+    @media (max-width: 640px) {
+        .contact-card .form-grid {
+            grid-template-columns: 1fr;
+        }
+        .contact-card .form-grid .full {
+            grid-column: auto;
+        }
+    }
 </style>
-<script is:inline define:vars={{ endpoint: `${import.meta.env.PUBLIC_CMS_API}/forms/contacto/submit` }}>
+<script is:inline define:vars={{ endpoint: `/api/cms/forms/contacto/submit?clientSlug=${import.meta.env.PUBLIC_CLIENT_SLUG}`, successMsg, fIdNombre: fNombre?.id ?? 'campo_1', fIdEmail: fEmail?.id ?? 'campo_2', fIdMensaje: fMensaje?.id ?? 'campo_3' }}>
   document.getElementById('contact-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.currentTarget.querySelector('[type="submit"]');
+    const form = e.currentTarget;
+    const btn = form.querySelector('[type="submit"]');
     btn.disabled = true;
-    const body = Object.fromEntries(new FormData(e.currentTarget));
+    const raw = Object.fromEntries(new FormData(form));
+    const body = { [fIdNombre]: raw.nombre, [fIdEmail]: raw.email, [fIdMensaje]: raw.mensaje };
     try {
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      const json = await res.json();
-      if (json.success) {
-        e.currentTarget.innerHTML = `<p style="color:var(--green);padding:24px">${json.data?.message ?? '¡Mensaje enviado!'}</p>`;
+      let json = null;
+      try { json = await res.json(); } catch {}
+      if (res.ok || json?.success) {
+        form.innerHTML = `<p style="color:var(--green);padding:24px">${json?.data?.message ?? successMsg}</p>`;
       } else { btn.disabled = false; alert('Error al enviar. Intente nuevamente.'); }
     } catch { btn.disabled = false; alert('Error de conexión. Intente nuevamente.'); }
   });

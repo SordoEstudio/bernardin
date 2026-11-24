@@ -74,7 +74,8 @@
       "tag": "Fertilización y soluciones viales",
       "tagEn": "Fertilization and road solutions",
       "color": "#257446",
-      "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg"
+      "logo": "/brands/Bernardin/Logo Bernardin - Azul.svg",
+      "productTypes": ["fertilizadoras", "vial"]
     },
     {
       "id": "unia",
@@ -82,7 +83,8 @@
       "tag": "Maquinaria para el suelo",
       "tagEn": "Soil preparation machinery",
       "color": "#085294",
-      "logo": "/brands/Unia/Logo - Unia.svg"
+      "logo": "/brands/Unia/Logo - Unia.svg",
+      "productTypes": ["suelos"]
     },
     {
       "id": "antonio-carraro",
@@ -90,7 +92,8 @@
       "tag": "Tractores especializados",
       "tagEn": "Specialized tractors",
       "color": "#257446",
-      "logo": "/brands/Carraro/Logo - Antonio Carraro.svg"
+      "logo": "/brands/Carraro/Logo - Antonio Carraro.svg",
+      "productTypes": ["tractores"]
     },
     {
       "id": "samasz",
@@ -98,7 +101,8 @@
       "tag": "Forraje y cosecha",
       "tagEn": "Forage and harvesting",
       "color": "#085294",
-      "logo": "/brands/Samasz/Logo - Samasz.svg"
+      "logo": "/brands/Samasz/Logo - Samasz.svg",
+      "productTypes": ["forraje"]
     },
     {
       "id": "casale",
@@ -106,7 +110,8 @@
       "tag": "Tecnología para el campo",
       "tagEn": "Technology for agriculture",
       "color": "#257446",
-      "logo": "/brands/Casale/Logo - Casale.svg"
+      "logo": "/brands/Casale/Logo - Casale.svg",
+      "productTypes": ["equipos"]
     }
   ],
   "stats": [

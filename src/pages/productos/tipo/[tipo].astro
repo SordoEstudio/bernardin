@@ -2,11 +2,15 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
+import type { Product, Category } from "../../../lib/cms/types";
 import { getTypeNamesForProduct, getBrandIdForProduct, slugifyType } from "../../../lib/products-utils";
 
 export async function getStaticPaths() {
     try {
-        const { products } = await cms.products.list({ locale: "es", limit: 500 });
+        const [{ products }, allCategories] = await Promise.all([
+            cms.products.list({ locale: "es", limit: 500 }),
+            cms.categories.list().catch(() => [] as Category[]),
+        ]);
         const typeMap = new Map<string, string>();
         for (const p of products) {
             for (const name of getTypeNamesForProduct(p)) {
@@ -15,18 +19,22 @@ export async function getStaticPaths() {
         }
         return [...typeMap.entries()].map(([tipo, typeName]) => ({
             params: { tipo },
-            props: { typeName },
+            props: {
+                typeName,
+                products: products.filter((p) => getTypeNamesForProduct(p).includes(typeName)),
+                typeCategory: allCategories.find((c) => c.name === typeName) ?? null,
+            },
         }));
     } catch {
         return [];
     }
 }
 
-const { typeName } = Astro.props as { typeName: string };
-const { products: allProducts } = await cms.products.list({ locale: "es", limit: 500 }).catch(() => ({ products: [] }));
-const products = allProducts.filter((p) => getTypeNamesForProduct(p).includes(typeName));
-const allCategories = await cms.categories.list().catch(() => []);
-const typeCategory = allCategories.find((c) => c.name === typeName);
+const { typeName, products, typeCategory } = Astro.props as {
+    typeName: string;
+    products: Product[];
+    typeCategory: Category | null;
+};
 ---
 
 <BaseLayout locale="es" title={`${typeName} | Productos | Bernardin`}>

@@ -2,40 +2,40 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import site from "../../../../data/site.json";
 import { cms } from "../../../../lib/cms";
-import type { Product } from "../../../../lib/cms/types";
+import type { Product, Category, CMSComponent } from "../../../../lib/cms/types";
 import { BRAND_CATEGORY_ID, getTypeNamesForProduct } from "../../../../lib/products-utils";
 
 export async function getStaticPaths() {
     try {
-        const results = await Promise.all(
-            site.brands
-                .filter((b) => BRAND_CATEGORY_ID[b.id])
-                .map((b) =>
-                    cms.products
-                        .list({ locale: "en", category: BRAND_CATEGORY_ID[b.id], limit: 500 })
-                        .then(({ products }) =>
-                            products.map((p) => ({
-                                params: { marca: b.id, producto: p.slug },
-                                props: { product: p, brandId: b.id },
-                            })),
-                        ),
-                ),
-        );
-        return results.flat();
+        const [brandsData, allCategories, { components: prodComponents }] = await Promise.all([
+            Promise.all(
+                site.brands
+                    .filter((b) => BRAND_CATEGORY_ID[b.id])
+                    .map((b) =>
+                        cms.products
+                            .list({ locale: "en", category: BRAND_CATEGORY_ID[b.id], limit: 500 })
+                            .then(({ products }) => products.map((p) => ({ brandId: b.id, product: p }))),
+                    ),
+            ).then((r) => r.flat()),
+            cms.categories.list().catch(() => [] as Category[]),
+            cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] as CMSComponent[] })),
+        ]);
+        return brandsData.map(({ brandId, product }) => ({
+            params: { marca: brandId, producto: product.slug },
+            props: { product, brandId, allCategories, prodComponents },
+        }));
     } catch {
         return [];
     }
 }
 
-const { product, brandId } = Astro.props as {
+const { product, brandId, allCategories, prodComponents } = Astro.props as {
     product: Product;
     brandId: string;
+    allCategories: Category[];
+    prodComponents: CMSComponent[];
 };
 const brand = site.brands.find((b) => b.id === brandId)!;
-const [allCategories, { components: prodComponents }] = await Promise.all([
-    cms.categories.list().catch(() => []),
-    cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] })),
-]);
 
 interface ProductoDetalleData { txt_h2?: string; txt_cta_label?: string; }
 const productoDetalle = cms.components.getByType<ProductoDetalleData>(prodComponents, "producto_detalle");
