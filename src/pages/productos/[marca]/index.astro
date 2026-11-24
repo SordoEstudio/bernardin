@@ -63,45 +63,49 @@ const getCat = (name: string): Category | undefined =>
         </div>
     </section>
 
-    <div class="search-bar-outer">
+    <div class="controls-bar">
         <div class="container">
-            <div class="search-ctrl">
+            <!-- chips row (default) -->
+            <div class="chips-row" id="chips-row">
+                {uniqueTypes.map((typeName, i) => (
+                    <a
+                        class:list={["type-chip", { "type-chip-extra": i >= 4 }]}
+                        href={`#${slugifyType(typeName)}`}
+                    >{typeName}</a>
+                ))}
+                {uniqueTypes.length > 4 && (
+                    <button
+                        class="more-btn"
+                        id="type-chips-toggle"
+                        type="button"
+                        data-total={uniqueTypes.length}
+                        data-label-more="Ver más"
+                        data-label-less="Ocultar"
+                    >Ver más ({uniqueTypes.length - 4}) ↓</button>
+                )}
+                <button class="search-open-btn" id="search-open-btn" type="button" aria-label="Buscar productos">
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                        <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.7"/>
+                        <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- search row (collapsed by default) -->
+            <div class="search-row hidden" id="search-row">
                 <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                     <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
                     <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
                 <input id="brand-search" type="search" placeholder={`Buscar en ${brand.name}...`} autocomplete="off" />
+                <button class="search-close-btn" id="search-close-btn" type="button" aria-label="Cerrar búsqueda">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </button>
             </div>
         </div>
     </div>
 
     <section class="section">
         <div class="container">
-            {uniqueTypes.length > 1 && (
-                <div class="type-chips-wrap">
-                    <div class="type-chips" id="type-chips">
-                        {uniqueTypes.map((typeName, i) => (
-                            <a
-                                class:list={["type-chip", { "type-chip-extra": i >= 4 }]}
-                                href={`#${slugifyType(typeName)}`}
-                            >{typeName}</a>
-                        ))}
-                    </div>
-                    {uniqueTypes.length > 4 && (
-                        <button
-                            class="type-chips-toggle"
-                            id="type-chips-toggle"
-                            type="button"
-                            data-total={uniqueTypes.length}
-                            data-label-more="Ver todos los tipos"
-                            data-label-less="Ocultar"
-                        >
-                            Ver todos los tipos ({uniqueTypes.length}) ↓
-                        </button>
-                    )}
-                </div>
-            )}
-
             <div class="products-column">
                 {
                     uniqueTypes.map((typeName) => {
@@ -148,24 +152,31 @@ const getCat = (name: string): Category | undefined =>
 
 <script is:inline>
 (function () {
-    /* ── type chips toggle ── */
-    var toggle = document.getElementById("type-chips-toggle");
-    if (toggle) {
-        var chips = document.getElementById("type-chips");
-        var total = toggle.dataset.total;
-        var labelMore = toggle.dataset.labelMore;
-        var labelLess = toggle.dataset.labelLess;
-        toggle.addEventListener("click", function () {
-            var expanded = chips.classList.toggle("expanded");
-            toggle.textContent = expanded ? labelLess + " ↑" : labelMore + " (" + total + ") ↓";
-        });
-    }
-
-    /* ── brand search ── */
+    var chipsRow    = document.getElementById("chips-row");
+    var searchRow   = document.getElementById("search-row");
+    var openBtn     = document.getElementById("search-open-btn");
+    var closeBtn    = document.getElementById("search-close-btn");
     var searchInput = document.getElementById("brand-search");
     var cards       = document.querySelectorAll(".product-card");
     var categories  = document.querySelectorAll("article.category");
 
+    /* ── search open/close ── */
+    function openSearch() {
+        chipsRow.classList.add("hidden");
+        searchRow.classList.remove("hidden");
+        searchInput.focus();
+    }
+    function closeSearch() {
+        searchRow.classList.add("hidden");
+        chipsRow.classList.remove("hidden");
+        searchInput.value = "";
+        cards.forEach(function (c) { c.classList.remove("hidden"); });
+        categories.forEach(function (c) { c.classList.remove("hidden"); });
+    }
+    openBtn.addEventListener("click", openSearch);
+    closeBtn.addEventListener("click", closeSearch);
+
+    /* ── filter ── */
     searchInput.addEventListener("input", function () {
         var q = searchInput.value.toLowerCase().trim();
         if (!q) {
@@ -181,35 +192,59 @@ const getCat = (name: string): Category | undefined =>
             cat.classList.toggle("hidden", !hasVisible);
         });
     });
+
+    /* ── chips expand ── */
+    var toggle = document.getElementById("type-chips-toggle");
+    if (toggle) {
+        var total     = toggle.dataset.total;
+        var labelMore = toggle.dataset.labelMore;
+        var labelLess = toggle.dataset.labelLess;
+        toggle.addEventListener("click", function () {
+            var extras = chipsRow.querySelectorAll(".type-chip-extra");
+            var expanded = toggle.dataset.expanded === "1";
+            extras.forEach(function (e) { e.style.display = expanded ? "none" : ""; });
+            toggle.dataset.expanded = expanded ? "0" : "1";
+            toggle.textContent = expanded
+                ? labelMore + " (" + (total - 4) + ") ↓"
+                : labelLess + " ↑";
+        });
+    }
 })();
 </script>
 
 <style>
     .hidden { display: none !important; }
 
-    .search-bar-outer {
+    /* ── controls bar ─────────────────────────────────── */
+    .controls-bar {
         background: var(--pale, #f4f8f4);
         border-top: 1px solid var(--line, #d9e2da);
         border-bottom: 1px solid var(--line, #d9e2da);
-        padding: 14px 0;
+        padding: 10px 0;
     }
-    .search-ctrl {
-        position: relative;
+    .chips-row {
         display: flex;
         align-items: center;
-        max-width: 480px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .search-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 520px;
     }
     .search-icon {
         position: absolute;
         left: 12px;
-        width: 16px; height: 16px;
+        width: 15px; height: 15px;
         color: #8aab96;
         pointer-events: none;
     }
     #brand-search {
-        width: 100%;
-        height: 42px;
-        padding: 0 14px 0 36px;
+        flex: 1;
+        height: 38px;
+        padding: 0 12px 0 34px;
         border: 1.5px solid var(--line, #d9e2da);
         border-radius: 9px;
         background: #fff;
@@ -225,6 +260,27 @@ const getCat = (name: string): Category | undefined =>
         box-shadow: 0 0 0 3px rgba(37,116,70,.1);
     }
     #brand-search::placeholder { color: #9bb5a4; }
+    .search-row { position: relative; }
+    .search-open-btn, .search-close-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px; height: 34px;
+        border: 1.5px solid var(--line, #d9e2da);
+        border-radius: 999px;
+        background: #fff;
+        cursor: pointer;
+        color: var(--green, #257446);
+        flex-shrink: 0;
+        transition: border-color 160ms, background 160ms;
+        margin-left: auto;
+    }
+    .search-open-btn:hover, .search-close-btn:hover {
+        border-color: var(--green, #257446);
+        background: rgba(37,116,70,.06);
+    }
+    .search-open-btn svg { width: 15px; height: 15px; }
+    .search-close-btn svg { width: 10px; height: 10px; }
 
     .brand-logo-hero {
         width: 210px;
@@ -418,25 +474,17 @@ const getCat = (name: string): Category | undefined =>
         }
     }
 
-    .type-chips-wrap {
-        max-width: 980px;
-        margin: 0 auto 40px;
-    }
-    .type-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
     .type-chip {
         display: inline-block;
-        padding: 8px 18px;
-        background: var(--pale, #f4f8f4);
+        padding: 6px 14px;
+        background: #fff;
         border: 1px solid var(--line, #d9e2da);
         border-radius: 999px;
-        font-size: .88rem;
+        font-size: .82rem;
         font-weight: 500;
         color: var(--green, #257446);
         text-decoration: none;
+        white-space: nowrap;
         transition: background 180ms, border-color 180ms, color 180ms;
     }
     .type-chip:hover {
@@ -445,24 +493,22 @@ const getCat = (name: string): Category | undefined =>
         color: #fff;
     }
     .type-chip-extra { display: none; }
-    .type-chips.expanded .type-chip-extra { display: inline-block; }
-    .type-chips-toggle {
-        margin-top: 10px;
+    .more-btn {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
+        padding: 6px 12px;
         background: none;
         border: 1.5px dashed var(--line, #d9e2da);
         border-radius: 999px;
-        font-size: .82rem;
+        font-size: .78rem;
         font-weight: 600;
         color: var(--green, #257446);
         cursor: pointer;
-        transition: border-color 180ms, background 180ms;
+        white-space: nowrap;
+        transition: border-color 160ms, background 160ms;
         font-family: inherit;
     }
-    .type-chips-toggle:hover {
+    .more-btn:hover {
         border-color: var(--green, #257446);
         background: rgba(37,116,70,.05);
     }
