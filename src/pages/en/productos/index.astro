@@ -2,11 +2,16 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
+import { getTypeNamesForProduct, slugifyType } from "../../../lib/products-utils";
 
 interface ProductosHeaderData { txt_h1?: string; txt_descripcion?: string; txt_ver_productos?: string; }
 
-const { components } = await cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] }));
+const [{ components }, { products: allProducts }] = await Promise.all([
+    cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] })),
+    cms.products.list({ locale: "en", limit: 500 }).catch(() => ({ products: [] })),
+]);
 const productosHeader = cms.components.getByType<ProductosHeaderData>(components, "productos_header");
+const typeNames = [...new Set(allProducts.flatMap((p) => getTypeNamesForProduct(p)))].sort((a, b) => a.localeCompare(b, "en"));
 ---
 
 <BaseLayout locale="en" title="Products | Bernardin"
@@ -32,6 +37,20 @@ const productosHeader = cms.components.getByType<ProductosHeaderData>(components
                                 <p>{b.tagEn}</p>
                                 <span class="arrow">{productosHeader?.txt_ver_productos}</span>
                             </>
+                        </a>
+                    ))
+                }
+            </div>
+        </div>
+    </section>
+    <section class="section tipo-section">
+        <div class="container">
+            <h2 class="tipo-title">Browse by type</h2>
+            <div class="tipo-chips">
+                {
+                    typeNames.map((name) => (
+                        <a class="tipo-chip" href={`/en/productos/tipo/${slugifyType(name)}`}>
+                            {name}
                         </a>
                     ))
                 }
@@ -89,6 +108,37 @@ const productosHeader = cms.components.getByType<ProductosHeaderData>(components
         font-size: 0.78rem;
         letter-spacing: 0.06em;
         white-space: nowrap;
+    }
+    .tipo-section {
+        background: var(--pale, #f4f8f4);
+        border-top: 1px solid var(--line, #d9e2da);
+    }
+    .tipo-title {
+        margin: 0 0 32px;
+        font-size: clamp(1.4rem, 3vw, 2rem);
+        color: var(--green, #257446);
+    }
+    .tipo-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .tipo-chip {
+        display: inline-block;
+        padding: 8px 18px;
+        background: #fff;
+        border: 1px solid var(--line, #d9e2da);
+        border-radius: 999px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--green, #257446);
+        text-decoration: none;
+        transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+    }
+    .tipo-chip:hover {
+        background: var(--green, #257446);
+        border-color: var(--green, #257446);
+        color: #fff;
     }
     @media (max-width: 700px) {
         .section {
