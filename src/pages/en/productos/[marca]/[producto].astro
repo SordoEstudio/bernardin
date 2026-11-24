@@ -2,41 +2,48 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import site from "../../../../data/site.json";
 import { cms } from "../../../../lib/cms";
-import type { Product } from "../../../../lib/cms/types";
+import type { Product, Category, CMSComponent } from "../../../../lib/cms/types";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct } from "../../../../lib/products-utils";
 
 export async function getStaticPaths() {
     try {
-        const { products } = await cms.products.list({ locale: "en", limit: 100 });
-        return products.map((p) => {
-            const brand = site.brands.find((b) =>
-                ((b as any).productTypes as string[] ?? []).includes(p.productType ?? "")
-            ) ?? site.brands[0];
-            return {
-                params: { marca: brand.id, producto: p.slug },
-                props: { product: p, brandId: brand.id },
-            };
-        });
+        const [brandsData, allCategories, { components: prodComponents }] = await Promise.all([
+            Promise.all(
+                site.brands
+                    .filter((b) => BRAND_CATEGORY_ID[b.id])
+                    .map((b) =>
+                        cms.products
+                            .list({ locale: "en", category: BRAND_CATEGORY_ID[b.id], limit: 500 })
+                            .then(({ products }) => products.map((p) => ({ brandId: b.id, product: p }))),
+                    ),
+            ).then((r) => r.flat()),
+            cms.categories.list().catch(() => [] as Category[]),
+            cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] as CMSComponent[] })),
+        ]);
+        return brandsData.map(({ brandId, product }) => ({
+            params: { marca: brandId, producto: product.slug },
+            props: { product, brandId, allCategories, prodComponents },
+        }));
     } catch {
         return [];
     }
 }
 
-const { product, brandId } = Astro.props as {
+const { product, brandId, allCategories, prodComponents } = Astro.props as {
     product: Product;
     brandId: string;
+    allCategories: Category[];
+    prodComponents: CMSComponent[];
 };
 const brand = site.brands.find((b) => b.id === brandId)!;
-const [allCategories, { components: prodComponents }] = await Promise.all([
-    cms.categories.list().catch(() => []),
-    cms.components.list({ page_filter: "Productos", locale: "en" }).catch(() => ({ components: [] })),
-]);
 
 interface ProductoDetalleData { txt_h2?: string; txt_cta_label?: string; }
 const productoDetalle = cms.components.getByType<ProductoDetalleData>(prodComponents, "producto_detalle");
-const category = allCategories.find((c) => c.slug === product.productType);
+const typeName = getTypeNamesForProduct(product)[0];
+const typeCategory = typeName ? allCategories.find((c) => c.name === typeName) : undefined;
 const images = product.images?.length ? product.images : [brand.logo];
 const productName = product.locale?.title ?? product.slug;
-const productDesc = product.locale?.description ?? category?.description ?? "";
+const productDesc = product.locale?.description ?? typeCategory?.description ?? "";
 ---
 
 <BaseLayout locale="en" title={`${productName} | ${brand.name} | Bernardin`}>
@@ -72,7 +79,7 @@ const productDesc = product.locale?.description ?? category?.description ?? "";
                     )
                 }
             </div><div class="product-copy">
-                <span class="eyebrow">{category?.name ?? ""}</span><h2>
+                <span class="eyebrow">{typeName ?? ""}</span><h2>
                     {productoDetalle?.txt_h2}
                 </h2><p>
                     {productDesc}
