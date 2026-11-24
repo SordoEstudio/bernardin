@@ -30,6 +30,13 @@ const enrichedProducts = allProducts
             <div class="breadcrumbs"><a href="/">Inicio</a> / Productos</div>
             <h1>{productosHeader?.txt_h1}</h1>
             <p>{productosHeader?.txt_descripcion}</p>
+            <div class="brand-strip" aria-label="Marcas Bernardin">
+                {site.brands.map((b) => (
+                    <a href={`/productos/${b.id}`}>
+                        <img src={b.logo} alt={b.name} />
+                    </a>
+                ))}
+            </div>
         </div>
     </section>
 
@@ -277,6 +284,35 @@ const enrichedProducts = allProducts
 </script>
 
 <style>
+    /* ── brand strip in hero ─────────────────────────── */
+    .brand-strip {
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 24px 0 0;
+    }
+    .brand-strip a {
+        display: grid;
+        place-items: center;
+        padding: 8px 14px;
+        background: rgba(255,255,255,.18);
+        border: 1px solid rgba(255,255,255,.35);
+        border-radius: 10px;
+        transition: transform 180ms, border-color 180ms, background 180ms, box-shadow 180ms;
+    }
+    .brand-strip a:hover {
+        transform: translateY(-2px);
+        background: rgba(255,255,255,.32);
+        border-color: rgba(255,255,255,.7);
+        box-shadow: 0 6px 16px rgba(25,67,40,.1);
+    }
+    .brand-strip img {
+        width: 100px;
+        height: 28px;
+        object-fit: contain;
+    }
+
     /* ── search bar strip ─────────────────────────────── */
     .search-bar-outer {
         background: var(--pale, #f4f8f4);
