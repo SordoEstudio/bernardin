@@ -1,0 +1,206 @@
+[
+  {
+    "slug": "fertilizadora-gravedad-1000l",
+    "brand": "bernardin",
+    "productType": "fertilizadoras",
+    "featured": true,
+    "visible": true,
+    "es": {
+      "title": "Fertilizadora a gravedad 1000L",
+      "summary": "Distribución uniforme por gravedad para aplicaciones de alta precisión.",
+      "description": "Tolva de 1000 litros con salida regulable. Ideal para aplicación de fertilizantes sólidos en siembra y cobertura. Compatible con tractores de mediana y alta potencia."
+    },
+    "en": {
+      "title": "Gravity fertilizer spreader 1000L",
+      "summary": "Uniform gravity distribution for high-precision applications.",
+      "description": "1000-litre hopper with adjustable outlet. Ideal for solid fertilizer application at planting and topdressing. Compatible with medium and high-power tractors."
+    }
+  },
+  {
+    "slug": "fertilizadora-centrifuga",
+    "brand": "bernardin",
+    "productType": "fertilizadoras",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Fertilizadora centrífuga",
+      "summary": "Mayor cobertura de trabajo y distribución precisa en anchos variables.",
+      "description": "Sistema de distribución centrífuga con regulación electrónica del caudal. Permite trabajar con anchos de labor de hasta 24 metros. Tolva con capacidad estándar de 1500 litros."
+    },
+    "en": {
+      "title": "Centrifugal fertilizer spreader",
+      "summary": "Wider working width and precise distribution across variable swaths.",
+      "description": "Centrifugal distribution system with electronic flow control. Working widths of up to 24 metres. Standard hopper capacity of 1,500 litres."
+    }
+  },
+  {
+    "slug": "esparcidor-arena",
+    "brand": "bernardin",
+    "productType": "vial",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Esparcidor de arena",
+      "summary": "Solución eficiente para el mantenimiento de caminos rurales en invierno.",
+      "description": "Esparcidor de arrastre con tolva de acero inoxidable y sistema de dosificación variable. Ideal para mantenimiento de caminos, accesos rurales y vías secundarias."
+    },
+    "en": {
+      "title": "Sand spreader",
+      "summary": "Efficient solution for rural road maintenance in winter conditions.",
+      "description": "Trailed spreader with stainless steel hopper and variable dosing system. Ideal for road maintenance, rural access tracks and secondary roads."
+    }
+  },
+  {
+    "slug": "barredora-vial",
+    "brand": "bernardin",
+    "productType": "vial",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Barredora vial",
+      "summary": "Limpieza de caminos y superficies con alta eficiencia operativa.",
+      "description": "Barredora de eje horizontal accionada por toma de fuerza. Cepillo de trabajo de alta durabilidad. Compatible con cargador frontal y acople de tres puntos."
+    },
+    "en": {
+      "title": "Road sweeper",
+      "summary": "Road and surface cleaning with high operational efficiency.",
+      "description": "Horizontal-axis sweeper driven by PTO. High-durability working brush. Compatible with front loader and three-point hitch."
+    }
+  },
+  {
+    "slug": "cultivador-campo",
+    "brand": "unia",
+    "productType": "suelos",
+    "featured": true,
+    "visible": true,
+    "es": {
+      "title": "Cultivador de campo",
+      "summary": "Laboreo profundo y descompactación del suelo para mejorar la estructura.",
+      "description": "Cultivador de campo UNIA con brazos en S de acero de alta resistencia. Disponible en anchos de labor de 3 a 6 metros. Sistema de seguridad por resorte con alta capacidad de absorción de impactos."
+    },
+    "en": {
+      "title": "Field cultivator",
+      "summary": "Deep tillage and soil decompaction to improve soil structure.",
+      "description": "UNIA field cultivator with high-strength S-tine arms. Available in working widths from 3 to 6 metres. Spring safety system with high impact absorption capacity."
+    }
+  },
+  {
+    "slug": "subsolador",
+    "brand": "unia",
+    "productType": "suelos",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Subsolador",
+      "summary": "Rotura de piso de arado y mejora de la infiltración sin invertir el perfil.",
+      "description": "Subsolador UNIA con puntas intercambiables de carburo. Trabajo a profundidades de hasta 60 cm. Disponible en versiones de 3, 5 y 7 cuerpos. Ideal para campos con piso de arado consolidado."
+    },
+    "en": {
+      "title": "Subsoiler",
+      "summary": "Plough pan breaking and improved infiltration without inverting the soil profile.",
+      "description": "UNIA subsoiler with interchangeable carbide tips. Working depth of up to 60 cm. Available in 3, 5 and 7-body versions. Ideal for fields with consolidated plough pan."
+    }
+  },
+  {
+    "slug": "trx-7800",
+    "brand": "antonio-carraro",
+    "productType": "tractores",
+    "featured": true,
+    "visible": true,
+    "es": {
+      "title": "TRX 7800",
+      "summary": "Tractor articulado de alta tracción para trabajos en pendiente y terrenos difíciles.",
+      "description": "El TRX 7800 combina la maniobrabilidad de la dirección articulada con la tracción de cuatro ruedas motrices iguales. Motor de 78 CV, apto para viticultura, fruticultura y trabajos en zonas de difícil acceso."
+    },
+    "en": {
+      "title": "TRX 7800",
+      "summary": "High-traction articulated tractor for slope work and difficult terrain.",
+      "description": "The TRX 7800 combines the manoeuvrability of articulated steering with equal four-wheel drive traction. 78 HP engine, suitable for viticulture, fruit growing and work in hard-to-access areas."
+    }
+  },
+  {
+    "slug": "tigre-4000",
+    "brand": "antonio-carraro",
+    "productType": "tractores",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Tigre 4000",
+      "summary": "Tractor compacto isodiamétrico para máxima versatilidad en espacios reducidos.",
+      "description": "El Tigre 4000 ofrece cuatro ruedas del mismo tamaño para mayor estabilidad y maniobrabilidad. Motor de 40 CV. Versión reversible disponible para mayor comodidad del operador en trabajos de precisión."
+    },
+    "en": {
+      "title": "Tigre 4000",
+      "summary": "Compact iso-diameter tractor for maximum versatility in tight spaces.",
+      "description": "The Tigre 4000 features four equal-size wheels for improved stability and manoeuvrability. 40 HP engine. Reversible version available for greater operator comfort in precision work."
+    }
+  },
+  {
+    "slug": "segadora-frontal",
+    "brand": "samasz",
+    "productType": "forraje",
+    "featured": true,
+    "visible": true,
+    "es": {
+      "title": "Segadora frontal",
+      "summary": "Corte limpio y uniforme para optimizar la calidad del forraje.",
+      "description": "Segadora frontal SaMASZ con barra de corte de discos. Ancho de trabajo de 2,7 a 3,5 m. Sistema de acondicionado de dedos opciones para mejorar el secado. Compatible con tractores desde 80 CV."
+    },
+    "en": {
+      "title": "Front mower",
+      "summary": "Clean, uniform cutting to optimise forage quality.",
+      "description": "SaMASZ front mower with disc cutter bar. Working width from 2.7 to 3.5 m. Optional finger conditioner to improve drying. Compatible with tractors from 80 HP."
+    }
+  },
+  {
+    "slug": "rastrillo-henificador",
+    "brand": "samasz",
+    "productType": "forraje",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Rastrillo henificador",
+      "summary": "Hilerado eficiente para acelerar el secado y facilitar la recolección.",
+      "description": "Rastrillo de ruedas SaMASZ con ajuste hidráulico del ángulo de trabajo. Disponible en versiones de 2 a 4 ruedas. Mínimo deterioro del forraje por diseño de dientes flotantes."
+    },
+    "en": {
+      "title": "Tedding rake",
+      "summary": "Efficient swathing to speed up drying and simplify collection.",
+      "description": "SaMASZ wheel rake with hydraulic working angle adjustment. Available in 2 to 4 wheel versions. Minimal forage damage thanks to floating tine design."
+    }
+  },
+  {
+    "slug": "equipos-aplicacion-casale",
+    "brand": "casale",
+    "productType": "equipos",
+    "featured": true,
+    "visible": true,
+    "es": {
+      "title": "Equipos de aplicación",
+      "summary": "Tecnología de pulverización de precisión para maximizar la eficiencia del agroquímico.",
+      "description": "Pulverizadores Casale de arrastre y automotrices con sistema de corte por secciones. Disponibles desde 2000 litros. Botalón plegable hidráulicamente con anchos de hasta 32 metros."
+    },
+    "en": {
+      "title": "Application equipment",
+      "summary": "Precision spraying technology to maximise agrochemical efficiency.",
+      "description": "Casale trailed and self-propelled sprayers with section control system. Available from 2,000 litres. Hydraulically folding boom with widths of up to 32 metres."
+    }
+  },
+  {
+    "slug": "soluciones-granos-casale",
+    "brand": "casale",
+    "productType": "equipos",
+    "featured": false,
+    "visible": true,
+    "es": {
+      "title": "Soluciones para granos",
+      "summary": "Equipos para el manejo eficiente de granos en el campo y en el acopio.",
+      "description": "Línea de extractores, transportadores y elevadores de granos Casale. Diseñados para reducir pérdidas en la cosecha y agilizar las tareas de acopio y carga."
+    },
+    "en": {
+      "title": "Grain solutions",
+      "summary": "Equipment for efficient grain handling in the field and storage.",
+      "description": "Casale range of grain augers, conveyors and elevators. Designed to reduce harvest losses and speed up storage and loading operations."
+    }
+  }
+]

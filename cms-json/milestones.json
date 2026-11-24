@@ -10,8 +10,12 @@
       "txt_h2_seccion": "Un camino que sigue creciendo",
       "lista_milestones": [
         { "txt_year": "1924", "txt_descripcion": "Nace una historia ligada al campo argentino." },
+        { "txt_year": "1950", "txt_descripcion": "Se incorpora la primera maquinaria pesada a la flota." },
         { "txt_year": "1978", "txt_descripcion": "El conocimiento técnico se convierte en acompañamiento cercano." },
+        { "txt_year": "1995", "txt_descripcion": "Inauguración de la primera sede regional de distribución." },
         { "txt_year": "2008", "txt_descripcion": "Alfaterra amplía su red y suma nuevas marcas internacionales." },
+        { "txt_year": "2018", "txt_descripcion": "Lanzamiento de soluciones digitales para la agricultura de precisión." },
+        { "txt_year": "2022", "txt_descripcion": "Certificación de procesos sustentables y huella de carbono." },
         { "txt_year": "Hoy",  "txt_descripcion": "Seguimos conectando tecnología, personas y territorio." }
       ]
     },
@@ -20,8 +24,12 @@
       "txt_h2_seccion": "A path that keeps growing",
       "lista_milestones": [
         { "txt_year": "1924",  "txt_descripcion": "A story linked to the Argentine countryside is born." },
+        { "txt_year": "1950",  "txt_descripcion": "The first heavy machinery is added to the fleet." },
         { "txt_year": "1978",  "txt_descripcion": "Technical knowledge becomes close accompaniment." },
+        { "txt_year": "1995",  "txt_descripcion": "Opening of the first regional distribution branch." },
         { "txt_year": "2008",  "txt_descripcion": "Alfaterra expands its network and adds new international brands." },
+        { "txt_year": "2018",  "txt_descripcion": "Launch of digital solutions for precision agriculture." },
+        { "txt_year": "2022",  "txt_descripcion": "Certification of sustainable processes and carbon footprint reduction." },
         { "txt_year": "Today", "txt_descripcion": "We keep connecting technology, people and territory." }
       ]
     }
