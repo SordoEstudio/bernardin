@@ -33,52 +33,70 @@ const enrichedProducts = allProducts
         </div>
     </section>
 
-    <!-- ── search bar + filters ───────────────────────── -->
-    <section class="section search-section">
+    <!-- ── search + filters ───────────────────────────── -->
+    <div class="search-bar-outer">
         <div class="container">
             <div class="controls-row">
-                <div class="search-wrap">
-                    <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+
+                <!-- text search -->
+                <div class="ctrl search-ctrl">
+                    <svg class="ctrl-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                         <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
                         <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                     </svg>
                     <input id="product-search" type="search" placeholder="Buscar productos..." autocomplete="off" />
                 </div>
 
-                <!-- marca select -->
-                <div class="select-wrap">
-                    <select id="marca-select">
-                        <option value="">Todas las marcas</option>
-                        {site.brands.map((b) => <option value={b.id}>{b.name}</option>)}
-                    </select>
-                    <svg class="select-arrow" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-                        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-
-                <!-- tipo searchable dropdown -->
-                <div class="tipo-dropdown" id="tipo-dropdown">
-                    <button class="dropdown-trigger" type="button" id="tipo-trigger" aria-expanded="false" aria-haspopup="listbox">
-                        <span id="tipo-label">Todos los tipos</span>
-                        <svg class="select-arrow" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                <!-- marca styled select -->
+                <div class="ctrl select-ctrl" id="marca-wrap">
+                    <button class="ctrl-btn" id="marca-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="marca-label">Todas las marcas</span>
+                        <svg class="ctrl-chevron" viewBox="0 0 12 8" fill="none" aria-hidden="true">
                             <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
-                    <div class="dropdown-panel" id="tipo-panel" hidden>
-                        <div class="dropdown-search-wrap">
-                            <input class="dropdown-search" id="tipo-filter-input" type="text" placeholder="Buscar tipo..." autocomplete="off" />
-                        </div>
-                        <ul class="dropdown-list" id="tipo-list" role="listbox">
-                            <li class="dropdown-item active" data-value="" data-label="Todos los tipos" role="option">Todos los tipos</li>
-                            {typeNames.map((name) => (
-                                <li class="dropdown-item" data-value={slugifyType(name)} data-label={name} role="option">{name}</li>
-                            ))}
-                        </ul>
-                    </div>
+                    <ul class="ctrl-panel hidden" id="marca-panel" role="listbox">
+                        <li class="ctrl-option active" data-value="" data-label="Todas las marcas" role="option">Todas las marcas</li>
+                        {site.brands.map((b) => (
+                            <li class="ctrl-option" data-value={b.id} data-label={b.name} role="option">{b.name}</li>
+                        ))}
+                    </ul>
                 </div>
-            </div>
 
-            <!-- results -->
+                <!-- tipo combobox -->
+                <div class="ctrl combo-ctrl" id="tipo-wrap">
+                    <input
+                        id="tipo-combo"
+                        class="ctrl-combo-input"
+                        type="text"
+                        placeholder="Todos los tipos"
+                        autocomplete="off"
+                        role="combobox"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-autocomplete="list"
+                    />
+                    <svg class="ctrl-chevron" id="tipo-chevron" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <button class="ctrl-clear hidden" id="tipo-clear" type="button" aria-label="Limpiar tipo">
+                        <svg viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                    <ul class="ctrl-panel hidden" id="tipo-panel" role="listbox">
+                        <li class="ctrl-option active" data-value="" data-label="Todos los tipos" role="option">Todos los tipos</li>
+                        {typeNames.map((name) => (
+                            <li class="ctrl-option" data-value={slugifyType(name)} data-label={name} role="option">{name}</li>
+                        ))}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── results ────────────────────────────────────── -->
+    <section class="section results-section">
+        <div class="container">
             <p class="result-count hidden" id="result-count"></p>
             <div class="products-grid" id="products-grid">
                 {
@@ -140,24 +158,18 @@ const enrichedProducts = allProducts
 <script is:inline>
 (function () {
     var searchInput = document.getElementById("product-search");
-    var marcaSelect = document.getElementById("marca-select");
-    var tipoTrigger = document.getElementById("tipo-trigger");
-    var tipoLabel = document.getElementById("tipo-label");
-    var tipoPanel = document.getElementById("tipo-panel");
-    var tipoFilterInput = document.getElementById("tipo-filter-input");
-    var tipoItems = document.querySelectorAll("#tipo-list .dropdown-item");
-    var cards = document.querySelectorAll(".product-card");
-    var countEl = document.getElementById("result-count");
-    var promptEl = document.getElementById("search-prompt");
+    var cards       = document.querySelectorAll(".product-card");
+    var countEl     = document.getElementById("result-count");
+    var promptEl    = document.getElementById("search-prompt");
     var noResultsEl = document.getElementById("no-results");
 
     var activeMarca = "";
-    var activeTipo = "";
+    var activeTipo  = "";
 
+    /* ── filter engine ── */
     function filter() {
         var q = searchInput.value.toLowerCase().trim();
         var hasFilter = q || activeMarca || activeTipo;
-
         if (!hasFilter) {
             cards.forEach(function (c) { c.classList.add("hidden"); });
             promptEl.classList.remove("hidden");
@@ -165,14 +177,13 @@ const enrichedProducts = allProducts
             noResultsEl.classList.add("hidden");
             return;
         }
-
         promptEl.classList.add("hidden");
         var count = 0;
         cards.forEach(function (card) {
             var show =
                 (!q || (card.dataset.nombre || "").includes(q)) &&
                 (!activeMarca || card.dataset.marca === activeMarca) &&
-                (!activeTipo || (card.dataset.tipo || "").split("|").includes(activeTipo));
+                (!activeTipo  || (card.dataset.tipo  || "").split("|").includes(activeTipo));
             card.classList.toggle("hidden", !show);
             if (show) count++;
         });
@@ -182,229 +193,239 @@ const enrichedProducts = allProducts
     }
 
     searchInput.addEventListener("input", filter);
-    marcaSelect.addEventListener("change", function () {
-        activeMarca = marcaSelect.value;
-        filter();
-    });
 
-    /* ── tipo dropdown ── */
-    tipoTrigger.addEventListener("click", function () {
-        var isOpen = !tipoPanel.hidden;
-        tipoPanel.hidden = isOpen;
-        tipoTrigger.setAttribute("aria-expanded", String(!isOpen));
-        if (!isOpen) {
-            tipoFilterInput.value = "";
-            tipoItems.forEach(function (i) { i.style.display = ""; });
-            tipoFilterInput.focus();
-        }
-    });
+    /* ── generic dropdown ── */
+    function makeDropdown(wrapperId, triggerId, labelId, panelId) {
+        var wrap    = document.getElementById(wrapperId);
+        var trigger = document.getElementById(triggerId);
+        var label   = document.getElementById(labelId);
+        var panel   = document.getElementById(panelId);
+        var items   = panel.querySelectorAll(".ctrl-option");
 
-    tipoFilterInput.addEventListener("input", function () {
-        var q = tipoFilterInput.value.toLowerCase();
+        function open()  { panel.classList.remove("hidden"); trigger.setAttribute("aria-expanded","true"); }
+        function close() { panel.classList.add("hidden");    trigger.setAttribute("aria-expanded","false"); }
+
+        trigger.addEventListener("click", function () {
+            panel.classList.contains("hidden") ? open() : close();
+        });
+        items.forEach(function (item) {
+            item.addEventListener("click", function () {
+                items.forEach(function (i) { i.classList.remove("active"); });
+                item.classList.add("active");
+                label.textContent = item.dataset.label;
+                activeMarca = item.dataset.value;
+                close();
+                filter();
+            });
+        });
+        document.addEventListener("click", function (e) {
+            if (!wrap.contains(e.target)) close();
+        });
+    }
+    makeDropdown("marca-wrap", "marca-trigger", "marca-label", "marca-panel");
+
+    /* ── tipo combobox ── */
+    var tipoWrap   = document.getElementById("tipo-wrap");
+    var tipoInput  = document.getElementById("tipo-combo");
+    var tipoPanel  = document.getElementById("tipo-panel");
+    var tipoChevron= document.getElementById("tipo-chevron");
+    var tipoClear  = document.getElementById("tipo-clear");
+    var tipoItems  = tipoPanel.querySelectorAll(".ctrl-option");
+
+    function tipoOpen()  { tipoPanel.classList.remove("hidden"); tipoInput.setAttribute("aria-expanded","true");  tipoChevron.classList.add("open"); }
+    function tipoClose() { tipoPanel.classList.add("hidden");    tipoInput.setAttribute("aria-expanded","false"); tipoChevron.classList.remove("open"); }
+
+    tipoInput.addEventListener("focus", tipoOpen);
+    tipoInput.addEventListener("input", function () {
+        tipoOpen();
+        var q = tipoInput.value.toLowerCase();
         tipoItems.forEach(function (item) {
-            if (!item.dataset.value) { return; } // keep "todos" always visible
-            item.style.display = item.textContent.toLowerCase().includes(q) ? "" : "none";
+            if (!item.dataset.value) { item.style.display = ""; return; }
+            item.style.display = item.dataset.label.toLowerCase().includes(q) ? "" : "none";
         });
     });
-
+    tipoInput.addEventListener("blur", function () {
+        setTimeout(tipoClose, 160);
+    });
     tipoItems.forEach(function (item) {
-        item.addEventListener("click", function () {
+        item.addEventListener("mousedown", function (e) {
+            e.preventDefault();
             tipoItems.forEach(function (i) { i.classList.remove("active"); });
             item.classList.add("active");
             activeTipo = item.dataset.value;
-            tipoLabel.textContent = item.dataset.label;
-            tipoPanel.hidden = true;
-            tipoTrigger.setAttribute("aria-expanded", "false");
+            tipoInput.value = item.dataset.value ? item.dataset.label : "";
+            tipoClear.classList.toggle("hidden", !item.dataset.value);
+            tipoClose();
             filter();
         });
     });
-
+    tipoClear.addEventListener("click", function () {
+        activeTipo = "";
+        tipoInput.value = "";
+        tipoClear.classList.add("hidden");
+        tipoItems.forEach(function (i) { i.classList.remove("active"); });
+        tipoItems[0].classList.add("active");
+        tipoInput.focus();
+        filter();
+    });
     document.addEventListener("click", function (e) {
-        if (!document.getElementById("tipo-dropdown").contains(e.target)) {
-            tipoPanel.hidden = true;
-            tipoTrigger.setAttribute("aria-expanded", "false");
-        }
+        if (!tipoWrap.contains(e.target)) tipoClose();
     });
 })();
 </script>
 
 <style>
-    /* ── controls row ─────────────────────────────────── */
-    .search-section {
+    /* ── search bar strip ─────────────────────────────── */
+    .search-bar-outer {
         background: var(--pale, #f4f8f4);
         border-top: 1px solid var(--line, #d9e2da);
         border-bottom: 1px solid var(--line, #d9e2da);
+        padding: 18px 0;
     }
     .controls-row {
         display: flex;
-        gap: 12px;
-        align-items: stretch;
-        margin-bottom: 28px;
+        gap: 10px;
+        align-items: center;
         flex-wrap: wrap;
     }
 
-    /* search input */
-    .search-wrap {
+    /* shared control shell */
+    .ctrl {
         position: relative;
-        flex: 1 1 240px;
+        height: 42px;
+        display: flex;
+        align-items: center;
     }
-    .search-icon {
+    .ctrl-icon {
         position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 17px;
-        height: 17px;
+        left: 12px;
+        width: 16px; height: 16px;
         color: #8aab96;
         pointer-events: none;
+        flex-shrink: 0;
     }
-    #product-search {
-        width: 100%;
-        height: 46px;
-        padding: 0 16px 0 42px;
-        font-size: 0.95rem;
+    /* shared input / button base */
+    .ctrl input,
+    .ctrl-btn {
+        height: 42px;
         border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 10px;
+        border-radius: 9px;
         background: #fff;
+        font-size: 0.88rem;
         color: var(--texto, #1a2e22);
         outline: none;
         box-sizing: border-box;
-        transition: border-color 150ms, box-shadow 150ms;
+        transition: border-color 140ms, box-shadow 140ms;
     }
-    #product-search:focus {
+    .ctrl input:focus,
+    .ctrl-btn:focus,
+    .ctrl-btn[aria-expanded="true"],
+    .ctrl-combo-input[aria-expanded="true"] {
         border-color: var(--green, #257446);
         box-shadow: 0 0 0 3px rgba(37,116,70,.1);
+    }
+
+    /* text search */
+    .search-ctrl { flex: 1 1 220px; }
+    #product-search {
+        width: 100%;
+        padding: 0 14px 0 36px;
     }
     #product-search::placeholder { color: #9bb5a4; }
 
-    /* shared control base */
-    .select-wrap,
-    .tipo-dropdown { flex: 0 0 auto; position: relative; }
-
-    /* marca select */
-    .select-wrap select {
-        appearance: none;
-        -webkit-appearance: none;
-        height: 46px;
-        padding: 0 42px 0 16px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 10px;
-        background: #fff;
-        color: var(--texto, #1a2e22);
-        cursor: pointer;
-        outline: none;
-        min-width: 170px;
-        box-sizing: border-box;
-        transition: border-color 150ms, box-shadow 150ms;
-    }
-    .select-wrap select:focus {
-        border-color: var(--green, #257446);
-        box-shadow: 0 0 0 3px rgba(37,116,70,.1);
-    }
-    .select-wrap .select-arrow {
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 11px;
-        height: 7px;
-        color: #7a9985;
-        pointer-events: none;
-    }
-
-    /* tipo dropdown trigger */
-    .dropdown-trigger {
+    /* marca dropdown trigger */
+    .select-ctrl { flex: 0 0 auto; }
+    .ctrl-btn {
         display: flex;
         align-items: center;
         gap: 8px;
-        height: 46px;
-        padding: 0 16px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 10px;
-        background: #fff;
-        color: var(--texto, #1a2e22);
-        cursor: pointer;
-        white-space: nowrap;
-        min-width: 190px;
+        padding: 0 12px;
+        min-width: 160px;
         justify-content: space-between;
-        box-sizing: border-box;
-        transition: border-color 150ms, box-shadow 150ms;
+        cursor: pointer;
+        font-weight: 500;
+        white-space: nowrap;
+        font-family: inherit;
     }
-    .dropdown-trigger:focus,
-    .dropdown-trigger[aria-expanded="true"] {
-        border-color: var(--green, #257446);
-        box-shadow: 0 0 0 3px rgba(37,116,70,.1);
-        outline: none;
+    .ctrl-chevron {
+        width: 10px; height: 7px;
+        color: #7a9985;
+        flex-shrink: 0;
+        transition: transform 160ms ease;
+        pointer-events: none;
     }
-    .dropdown-trigger .select-arrow { width: 11px; height: 7px; color: #7a9985; flex-shrink: 0; }
-    .dropdown-trigger[aria-expanded="true"] .select-arrow { transform: rotate(180deg); }
+    .ctrl-btn[aria-expanded="true"] .ctrl-chevron,
+    .ctrl-chevron.open { transform: rotate(180deg); }
 
-    /* dropdown panel */
-    .dropdown-panel {
+    /* tipo combobox */
+    .combo-ctrl { flex: 0 0 auto; }
+    .ctrl-combo-input {
+        padding: 0 52px 0 12px;
+        min-width: 190px;
+        cursor: pointer;
+        font-weight: 500;
+        font-family: inherit;
+        caret-color: var(--green, #257446);
+    }
+    .ctrl-combo-input::placeholder { color: var(--texto, #1a2e22); font-weight: 500; }
+    /* chevron & clear inside combobox */
+    .combo-ctrl .ctrl-chevron {
         position: absolute;
-        top: calc(100% + 6px);
+        right: 30px;
+        pointer-events: none;
+    }
+    .ctrl-clear {
+        position: absolute;
+        right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px; height: 20px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #9bb5a4;
+        padding: 0;
+        border-radius: 4px;
+        transition: color 120ms;
+    }
+    .ctrl-clear:hover { color: var(--texto, #1a2e22); }
+    .ctrl-clear svg { width: 10px; height: 10px; }
+
+    /* shared dropdown panel */
+    .ctrl-panel {
+        position: absolute;
+        top: calc(100% + 5px);
         left: 0;
         min-width: 100%;
-        max-height: 320px;
-        display: flex;
-        flex-direction: column;
-        background: #fff;
-        border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 12px;
-        box-shadow: 0 8px 28px rgba(25,67,40,.12);
-        z-index: 50;
-        overflow: hidden;
-    }
-    .dropdown-search-wrap {
-        padding: 10px 10px 6px;
-        border-bottom: 1px solid var(--line, #d9e2da);
-    }
-    .dropdown-search {
-        width: 100%;
-        padding: 7px 12px;
-        font-size: 0.85rem;
-        border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 7px;
-        outline: none;
-        box-sizing: border-box;
-        transition: border-color 150ms;
-    }
-    .dropdown-search:focus { border-color: var(--green, #257446); }
-    .dropdown-list {
+        max-height: 280px;
+        overflow-y: auto;
         list-style: none;
         margin: 0;
-        padding: 6px 0;
-        overflow-y: auto;
-        max-height: 240px;
+        padding: 5px 0;
+        background: #fff;
+        border: 1.5px solid var(--line, #d9e2da);
+        border-radius: 10px;
+        box-shadow: 0 6px 24px rgba(25,67,40,.12);
+        z-index: 50;
     }
-    .dropdown-item {
-        padding: 9px 16px;
-        font-size: 0.88rem;
+    .ctrl-option {
+        padding: 8px 14px;
+        font-size: 0.87rem;
         cursor: pointer;
         color: var(--texto, #1a2e22);
-        transition: background 120ms;
+        transition: background 100ms;
+        white-space: nowrap;
     }
-    .dropdown-item:hover { background: var(--pale, #f4f8f4); }
-    .dropdown-item.active {
-        background: rgba(37,116,70,.08);
-        color: var(--green, #257446);
-        font-weight: 600;
-    }
-
-    /* ── results ──────────────────────────────────────── */
-    .result-count { margin: 0 0 16px; font-size: 0.84rem; color: #7a9985; font-weight: 500; }
-    .search-prompt {
-        padding: 48px 0;
-        text-align: center;
-        color: #9bb5a4;
-        font-size: 0.95rem;
-    }
-    .no-results { padding: 48px 0; text-align: center; color: #7a9985; font-size: 0.95rem; }
+    .ctrl-option:hover { background: var(--pale, #f4f8f4); }
+    .ctrl-option.active { color: var(--green, #257446); font-weight: 600; background: rgba(37,116,70,.06); }
     .hidden { display: none !important; }
+
+    /* ── results section ──────────────────────────────── */
+    .results-section { padding-top: 32px; }
+    .result-count { margin: 0 0 14px; font-size: 0.82rem; color: #7a9985; font-weight: 500; }
+    .search-prompt { padding: 44px 0; text-align: center; color: #9bb5a4; font-size: 0.93rem; }
+    .no-results    { padding: 44px 0; text-align: center; color: #7a9985;  font-size: 0.93rem; }
 
     /* ── product grid ─────────────────────────────────── */
     .products-grid {
@@ -413,60 +434,26 @@ const enrichedProducts = allProducts
         gap: 16px;
     }
     .product-card a {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        background: #fff;
-        border: 1px solid var(--line, #d9e2da);
-        border-radius: 12px;
-        overflow: hidden;
-        text-decoration: none;
-        transition: transform 160ms ease, box-shadow 160ms ease;
+        display: flex; flex-direction: column; height: 100%;
+        background: #fff; border: 1px solid var(--line, #d9e2da); border-radius: 12px;
+        overflow: hidden; text-decoration: none; transition: transform 160ms, box-shadow 160ms;
     }
-    .product-card a:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 24px rgba(25,67,40,.11);
-    }
+    .product-card a:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(25,67,40,.11); }
     .card-media {
-        display: grid;
-        place-items: center;
-        height: 150px;
-        padding: 20px;
+        display: grid; place-items: center; height: 150px; padding: 20px;
         background: radial-gradient(circle at 50% 45%, rgba(64,181,83,.08), transparent 65%), var(--pale, #f4f8f4);
         border-bottom: 1px solid rgba(37,116,70,.08);
     }
     .card-media img { width: 100%; height: 100%; object-fit: contain; }
-    .card-brand {
-        padding: 10px 14px 0;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: .06em;
-        text-transform: uppercase;
-        color: var(--green, #257446);
-    }
-    .product-card h3 {
-        margin: 0;
-        padding: 6px 14px 16px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        line-height: 1.35;
-        color: var(--texto, #1a2e22);
-    }
+    .card-brand { padding: 10px 14px 0; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green, #257446); }
+    .product-card h3 { margin: 0; padding: 6px 14px 16px; font-size: .9rem; font-weight: 600; line-height: 1.35; color: var(--texto, #1a2e22); }
 
     /* ── brand grid ───────────────────────────────────── */
     .brand-grid { grid-template-columns: repeat(6, 1fr); gap: 18px; }
     .brand-card-logo {
-        display: flex;
-        min-height: 220px;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 28px 26px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--white);
-        box-shadow: var(--shadow);
-        overflow: hidden;
+        display: flex; min-height: 220px; flex-direction: column; align-items: flex-start;
+        justify-content: space-between; padding: 28px 26px; border: 1px solid var(--line);
+        border-radius: 8px; background: var(--white); box-shadow: var(--shadow); overflow: hidden;
     }
     .brand-card-logo:nth-child(1) { grid-column: 1 / span 2; }
     .brand-card-logo:nth-child(2) { grid-column: 3 / span 2; }
@@ -475,48 +462,36 @@ const enrichedProducts = allProducts
     .brand-card-logo:nth-child(5) { grid-column: 4 / span 2; }
     .brand-card-logo img { width: min(100%, 220px); height: 72px; object-fit: contain; object-position: left center; }
     .brand-card-logo p { margin: 18px 0 0; color: #566b60; max-width: 22ch; }
-    .arrow {
-        color: var(--blue);
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: .78rem;
-        letter-spacing: .06em;
-        white-space: nowrap;
-    }
+    .arrow { color: var(--blue); font-weight: 700; text-transform: uppercase; font-size: .78rem; letter-spacing: .06em; white-space: nowrap; }
 
     /* ── tipo section ─────────────────────────────────── */
     .tipo-section { background: #fff; border-top: 1px solid var(--line, #d9e2da); }
     .tipo-title { margin: 0 0 32px; font-size: clamp(1.4rem, 3vw, 2rem); color: var(--green, #257446); }
     .tipo-chips { display: flex; flex-wrap: wrap; gap: 10px; }
     .tipo-chip {
-        display: inline-block;
-        padding: 8px 18px;
-        background: var(--pale, #f4f8f4);
-        border: 1px solid var(--line, #d9e2da);
-        border-radius: 999px;
-        font-size: .88rem;
-        font-weight: 500;
-        color: var(--green, #257446);
-        text-decoration: none;
+        display: inline-block; padding: 8px 18px; background: var(--pale, #f4f8f4);
+        border: 1px solid var(--line, #d9e2da); border-radius: 999px; font-size: .88rem;
+        font-weight: 500; color: var(--green, #257446); text-decoration: none;
         transition: background 180ms, border-color 180ms, color 180ms;
     }
     .tipo-chip:hover { background: var(--green, #257446); border-color: var(--green, #257446); color: #fff; }
 
     /* ── mobile ───────────────────────────────────────── */
     @media (max-width: 700px) {
-        .controls-row { flex-direction: column; }
-        .select-wrap select,
-        .dropdown-trigger { min-width: 0; width: 100%; }
-        .search-wrap { flex: unset; }
+        .controls-row { flex-direction: column; align-items: stretch; }
+        .ctrl { height: 44px; }
+        .ctrl-btn,
+        .ctrl-combo-input { min-width: 0; width: 100%; }
+        .search-ctrl { flex: unset; }
+        .ctrl-panel { position: fixed; top: auto; left: 1rem; right: 1rem; bottom: 1rem; max-height: 55vh; border-radius: 14px; }
         .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         .brand-card-logo,
         .brand-card-logo:nth-child(n) { grid-column: auto; min-height: 205px; padding: 22px 18px; }
         .brand-card-logo:nth-child(5) { grid-column: 1 / -1; max-width: calc(50% - 7px); width: 100%; justify-self: center; }
         .brand-card-logo img { width: 100%; height: 58px; object-position: center; }
         .brand-card-logo p { font-size: .95rem; line-height: 1.35; margin-top: 14px; }
-        .arrow { font-size: .68rem; letter-spacing: .03em; }
+        .arrow { font-size: .68rem; }
         .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
         .card-media { height: 120px; }
-        .dropdown-panel { position: fixed; top: auto; left: 1rem; right: 1rem; bottom: 1rem; max-height: 60vh; border-radius: 16px; }
     }
 </style>
