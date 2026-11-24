@@ -65,10 +65,27 @@ const getCat = (name: string): Category | undefined =>
                 }
             </div>
             {uniqueTypes.length > 1 && (
-                <div class="type-chips">
-                    {uniqueTypes.map((typeName) => (
-                        <a class="type-chip" href={`#${slugifyType(typeName)}`}>{typeName}</a>
-                    ))}
+                <div class="type-chips-wrap">
+                    <div class="type-chips" id="type-chips">
+                        {uniqueTypes.map((typeName, i) => (
+                            <a
+                                class:list={["type-chip", { "type-chip-extra": i >= 4 }]}
+                                href={`#${slugifyType(typeName)}`}
+                            >{typeName}</a>
+                        ))}
+                    </div>
+                    {uniqueTypes.length > 4 && (
+                        <button
+                            class="type-chips-toggle"
+                            id="type-chips-toggle"
+                            type="button"
+                            data-total={uniqueTypes.length}
+                            data-label-more="See all types"
+                            data-label-less="Hide"
+                        >
+                            See all types ({uniqueTypes.length}) ↓
+                        </button>
+                    )}
                 </div>
             )}
 
@@ -115,6 +132,22 @@ const getCat = (name: string): Category | undefined =>
         </div>
     </section>
 </BaseLayout>
+
+<script is:inline>
+(function () {
+    var toggle = document.getElementById("type-chips-toggle");
+    if (!toggle) return;
+    var chips = document.getElementById("type-chips");
+    var total = toggle.dataset.total;
+    var labelMore = toggle.dataset.labelMore;
+    var labelLess = toggle.dataset.labelLess;
+    toggle.addEventListener("click", function () {
+        var expanded = chips.classList.toggle("expanded");
+        toggle.textContent = expanded ? labelLess + " ↑" : labelMore + " (" + total + ") ↓";
+    });
+})();
+</script>
+
 <style>
     .brand-logo-hero {
         width: 210px;
@@ -308,12 +341,14 @@ const getCat = (name: string): Category | undefined =>
         }
     }
 
+    .type-chips-wrap {
+        max-width: 980px;
+        margin: 0 auto 40px;
+    }
     .type-chips {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        margin: 0 auto 40px;
-        max-width: 980px;
     }
     .type-chip {
         display: inline-block;
@@ -331,5 +366,27 @@ const getCat = (name: string): Category | undefined =>
         background: var(--green, #257446);
         border-color: var(--green, #257446);
         color: #fff;
+    }
+    .type-chip-extra { display: none; }
+    .type-chips.expanded .type-chip-extra { display: inline-block; }
+    .type-chips-toggle {
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: none;
+        border: 1.5px dashed var(--line, #d9e2da);
+        border-radius: 999px;
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--green, #257446);
+        cursor: pointer;
+        transition: border-color 180ms, background 180ms;
+        font-family: inherit;
+    }
+    .type-chips-toggle:hover {
+        border-color: var(--green, #257446);
+        background: rgba(37,116,70,.05);
     }
 </style>
