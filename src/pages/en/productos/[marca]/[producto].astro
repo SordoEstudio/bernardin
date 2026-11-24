@@ -57,7 +57,7 @@ const productDesc = marked.parse(productDescRaw) as string;
                 > / {productName}
             </div><span class="eyebrow">{brand.name}</span><h1>
                 {productName}
-            </h1><div class="prose" set:html={productDesc} />
+            </h1><div class="prose" set:html={productDesc}></div>
         </div>
     </section>
     <section class="section">
@@ -83,11 +83,10 @@ const productDesc = marked.parse(productDescRaw) as string;
             </div><div class="product-copy">
                 <span class="eyebrow">{typeName ?? ""}</span><h2>
                     {productoDetalle?.txt_h2}
-                </h2><div class="prose" set:html={productDesc} /><a
-                    class="btn"
-                    href={`/en/contacto?producto=${encodeURIComponent(productName)}`}
-                    >{productoDetalle?.txt_cta_label} <span>→</span></a
-                >
+                </h2><div class="prose" set:html={productDesc}></div>
+                <a class="btn" href={`/en/contacto?producto=${encodeURIComponent(productName)}`}>
+                    {productoDetalle?.txt_cta_label} <span>→</span>
+                </a>
             </div>
         </div>
     </section>
