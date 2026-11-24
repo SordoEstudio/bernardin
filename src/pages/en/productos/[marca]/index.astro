@@ -3,7 +3,7 @@ import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import site from "../../../../data/site.json";
 import { cms } from "../../../../lib/cms";
 import type { Product, Category } from "../../../../lib/cms/types";
-import { BRAND_CATEGORY_ID, getTypeNamesForProduct } from "../../../../lib/products-utils";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct, slugifyType } from "../../../../lib/products-utils";
 
 export async function getStaticPaths() {
     const [brandsData, allCategories] = await Promise.all([
@@ -64,6 +64,14 @@ const getCat = (name: string): Category | undefined =>
                     ))
                 }
             </div>
+            {uniqueTypes.length > 1 && (
+                <div class="type-chips">
+                    {uniqueTypes.map((typeName) => (
+                        <a class="type-chip" href={`#${slugifyType(typeName)}`}>{typeName}</a>
+                    ))}
+                </div>
+            )}
+
             <div class="products-column">
                 {
                     uniqueTypes.map((typeName) => {
@@ -72,7 +80,7 @@ const getCat = (name: string): Category | undefined =>
                             getTypeNamesForProduct(p).includes(typeName),
                         );
                         return (
-                            <article class="category">
+                            <article class="category" id={slugifyType(typeName)}>
                                 <header>
                                     <div>
                                         <span class="eyebrow">{brand.name}</span>
@@ -298,5 +306,30 @@ const getCat = (name: string): Category | undefined =>
         .product-card h3 {
             padding: 18px 20px 20px;
         }
+    }
+
+    .type-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 0 auto 40px;
+        max-width: 980px;
+    }
+    .type-chip {
+        display: inline-block;
+        padding: 8px 18px;
+        background: var(--pale, #f4f8f4);
+        border: 1px solid var(--line, #d9e2da);
+        border-radius: 999px;
+        font-size: .88rem;
+        font-weight: 500;
+        color: var(--green, #257446);
+        text-decoration: none;
+        transition: background 180ms, border-color 180ms, color 180ms;
+    }
+    .type-chip:hover {
+        background: var(--green, #257446);
+        border-color: var(--green, #257446);
+        color: #fff;
     }
 </style>
