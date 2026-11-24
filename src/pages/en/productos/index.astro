@@ -90,7 +90,7 @@ const enrichedProducts = allProducts
         </div>
     </div>
 
-    <section class="section results-section">
+    <section class="section results-section hidden" id="results-section">
         <div class="container">
             <p class="result-count hidden" id="result-count"></p>
             <div class="products-grid" id="products-grid">
@@ -113,12 +113,11 @@ const enrichedProducts = allProducts
                     ))
                 }
             </div>
-            <p class="search-prompt" id="search-prompt">Use the search box or select a brand and type to explore products.</p>
             <p class="no-results hidden" id="no-results">No results for your search.</p>
         </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="browse-section">
         <div class="container">
             <div class="brand-grid">
                 {
@@ -150,11 +149,12 @@ const enrichedProducts = allProducts
 
 <script is:inline>
 (function () {
-    var searchInput = document.getElementById("product-search");
-    var cards       = document.querySelectorAll(".product-card");
-    var countEl     = document.getElementById("result-count");
-    var promptEl    = document.getElementById("search-prompt");
-    var noResultsEl = document.getElementById("no-results");
+    var searchInput   = document.getElementById("product-search");
+    var cards         = document.querySelectorAll(".product-card");
+    var countEl       = document.getElementById("result-count");
+    var noResultsEl   = document.getElementById("no-results");
+    var resultSection = document.getElementById("results-section");
+    var browseSection = document.getElementById("browse-section");
     var activeMarca = "";
     var activeTipo  = "";
 
@@ -163,12 +163,14 @@ const enrichedProducts = allProducts
         var hasFilter = q || activeMarca || activeTipo;
         if (!hasFilter) {
             cards.forEach(function (c) { c.classList.add("hidden"); });
-            promptEl.classList.remove("hidden");
             countEl.classList.add("hidden");
             noResultsEl.classList.add("hidden");
+            resultSection.classList.add("hidden");
+            browseSection.classList.remove("hidden");
             return;
         }
-        promptEl.classList.add("hidden");
+        browseSection.classList.add("hidden");
+        resultSection.classList.remove("hidden");
         var count = 0;
         cards.forEach(function (card) {
             var show =
@@ -318,7 +320,6 @@ const enrichedProducts = allProducts
     .hidden { display: none !important; }
     .results-section { padding-top: 32px; }
     .result-count { margin: 0 0 14px; font-size: .82rem; color: #7a9985; font-weight: 500; }
-    .search-prompt { padding: 44px 0; text-align: center; color: #9bb5a4; font-size: .93rem; }
     .no-results    { padding: 44px 0; text-align: center; color: #7a9985;  font-size: .93rem; }
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
     .product-card a {
