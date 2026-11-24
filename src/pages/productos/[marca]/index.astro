@@ -63,6 +63,18 @@ const getCat = (name: string): Category | undefined =>
         </div>
     </section>
 
+    <div class="search-bar-outer">
+        <div class="container">
+            <div class="search-ctrl">
+                <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <input id="brand-search" type="search" placeholder={`Buscar en ${brand.name}...`} autocomplete="off" />
+            </div>
+        </div>
+    </div>
+
     <section class="section">
         <div class="container">
             {uniqueTypes.length > 1 && (
@@ -108,7 +120,7 @@ const getCat = (name: string): Category | undefined =>
                                 <p>{cat?.description ?? ""}</p>
                                 <div class="items">
                                     {items.map((p) => (
-                                        <article class="product-card">
+                                        <article class="product-card" data-nombre={(p.locale?.title ?? p.slug).toLowerCase()}>
                                             <div class="product-media">
                                                 <img
                                                     src={p.images?.[0] ?? brand.logo}
@@ -136,20 +148,84 @@ const getCat = (name: string): Category | undefined =>
 
 <script is:inline>
 (function () {
+    /* ── type chips toggle ── */
     var toggle = document.getElementById("type-chips-toggle");
-    if (!toggle) return;
-    var chips = document.getElementById("type-chips");
-    var total = toggle.dataset.total;
-    var labelMore = toggle.dataset.labelMore;
-    var labelLess = toggle.dataset.labelLess;
-    toggle.addEventListener("click", function () {
-        var expanded = chips.classList.toggle("expanded");
-        toggle.textContent = expanded ? labelLess + " ↑" : labelMore + " (" + total + ") ↓";
+    if (toggle) {
+        var chips = document.getElementById("type-chips");
+        var total = toggle.dataset.total;
+        var labelMore = toggle.dataset.labelMore;
+        var labelLess = toggle.dataset.labelLess;
+        toggle.addEventListener("click", function () {
+            var expanded = chips.classList.toggle("expanded");
+            toggle.textContent = expanded ? labelLess + " ↑" : labelMore + " (" + total + ") ↓";
+        });
+    }
+
+    /* ── brand search ── */
+    var searchInput = document.getElementById("brand-search");
+    var cards       = document.querySelectorAll(".product-card");
+    var categories  = document.querySelectorAll("article.category");
+
+    searchInput.addEventListener("input", function () {
+        var q = searchInput.value.toLowerCase().trim();
+        if (!q) {
+            cards.forEach(function (c) { c.classList.remove("hidden"); });
+            categories.forEach(function (c) { c.classList.remove("hidden"); });
+            return;
+        }
+        cards.forEach(function (card) {
+            card.classList.toggle("hidden", !(card.dataset.nombre || "").includes(q));
+        });
+        categories.forEach(function (cat) {
+            var hasVisible = cat.querySelectorAll(".product-card:not(.hidden)").length > 0;
+            cat.classList.toggle("hidden", !hasVisible);
+        });
     });
 })();
 </script>
 
 <style>
+    .hidden { display: none !important; }
+
+    .search-bar-outer {
+        background: var(--pale, #f4f8f4);
+        border-top: 1px solid var(--line, #d9e2da);
+        border-bottom: 1px solid var(--line, #d9e2da);
+        padding: 14px 0;
+    }
+    .search-ctrl {
+        position: relative;
+        display: flex;
+        align-items: center;
+        max-width: 480px;
+    }
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        width: 16px; height: 16px;
+        color: #8aab96;
+        pointer-events: none;
+    }
+    #brand-search {
+        width: 100%;
+        height: 42px;
+        padding: 0 14px 0 36px;
+        border: 1.5px solid var(--line, #d9e2da);
+        border-radius: 9px;
+        background: #fff;
+        font-size: .88rem;
+        color: var(--texto, #1a2e22);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 140ms, box-shadow 140ms;
+        font-family: inherit;
+    }
+    #brand-search:focus {
+        border-color: var(--green, #257446);
+        box-shadow: 0 0 0 3px rgba(37,116,70,.1);
+    }
+    #brand-search::placeholder { color: #9bb5a4; }
+
     .brand-logo-hero {
         width: 210px;
         height: 60px;
@@ -160,7 +236,7 @@ const getCat = (name: string): Category | undefined =>
 
     .brand-strip {
         display: flex;
-        justify-content: flex-start;
+        justify-content: center;
         gap: 10px;
         flex-wrap: wrap;
         margin: 24px 0 0;
