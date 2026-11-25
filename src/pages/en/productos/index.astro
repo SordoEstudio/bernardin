@@ -2,7 +2,7 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
-import { getTypeNamesForProduct, getBrandIdForProduct, slugifyType } from "../../../lib/products-utils";
+import { getTypeNamesForProduct, getBrandIdForProduct, slugifyType, getProductImageUrl } from "../../../lib/products-utils";
 import type { Product } from "../../../lib/cms/types";
 import '../../../styles/products-index.css';
 
@@ -22,7 +22,18 @@ const enrichedProducts = allProducts
         const types = getTypeNamesForProduct(p);
         return { product: p, brandId, brand, types };
     })
-    .filter((e) => e.brandId);
+    .filter((e) => e.brandId)
+    .sort((a, b) => {
+        if (a.brandId === 'bernardin' && b.brandId !== 'bernardin') return -1;
+        if (b.brandId === 'bernardin' && a.brandId !== 'bernardin') return 1;
+        return 0;
+    });
+
+const orderedTypes = [...new Set(enrichedProducts.map((e) => e.types[0]).filter(Boolean))];
+const typeGroups = orderedTypes.map((typeName) => ({
+    typeName,
+    products: enrichedProducts.filter((e) => e.types[0] === typeName),
+}));
 ---
 
 <BaseLayout locale="en" title="Products | Bernardin">
@@ -104,49 +115,36 @@ const enrichedProducts = allProducts
         </div>
     </div>
 
-    <section class="section results-section hidden" id="results-section">
+    <!-- ── type-grouped products ─────────────────────── -->
+    <section class="section type-groups-section" id="type-groups-section">
         <div class="container">
-            <p class="result-count hidden" id="result-count"></p>
-            <div class="products-grid" id="products-grid">
-                {
-                    enrichedProducts.map(({ product, brandId, brand, types }) => (
-                        <article
-                            class="product-card hidden"
-                            data-nombre={(product.locale?.title ?? product.slug).toLowerCase()}
-                            data-marca={brandId}
-                            data-tipo={types.map(slugifyType).join("|")}
-                        >
-                            <a href={`/en/productos/${brandId}/${product.slug}`}>
-                                <div class="card-media">
-                                    <img src={product.images?.[0] ?? brand?.logo ?? ""} alt={product.locale?.title ?? product.slug} loading="lazy" />
-                                </div>
-                                {brand && <span class="card-brand">{brand.name}</span>}
-                                <h3>{product.locale?.title ?? product.slug}</h3>
-                            </a>
-                        </article>
-                    ))
-                }
+            <div class="result-bar">
+                <p class="result-count hidden" id="result-count"></p>
+                <p class="no-results hidden" id="no-results">No results for your search.</p>
             </div>
-            <div id="reveal-sentinel" aria-hidden="true" style="height:1px;pointer-events:none"></div>
-            <p class="no-results hidden" id="no-results">No results for your search.</p>
-        </div>
-    </section>
-
-    <section class="section" id="browse-section">
-        <div class="container">
-            <div class="brand-grid">
-                {
-                    site.brands.map((b) => (
-                        <a class="brand-card brand-card-logo" href={`/en/productos/${b.id}`}>
-                            <>
-                                <img src={b.logo} alt={`${b.name} logo`} />
-                                <p>{b.tagEn}</p>
-                                <span class="arrow">{productosHeader?.txt_ver_productos}</span>
-                            </>
-                        </a>
-                    ))
-                }
-            </div>
+            {typeGroups.map(({ typeName, products: group }) => (
+                <div class="type-group" data-type={slugifyType(typeName)}>
+                    <h2 class="type-group-title">{typeName}</h2>
+                    <div class="products-grid">
+                        {group.map(({ product, brandId, brand, types }) => (
+                            <article
+                                class="product-card"
+                                data-nombre={(product.locale?.title ?? product.slug).toLowerCase()}
+                                data-marca={brandId}
+                                data-tipo={types.map(slugifyType).join("|")}
+                            >
+                                <a href={`/en/productos/${brandId}/${product.slug}`}>
+                                    <div class="card-media">
+                                        <img src={getProductImageUrl(product, brand?.logo || "")} alt={product.locale?.title ?? product.slug} loading="lazy" />
+                                    </div>
+                                    {brand && <span class="card-brand">{brand.name}</span>}
+                                    <h3>{product.locale?.title ?? product.slug}</h3>
+                                </a>
+                            </article>
+                        ))}
+                    </div>
+                </div>
+            ))}
         </div>
     </section>
 
@@ -164,69 +162,53 @@ const enrichedProducts = allProducts
 
 <script is:inline>
 (function () {
-    var searchInput   = document.getElementById("product-search");
-    var cards         = document.querySelectorAll(".product-card");
-    var countEl       = document.getElementById("result-count");
-    var noResultsEl   = document.getElementById("no-results");
-    var resultSection = document.getElementById("results-section");
-    var browseSection = document.getElementById("browse-section");
+    var searchInput = document.getElementById("product-search");
+    var allCards    = Array.from(document.querySelectorAll(".product-card"));
+    var groups      = Array.from(document.querySelectorAll(".type-group"));
+    var countEl     = document.getElementById("result-count");
+    var noResultsEl = document.getElementById("no-results");
     var activeMarca = "";
     var activeTipo  = "";
-    var PAGE_SIZE   = 20;
-    var revealQueue = [];
 
     var searchInline   = document.getElementById("search-inline-idx");
     var searchOpenBtn  = document.getElementById("search-open-btn-idx");
     var searchCloseBtn = document.getElementById("search-close-btn-idx");
-    searchOpenBtn.addEventListener("click", function() {
+    searchOpenBtn.addEventListener("click", function () {
         searchInline.classList.add("open");
         searchInput.focus();
     });
-    searchCloseBtn.addEventListener("click", function() {
+    searchCloseBtn.addEventListener("click", function () {
         searchInline.classList.remove("open");
         searchInput.value = "";
         filter();
     });
 
-    var sentinel = document.getElementById("reveal-sentinel");
-    if (sentinel) {
-        new IntersectionObserver(function(entries) {
-            if (entries[0].isIntersecting && revealQueue.length > 0) {
-                var batch = revealQueue.splice(0, PAGE_SIZE);
-                batch.forEach(function(c) { c.classList.remove("hidden"); });
-            }
-        }, { rootMargin: "200px" }).observe(sentinel);
-    }
-
     function filter() {
         var q = searchInput.value.toLowerCase().trim();
         var hasFilter = q || activeMarca || activeTipo;
-        if (!hasFilter) {
-            cards.forEach(function (c) { c.classList.add("hidden"); });
-            countEl.classList.add("hidden");
-            noResultsEl.classList.add("hidden");
-            resultSection.classList.add("hidden");
-            browseSection.classList.remove("hidden");
-            revealQueue = [];
-            return;
-        }
-        browseSection.classList.add("hidden");
-        resultSection.classList.remove("hidden");
-        cards.forEach(function (c) { c.classList.add("hidden"); });
-        var matching = [];
-        cards.forEach(function (card) {
-            var show =
+        var matchCount = 0;
+        allCards.forEach(function (card) {
+            var show = !hasFilter || (
                 (!q || (card.dataset.nombre || "").includes(q)) &&
                 (!activeMarca || card.dataset.marca === activeMarca) &&
-                (!activeTipo  || (card.dataset.tipo  || "").split("|").includes(activeTipo));
-            if (show) matching.push(card);
+                (!activeTipo  || (card.dataset.tipo  || "").split("|").includes(activeTipo))
+            );
+            card.classList.toggle("hidden", !show);
+            if (show) matchCount++;
         });
-        revealQueue = matching.slice(PAGE_SIZE);
-        matching.slice(0, PAGE_SIZE).forEach(function (c) { c.classList.remove("hidden"); });
-        var count = matching.length;
-        countEl.textContent = count + " product" + (count !== 1 ? "s" : "");
-        countEl.classList.remove("hidden");
-        noResultsEl.classList.toggle("hidden", count > 0);
+        groups.forEach(function (group) {
+            group.classList.toggle("hidden",
+                group.querySelectorAll(".product-card:not(.hidden)").length === 0
+            );
+        });
+        if (hasFilter) {
+            countEl.textContent = matchCount + " product" + (matchCount !== 1 ? "s" : "");
+            countEl.classList.remove("hidden");
+            noResultsEl.classList.toggle("hidden", matchCount > 0);
+        } else {
+            countEl.classList.add("hidden");
+            noResultsEl.classList.add("hidden");
+        }
     }
 
     searchInput.addEventListener("input", filter);

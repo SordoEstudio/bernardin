@@ -22,8 +22,8 @@
     box-shadow: 0 6px 16px rgba(25,67,40,.1);
 }
 .brand-strip img {
-    width: 100px;
-    height: 28px;
+    width: 140px;
+    height: 38px;
     object-fit: contain;
 }
 
@@ -254,15 +254,27 @@
 .ctrl-option.active { color: var(--green, #257446); font-weight: 600; background: rgba(37,116,70,.06); }
 .hidden { display: none !important; }
 
-/* ── results section ──────────────────────────────── */
-.results-section { padding-top: 32px; }
+/* ── type groups ──────────────────────────────────── */
+.type-groups-section { padding-top: 36px; }
+.result-bar { margin-bottom: 8px; }
 .result-count { margin: 0 0 14px; font-size: 0.82rem; color: #7a9985; font-weight: 500; }
-.no-results    { padding: 44px 0; text-align: center; color: #7a9985;  font-size: 0.93rem; }
+.no-results   { padding: 44px 0; text-align: center; color: #7a9985; font-size: 0.93rem; }
+.type-group { margin-bottom: 52px; }
+.type-group:last-child { margin-bottom: 0; }
+.type-group-title {
+    margin: 0 0 20px;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 700;
+    color: var(--green, #257446);
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--line, #d9e2da);
+    letter-spacing: .01em;
+}
 
 /* ── product grid ─────────────────────────────────── */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 16px;
 }
 .product-card a {
@@ -275,8 +287,9 @@
     display: grid; place-items: center; height: 150px; padding: 20px;
     background: radial-gradient(circle at 50% 45%, rgba(64,181,83,.08), transparent 65%), var(--pale, #f4f8f4);
     border-bottom: 1px solid rgba(37,116,70,.08);
+    overflow: hidden;
 }
-.card-media img { width: 100%; height: 100%; object-fit: contain; }
+.card-media img { width: 100%; height: 100%; object-fit: contain; max-width: 100%; max-height: 110px; }
 .card-brand { padding: 10px 14px 0; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--green, #257446); }
 .product-card h3 { margin: 0; padding: 6px 14px 16px; font-size: .9rem; font-weight: 600; line-height: 1.35; color: var(--texto, #1a2e22); }
 
@@ -310,11 +323,32 @@
 
 /* ── mobile ───────────────────────────────────────── */
 @media (max-width: 700px) {
-    .controls-row { flex-direction: column; align-items: stretch; }
-    .ctrl { height: 44px; }
-    .ctrl-btn,
-    .ctrl-combo-input { min-width: 0; width: 100%; }
-    .ctrl-panel { position: fixed; top: auto; left: 1rem; right: 1rem; bottom: 1rem; max-height: 55vh; border-radius: 14px; }
+    /* controls: one row — [🔍] [Marca▾] [Tipo▾]
+       when search opens it overlays the full bar */
+    .controls-row { display: flex; flex-wrap: nowrap; gap: 8px; position: relative; }
+    .search-inline { flex-shrink: 0; }
+    .search-inline.open {
+        position: absolute;
+        left: 0; right: 0; top: 0; bottom: 0;
+        display: flex; align-items: center;
+        background: var(--pale, #f4f9f5);
+        border-radius: 9px;
+        z-index: 10;
+    }
+    .search-inline.open .search-expand-input { width: calc(100% - 78px); }
+    .select-ctrl, .combo-ctrl { flex: 1; min-width: 0; }
+    .ctrl { height: 38px; }
+    .ctrl-btn, .ctrl-combo-input { min-width: 0; width: 100%; font-size: 0.82rem; }
+    /* panels: absolute dropdown — avoids iOS Safari rendering bug with fixed inside sticky */
+    .ctrl-panel {
+        position: absolute;
+        top: calc(100% + 4px); left: 0; right: 0; bottom: auto;
+        min-width: 0; max-height: 220px; border-radius: 10px; z-index: 100;
+    }
+    /* brand strip */
+    .brand-strip img { width: 100px; height: 30px; }
+    .brand-strip a { padding: 6px 10px; }
+    /* brand grid */
     .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .brand-card-logo,
     .brand-card-logo:nth-child(n) { grid-column: auto; min-height: 205px; padding: 22px 18px; }

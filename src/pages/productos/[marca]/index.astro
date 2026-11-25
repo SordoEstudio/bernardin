@@ -3,7 +3,7 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
 import type { Product, Category } from "../../../lib/cms/types";
-import { BRAND_CATEGORY_ID, getTypeNamesForProduct, slugifyType } from "../../../lib/products-utils";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct, slugifyType, getProductImageUrl } from "../../../lib/products-utils";
 import '../../../styles/products-marca.css';
 
 export async function getStaticPaths() {
@@ -120,19 +120,15 @@ const getCat = (name: string): Category | undefined =>
                                 <div class="items">
                                     {items.map((p) => (
                                         <article class="product-card" data-nombre={(p.locale?.title ?? p.slug).toLowerCase()}>
-                                            <div class="product-media">
-                                                <img
-                                                    src={p.images?.[0] ?? brand.logo}
-                                                    alt={p.locale?.title ?? p.slug}
-                                                />
-                                            </div>
-                                            <h3>
-                                                <a
-                                                    href={`/productos/${brand.id}/${p.slug}`}
-                                                >
-                                                    {p.locale?.title ?? p.slug}
-                                                </a>
-                                            </h3>
+                                            <a href={`/productos/${brand.id}/${p.slug}`}>
+                                                <div class="product-media">
+                                                    <img
+                                                        src={getProductImageUrl(p, brand.logo)}
+                                                        alt={p.locale?.title ?? p.slug}
+                                                    />
+                                                </div>
+                                                <h3>{p.locale?.title ?? p.slug}</h3>
+                                            </a>
                                         </article>
                                     ))}
                                 </div>
