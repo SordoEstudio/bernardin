@@ -3,7 +3,7 @@
 /* ── controls bar (sticky) ────────────────────────── */
 .controls-bar {
     position: sticky;
-    top: 0;
+    top: 78px;
     z-index: 20;
     background: var(--pale, #f4f8f4);
     border-top: 1px solid var(--line, #d9e2da);

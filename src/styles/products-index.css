@@ -29,10 +29,13 @@
 
 /* ── search bar strip ─────────────────────────────── */
 .search-bar-outer {
+    position: sticky;
+    top: 78px;
+    z-index: 20;
     background: var(--pale, #f4f8f4);
     border-top: 1px solid var(--line, #d9e2da);
     border-bottom: 1px solid var(--line, #d9e2da);
-    padding: 18px 0;
+    padding: 14px 0;
 }
 .controls-row {
     display: flex;
@@ -41,6 +44,99 @@
     flex-wrap: wrap;
 }
 
+/* expandable lupa search */
+.search-inline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+}
+.search-open-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px; height: 42px;
+    border: 1.5px solid var(--line, #d9e2da);
+    border-radius: 9px;
+    background: #fff;
+    cursor: pointer;
+    color: var(--green, #257446);
+    flex-shrink: 0;
+    transition: border-color 160ms, background 160ms, border-radius 220ms;
+    z-index: 1;
+}
+.search-open-btn:hover { border-color: var(--green, #257446); background: rgba(37,116,70,.06); }
+.search-open-btn svg { width: 16px; height: 16px; }
+.search-inline.open .search-open-btn {
+    border-radius: 9px 0 0 9px;
+    border-right: none;
+    background: #fff;
+}
+.search-expand-input {
+    width: 0;
+    height: 42px;
+    padding: 0;
+    border: 1.5px solid transparent;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    background: #fff;
+    font-size: .88rem;
+    color: var(--texto, #1a2e22);
+    outline: none;
+    font-family: inherit;
+    overflow: hidden;
+    opacity: 0;
+    transition: width 240ms ease, opacity 200ms ease, padding 200ms ease, border-color 140ms;
+    box-sizing: border-box;
+}
+.search-inline.open .search-expand-input {
+    width: clamp(160px, 22vw, 280px);
+    opacity: 1;
+    padding: 0 10px;
+    border-color: var(--line, #d9e2da);
+    border-left-color: transparent;
+}
+.search-expand-input::placeholder { color: #9bb5a4; }
+.search-expand-input:focus { outline: none; }
+.search-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0;
+    height: 42px;
+    border: 1.5px solid transparent;
+    border-left: none;
+    border-radius: 0 9px 9px 0;
+    background: #fff;
+    cursor: pointer;
+    color: #9bb5a4;
+    flex-shrink: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: width 240ms ease, opacity 200ms ease, color 140ms, border-color 140ms;
+    padding: 0;
+}
+.search-close-btn:hover { color: var(--texto, #1a2e22); }
+.search-close-btn svg { width: 10px; height: 10px; flex-shrink: 0; }
+.search-inline.open .search-close-btn {
+    width: 36px;
+    opacity: 1;
+    border-color: var(--line, #d9e2da);
+    border-left-color: transparent;
+}
+.search-inline.open .search-open-btn,
+.search-inline.open .search-expand-input,
+.search-inline.open .search-close-btn {
+    border-color: var(--line, #d9e2da);
+}
+.search-inline.open:focus-within .search-expand-input,
+.search-inline.open:focus-within .search-open-btn,
+.search-inline.open:focus-within .search-close-btn {
+    border-color: var(--green, #257446);
+}
+.search-inline.open:focus-within { box-shadow: 0 0 0 3px rgba(37,116,70,.1); border-radius: 9px; }
+
 /* shared control shell */
 .ctrl {
     position: relative;
@@ -48,14 +144,7 @@
     display: flex;
     align-items: center;
 }
-.ctrl-icon {
-    position: absolute;
-    left: 12px;
-    width: 16px; height: 16px;
-    color: #8aab96;
-    pointer-events: none;
-    flex-shrink: 0;
-}
+
 /* shared input / button base */
 .ctrl input,
 .ctrl-btn {
@@ -76,14 +165,6 @@
     border-color: var(--green, #257446);
     box-shadow: 0 0 0 3px rgba(37,116,70,.1);
 }
-
-/* text search */
-.search-ctrl { flex: 1 1 220px; }
-#product-search {
-    width: 100%;
-    padding: 0 14px 0 36px;
-}
-#product-search::placeholder { color: #9bb5a4; }
 
 /* marca dropdown trigger */
 .select-ctrl { flex: 0 0 auto; }
@@ -233,7 +314,6 @@
     .ctrl { height: 44px; }
     .ctrl-btn,
     .ctrl-combo-input { min-width: 0; width: 100%; }
-    .search-ctrl { flex: unset; }
     .ctrl-panel { position: fixed; top: auto; left: 1rem; right: 1rem; bottom: 1rem; max-height: 55vh; border-radius: 14px; }
     .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .brand-card-logo,
