@@ -2,8 +2,9 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import site from "../../data/site.json";
 import { cms } from "../../lib/cms";
-import { getTypeNamesForProduct, getBrandIdForProduct, slugifyType } from "../../lib/products-utils";
+import { getTypeNamesForProduct, getBrandIdForProduct, slugifyType, getProductImageUrl } from "../../lib/products-utils";
 import type { Product } from "../../lib/cms/types";
+import '../../styles/products-index.css';
 
 interface ProductosHeaderData { txt_h1?: string; txt_descripcion?: string; txt_ver_productos?: string; }
 
@@ -21,7 +22,19 @@ const enrichedProducts = allProducts
         const types = getTypeNamesForProduct(p);
         return { product: p, brandId, brand, types };
     })
-    .filter((e) => e.brandId);
+    .filter((e) => e.brandId)
+    .sort((a, b) => {
+        if (a.brandId === 'bernardin' && b.brandId !== 'bernardin') return -1;
+        if (b.brandId === 'bernardin' && a.brandId !== 'bernardin') return 1;
+        return 0;
+    });
+
+// Group by primary type (preserves brand-priority order since products are sorted bernardin-first)
+const orderedTypes = [...new Set(enrichedProducts.map((e) => e.types[0]).filter(Boolean))];
+const typeGroups = orderedTypes.map((typeName) => ({
+    typeName,
+    products: enrichedProducts.filter((e) => e.types[0] === typeName),
+}));
 ---
 
 <BaseLayout locale="es" title="Productos | Bernardin">
@@ -30,100 +43,123 @@ const enrichedProducts = allProducts
             <div class="breadcrumbs"><a href="/">Inicio</a> / Productos</div>
             <h1>{productosHeader?.txt_h1}</h1>
             <p>{productosHeader?.txt_descripcion}</p>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            <div class="brand-grid">
-                {
-                    site.brands.map((b) => (
-                        <a class="brand-card brand-card-logo" href={`/productos/${b.id}`}>
-                            <>
-                                <img src={b.logo} alt={`Logo de ${b.name}`} />
-                                <p>{b.tag}</p>
-                                <span class="arrow">{productosHeader?.txt_ver_productos}</span>
-                            </>
-                        </a>
-                    ))
-                }
+            <div class="brand-strip" aria-label="Marcas Bernardin">
+                {site.brands.map((b) => (
+                    <a href={`/productos/${b.id}`}>
+                        <img src={b.logo} alt={b.name} />
+                    </a>
+                ))}
             </div>
         </div>
     </section>
 
-    <section class="section search-section">
+    <!-- ── search + filters ───────────────────────────── -->
+    <div class="search-bar-outer">
         <div class="container">
-            <div class="search-bar-wrap">
-                <svg class="search-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
-                    <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                </svg>
-                <input id="product-search" type="search" placeholder="Buscar productos..." autocomplete="off" />
-            </div>
+            <div class="controls-row">
 
-            <div class="filters">
-                <div class="filter-group">
-                    <span class="filter-label">Marca</span>
-                    <div class="filter-chips" id="marca-filters">
-                        <button class="filter-chip active" data-filter-marca="">Todas</button>
+                <!-- expandable lupa search -->
+                <div class="search-inline" id="search-inline-idx">
+                    <button class="search-open-btn" id="search-open-btn-idx" type="button" aria-label="Buscar productos">
+                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                            <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+                            <path d="M13 13l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <input id="product-search" class="search-expand-input" type="search" placeholder="Buscar productos..." autocomplete="off" />
+                    <button class="search-close-btn" id="search-close-btn-idx" type="button" aria-label="Cerrar búsqueda">
+                        <svg viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                </div>
+
+                <!-- marca styled select -->
+                <div class="ctrl select-ctrl" id="marca-wrap">
+                    <button class="ctrl-btn" id="marca-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="marca-label">Todas las marcas</span>
+                        <svg class="ctrl-chevron" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                            <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <ul class="ctrl-panel hidden" id="marca-panel" role="listbox">
+                        <li class="ctrl-option active" data-value="" data-label="Todas las marcas" role="option">Todas las marcas</li>
                         {site.brands.map((b) => (
-                            <button class="filter-chip" data-filter-marca={b.id}>{b.name}</button>
+                            <li class="ctrl-option" data-value={b.id} data-label={b.name} role="option">{b.name}</li>
                         ))}
-                    </div>
+                    </ul>
                 </div>
-                <div class="filter-group">
-                    <span class="filter-label">Tipo</span>
-                    <div class="filter-chips" id="tipo-filters">
-                        <button class="filter-chip active" data-filter-tipo="">Todos</button>
+
+                <!-- tipo combobox -->
+                <div class="ctrl combo-ctrl" id="tipo-wrap">
+                    <input
+                        id="tipo-combo"
+                        class="ctrl-combo-input"
+                        type="text"
+                        placeholder="Todos los tipos"
+                        autocomplete="off"
+                        role="combobox"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        aria-autocomplete="list"
+                    />
+                    <svg class="ctrl-chevron" id="tipo-chevron" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+                        <path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <button class="ctrl-clear hidden" id="tipo-clear" type="button" aria-label="Limpiar tipo">
+                        <svg viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                    <ul class="ctrl-panel hidden" id="tipo-panel" role="listbox">
+                        <li class="ctrl-option active" data-value="" data-label="Todos los tipos" role="option">Todos los tipos</li>
                         {typeNames.map((name) => (
-                            <button class="filter-chip" data-filter-tipo={slugifyType(name)}>{name}</button>
+                            <li class="ctrl-option" data-value={slugifyType(name)} data-label={name} role="option">{name}</li>
+                        ))}
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── type-grouped products ─────────────────────── -->
+    <section class="section type-groups-section" id="type-groups-section">
+        <div class="container">
+            <div class="result-bar">
+                <p class="result-count hidden" id="result-count"></p>
+                <p class="no-results hidden" id="no-results">Sin resultados para tu búsqueda.</p>
+            </div>
+            {typeGroups.map(({ typeName, products: group }) => (
+                <div class="type-group" data-type={slugifyType(typeName)}>
+                    <h2 class="type-group-title">{typeName}</h2>
+                    <div class="products-grid">
+                        {group.map(({ product, brandId, brand, types }) => (
+                            <article
+                                class="product-card"
+                                data-nombre={(product.locale?.title ?? product.slug).toLowerCase()}
+                                data-marca={brandId}
+                                data-tipo={types.map(slugifyType).join("|")}
+                            >
+                                <a href={`/productos/${brandId}/${product.slug}`}>
+                                    <div class="card-media">
+                                        <img src={getProductImageUrl(product, brand?.logo || "")} alt={product.locale?.title ?? product.slug} loading="lazy" />
+                                    </div>
+                                    {brand && <span class="card-brand">{brand.name}</span>}
+                                    <h3>{product.locale?.title ?? product.slug}</h3>
+                                </a>
+                            </article>
                         ))}
                     </div>
                 </div>
-            </div>
-
-            <p class="result-count" id="result-count">{enrichedProducts.length} productos</p>
-
-            <div class="products-grid" id="products-grid">
-                {
-                    enrichedProducts.map(({ product, brandId, brand, types }) => (
-                        <article
-                            class="product-card"
-                            data-nombre={(product.locale?.title ?? product.slug).toLowerCase()}
-                            data-marca={brandId}
-                            data-tipo={types.map(slugifyType).join("|")}
-                        >
-                            <a href={`/productos/${brandId}/${product.slug}`}>
-                                <div class="card-media">
-                                    <img
-                                        src={product.images?.[0] ?? brand?.logo ?? ""}
-                                        alt={product.locale?.title ?? product.slug}
-                                        loading="lazy"
-                                    />
-                                </div>
-                                {brand && <span class="card-brand">{brand.name}</span>}
-                                <h3>{product.locale?.title ?? product.slug}</h3>
-                            </a>
-                        </article>
-                    ))
-                }
-            </div>
-
-            <p class="no-results hidden" id="no-results">Sin resultados para tu búsqueda.</p>
+            ))}
         </div>
     </section>
 
+    <!-- ── tipo chips (seo) ───────────────────────────── -->
     <section class="section tipo-section">
         <div class="container">
             <h2 class="tipo-title">Explorar por tipo</h2>
             <div class="tipo-chips">
-                {
-                    typeNames.map((name) => (
-                        <a class="tipo-chip" href={`/productos/tipo/${slugifyType(name)}`}>
-                            {name}
-                        </a>
-                    ))
-                }
+                {typeNames.map((name) => (
+                    <a class="tipo-chip" href={`/productos/tipo/${slugifyType(name)}`}>{name}</a>
+                ))}
             </div>
         </div>
     </section>
@@ -131,310 +167,133 @@ const enrichedProducts = allProducts
 
 <script is:inline>
 (function () {
-    var input = document.getElementById("product-search");
-    var grid = document.getElementById("products-grid");
-    var cards = grid.querySelectorAll(".product-card");
-    var countEl = document.getElementById("result-count");
-    var noResults = document.getElementById("no-results");
-    var marcaChips = document.querySelectorAll("[data-filter-marca]");
-    var tipoChips = document.querySelectorAll("[data-filter-tipo]");
-
+    var searchInput = document.getElementById("product-search");
+    var allCards    = Array.from(document.querySelectorAll(".product-card"));
+    var groups      = Array.from(document.querySelectorAll(".type-group"));
+    var countEl     = document.getElementById("result-count");
+    var noResultsEl = document.getElementById("no-results");
     var activeMarca = "";
-    var activeTipo = "";
+    var activeTipo  = "";
+
+    var searchInline   = document.getElementById("search-inline-idx");
+    var searchOpenBtn  = document.getElementById("search-open-btn-idx");
+    var searchCloseBtn = document.getElementById("search-close-btn-idx");
+    searchOpenBtn.addEventListener("click", function () {
+        searchInline.classList.add("open");
+        searchInput.focus();
+    });
+    searchCloseBtn.addEventListener("click", function () {
+        searchInline.classList.remove("open");
+        searchInput.value = "";
+        filter();
+    });
 
     function filter() {
-        var q = input.value.toLowerCase().trim();
-        var count = 0;
-        cards.forEach(function (card) {
-            var nombre = card.dataset.nombre || "";
-            var marca = card.dataset.marca || "";
-            var tipo = card.dataset.tipo || "";
-            var show =
-                (!q || nombre.includes(q)) &&
-                (!activeMarca || marca === activeMarca) &&
-                (!activeTipo || tipo.split("|").includes(activeTipo));
+        var q = searchInput.value.toLowerCase().trim();
+        var hasFilter = q || activeMarca || activeTipo;
+        var matchCount = 0;
+        allCards.forEach(function (card) {
+            var show = !hasFilter || (
+                (!q || (card.dataset.nombre || "").includes(q)) &&
+                (!activeMarca || card.dataset.marca === activeMarca) &&
+                (!activeTipo  || (card.dataset.tipo  || "").split("|").includes(activeTipo))
+            );
             card.classList.toggle("hidden", !show);
-            if (show) count++;
+            if (show) matchCount++;
         });
-        countEl.textContent = count + " producto" + (count !== 1 ? "s" : "");
-        noResults.classList.toggle("hidden", count > 0);
+        groups.forEach(function (group) {
+            group.classList.toggle("hidden",
+                group.querySelectorAll(".product-card:not(.hidden)").length === 0
+            );
+        });
+        if (hasFilter) {
+            countEl.textContent = matchCount + " producto" + (matchCount !== 1 ? "s" : "");
+            countEl.classList.remove("hidden");
+            noResultsEl.classList.toggle("hidden", matchCount > 0);
+        } else {
+            countEl.classList.add("hidden");
+            noResultsEl.classList.add("hidden");
+        }
     }
 
-    input.addEventListener("input", filter);
+    searchInput.addEventListener("input", filter);
 
-    marcaChips.forEach(function (chip) {
-        chip.addEventListener("click", function () {
-            marcaChips.forEach(function (c) { c.classList.remove("active"); });
-            chip.classList.add("active");
-            activeMarca = chip.dataset.filterMarca;
+    /* ── generic dropdown ── */
+    function makeDropdown(wrapperId, triggerId, labelId, panelId) {
+        var wrap    = document.getElementById(wrapperId);
+        var trigger = document.getElementById(triggerId);
+        var label   = document.getElementById(labelId);
+        var panel   = document.getElementById(panelId);
+        var items   = panel.querySelectorAll(".ctrl-option");
+
+        function open()  { panel.classList.remove("hidden"); trigger.setAttribute("aria-expanded","true"); }
+        function close() { panel.classList.add("hidden");    trigger.setAttribute("aria-expanded","false"); }
+
+        trigger.addEventListener("click", function () {
+            panel.classList.contains("hidden") ? open() : close();
+        });
+        items.forEach(function (item) {
+            item.addEventListener("click", function () {
+                items.forEach(function (i) { i.classList.remove("active"); });
+                item.classList.add("active");
+                label.textContent = item.dataset.label;
+                activeMarca = item.dataset.value;
+                close();
+                filter();
+            });
+        });
+        document.addEventListener("click", function (e) {
+            if (!wrap.contains(e.target)) close();
+        });
+    }
+    makeDropdown("marca-wrap", "marca-trigger", "marca-label", "marca-panel");
+
+    /* ── tipo combobox ── */
+    var tipoWrap   = document.getElementById("tipo-wrap");
+    var tipoInput  = document.getElementById("tipo-combo");
+    var tipoPanel  = document.getElementById("tipo-panel");
+    var tipoChevron= document.getElementById("tipo-chevron");
+    var tipoClear  = document.getElementById("tipo-clear");
+    var tipoItems  = tipoPanel.querySelectorAll(".ctrl-option");
+
+    function tipoOpen()  { tipoPanel.classList.remove("hidden"); tipoInput.setAttribute("aria-expanded","true");  tipoChevron.classList.add("open"); }
+    function tipoClose() { tipoPanel.classList.add("hidden");    tipoInput.setAttribute("aria-expanded","false"); tipoChevron.classList.remove("open"); }
+
+    tipoInput.addEventListener("focus", tipoOpen);
+    tipoInput.addEventListener("input", function () {
+        tipoOpen();
+        var q = tipoInput.value.toLowerCase();
+        tipoItems.forEach(function (item) {
+            if (!item.dataset.value) { item.style.display = ""; return; }
+            item.style.display = item.dataset.label.toLowerCase().includes(q) ? "" : "none";
+        });
+    });
+    tipoInput.addEventListener("blur", function () {
+        setTimeout(tipoClose, 160);
+    });
+    tipoItems.forEach(function (item) {
+        item.addEventListener("mousedown", function (e) {
+            e.preventDefault();
+            tipoItems.forEach(function (i) { i.classList.remove("active"); });
+            item.classList.add("active");
+            activeTipo = item.dataset.value;
+            tipoInput.value = item.dataset.value ? item.dataset.label : "";
+            tipoClear.classList.toggle("hidden", !item.dataset.value);
+            tipoClose();
             filter();
         });
     });
-
-    tipoChips.forEach(function (chip) {
-        chip.addEventListener("click", function () {
-            tipoChips.forEach(function (c) { c.classList.remove("active"); });
-            chip.classList.add("active");
-            activeTipo = chip.dataset.filterTipo;
-            filter();
-        });
+    tipoClear.addEventListener("click", function () {
+        activeTipo = "";
+        tipoInput.value = "";
+        tipoClear.classList.add("hidden");
+        tipoItems.forEach(function (i) { i.classList.remove("active"); });
+        tipoItems[0].classList.add("active");
+        tipoInput.focus();
+        filter();
+    });
+    document.addEventListener("click", function (e) {
+        if (!tipoWrap.contains(e.target)) tipoClose();
     });
 })();
 </script>
-
-<style>
-    /* ── brand grid ───────────────────────────────────────── */
-    .brand-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 18px;
-    }
-    .brand-card-logo {
-        display: flex;
-        min-height: 220px;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 28px 26px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--white);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-    }
-    .brand-card-logo:nth-child(1) { grid-column: 1 / span 2; }
-    .brand-card-logo:nth-child(2) { grid-column: 3 / span 2; }
-    .brand-card-logo:nth-child(3) { grid-column: 5 / span 2; }
-    .brand-card-logo:nth-child(4) { grid-column: 2 / span 2; }
-    .brand-card-logo:nth-child(5) { grid-column: 4 / span 2; }
-    .brand-card-logo img {
-        width: min(100%, 220px);
-        height: 72px;
-        object-fit: contain;
-        object-position: left center;
-    }
-    .brand-card-logo p {
-        margin: 18px 0 0;
-        color: #566b60;
-        max-width: 22ch;
-    }
-    .arrow {
-        color: var(--blue);
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.78rem;
-        letter-spacing: 0.06em;
-        white-space: nowrap;
-    }
-
-    /* ── search section ──────────────────────────────────── */
-    .search-section {
-        background: var(--pale, #f4f8f4);
-        border-top: 1px solid var(--line, #d9e2da);
-        border-bottom: 1px solid var(--line, #d9e2da);
-    }
-    .search-bar-wrap {
-        position: relative;
-        max-width: 540px;
-        margin-bottom: 28px;
-    }
-    .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 18px;
-        height: 18px;
-        color: #8aab96;
-        pointer-events: none;
-    }
-    #product-search {
-        width: 100%;
-        padding: 13px 16px 13px 42px;
-        font-size: 1rem;
-        border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 10px;
-        background: #fff;
-        color: var(--texto, #1a2e22);
-        outline: none;
-        transition: border-color 150ms ease, box-shadow 150ms ease;
-    }
-    #product-search:focus {
-        border-color: var(--green, #257446);
-        box-shadow: 0 0 0 3px rgba(37, 116, 70, 0.1);
-    }
-    #product-search::placeholder { color: #9bb5a4; }
-
-    .filters {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        margin-bottom: 28px;
-    }
-    .filter-group {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-    .filter-label {
-        padding-top: 6px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #7a9985;
-        white-space: nowrap;
-        min-width: 42px;
-    }
-    .filter-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-    }
-    .filter-chip {
-        padding: 5px 14px;
-        font-size: 0.84rem;
-        font-weight: 500;
-        border: 1.5px solid var(--line, #d9e2da);
-        border-radius: 999px;
-        background: #fff;
-        color: var(--green, #257446);
-        cursor: pointer;
-        transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
-    }
-    .filter-chip:hover { border-color: var(--green, #257446); }
-    .filter-chip.active {
-        background: var(--green, #257446);
-        border-color: var(--green, #257446);
-        color: #fff;
-    }
-
-    .result-count {
-        margin: 0 0 20px;
-        font-size: 0.85rem;
-        color: #7a9985;
-        font-weight: 500;
-    }
-    .no-results {
-        margin-top: 48px;
-        text-align: center;
-        color: #7a9985;
-        font-size: 1rem;
-    }
-    .hidden { display: none; }
-
-    /* ── product grid ────────────────────────────────────── */
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-        gap: 16px;
-    }
-    .product-card a {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        background: #fff;
-        border: 1px solid var(--line, #d9e2da);
-        border-radius: 12px;
-        overflow: hidden;
-        text-decoration: none;
-        transition: transform 160ms ease, box-shadow 160ms ease;
-    }
-    .product-card a:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 24px rgba(25, 67, 40, 0.11);
-    }
-    .card-media {
-        display: grid;
-        place-items: center;
-        height: 150px;
-        padding: 20px;
-        background: radial-gradient(circle at 50% 45%, rgba(64, 181, 83, 0.08), transparent 65%), var(--pale, #f4f8f4);
-        border-bottom: 1px solid rgba(37, 116, 70, 0.08);
-    }
-    .card-media img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-    .card-brand {
-        padding: 10px 14px 0;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--green, #257446);
-    }
-    .product-card h3 {
-        margin: 0;
-        padding: 6px 14px 16px;
-        font-size: 0.92rem;
-        font-weight: 600;
-        line-height: 1.35;
-        color: var(--texto, #1a2e22);
-    }
-
-    /* ── tipo section ────────────────────────────────────── */
-    .tipo-section {
-        background: #fff;
-        border-top: 1px solid var(--line, #d9e2da);
-    }
-    .tipo-title {
-        margin: 0 0 32px;
-        font-size: clamp(1.4rem, 3vw, 2rem);
-        color: var(--green, #257446);
-    }
-    .tipo-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .tipo-chip {
-        display: inline-block;
-        padding: 8px 18px;
-        background: var(--pale, #f4f8f4);
-        border: 1px solid var(--line, #d9e2da);
-        border-radius: 999px;
-        font-size: 0.88rem;
-        font-weight: 500;
-        color: var(--green, #257446);
-        text-decoration: none;
-        transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
-    }
-    .tipo-chip:hover {
-        background: var(--green, #257446);
-        border-color: var(--green, #257446);
-        color: #fff;
-    }
-
-    /* ── mobile ──────────────────────────────────────────── */
-    @media (max-width: 700px) {
-        .brand-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-        .brand-card-logo,
-        .brand-card-logo:nth-child(n) {
-            grid-column: auto;
-            min-height: 205px;
-            padding: 22px 18px;
-        }
-        .brand-card-logo:nth-child(5) {
-            grid-column: 1 / -1;
-            max-width: calc(50% - 7px);
-            width: 100%;
-            justify-self: center;
-        }
-        .brand-card-logo img {
-            width: 100%;
-            height: 58px;
-            object-position: center;
-        }
-        .brand-card-logo p { font-size: 0.95rem; line-height: 1.35; margin-top: 14px; }
-        .arrow { font-size: 0.68rem; letter-spacing: 0.03em; }
-        .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card-media { height: 120px; }
-        .filter-group { gap: 8px; }
-    }
-</style>

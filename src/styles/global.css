@@ -494,6 +494,20 @@ h3 {
   color: #b9d9c2;
 }
 
+.footer-grid > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.footer-grid > div:first-child .logo img {
+  object-position: center;
+}
+.footer-grid > div:first-child > p {
+  margin-top: 10px;
+  color: #ccebd2;
+}
+
 .whatsapp {
   position: fixed;
   right: 24px;
@@ -569,6 +583,10 @@ h3 {
     --gap: 14px;
     --card-h: 230px;
   }
+
+  .page-hero { padding: 44px 0 52px; }
+  .stat:nth-child(2n) { border-right: none; }
+  .story-panel { padding: 32px; min-height: 280px; }
 }
 
 @media (max-width: 480px) {
