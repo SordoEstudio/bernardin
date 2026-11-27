@@ -2,12 +2,13 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import site from "../../../data/site.json";
 import { cms } from "../../../lib/cms";
-import type { Product, Category, CMSComponent } from "../../../lib/cms/types";
-import { BRAND_CATEGORY_ID, getTypeNamesForProduct } from "../../../lib/products-utils";
+import type { Product, CMSComponent } from "../../../lib/cms/types";
+import { BRAND_CATEGORY_ID, getTypeNamesForProduct, getProductImages, getProductImageUrl, splitDescription } from "../../../lib/products-utils";
+import { marked } from "marked";
 
 export async function getStaticPaths() {
     try {
-        const [brandsData, allCategories, { components: prodComponents }] = await Promise.all([
+        const [brandsData, { components: prodComponents }] = await Promise.all([
             Promise.all(
                 site.brands
                     .filter((b) => BRAND_CATEGORY_ID[b.id])
@@ -17,81 +18,157 @@ export async function getStaticPaths() {
                             .then(({ products }) => products.map((p) => ({ brandId: b.id, product: p }))),
                     ),
             ).then((r) => r.flat()),
-            cms.categories.list().catch(() => [] as Category[]),
             cms.components.list({ page_filter: "Productos", locale: "es" }).catch(() => ({ components: [] as CMSComponent[] })),
         ]);
-        return brandsData.map(({ brandId, product }) => ({
-            params: { marca: brandId, producto: product.slug },
-            props: { product, brandId, allCategories, prodComponents },
-        }));
+        return brandsData.map(({ brandId, product }) => {
+            const selfSlug = product.slug;
+            const selfType = getTypeNamesForProduct(product)[0];
+            const sameBrand = brandsData.filter(e => e.brandId === brandId && e.product.slug !== selfSlug);
+            const sameType = sameBrand.filter(e => getTypeNamesForProduct(e.product)[0] === selfType);
+            const otherType = sameBrand.filter(e => getTypeNamesForProduct(e.product)[0] !== selfType);
+            const related = [...sameType, ...otherType].slice(0, 4);
+            return {
+                params: { marca: brandId, producto: product.slug },
+                props: { product, brandId, prodComponents, related },
+            };
+        });
     } catch {
         return [];
     }
 }
 
-const { product, brandId, allCategories, prodComponents } = Astro.props as {
+const { product, brandId, prodComponents, related } = Astro.props as {
     product: Product;
     brandId: string;
-    allCategories: Category[];
     prodComponents: CMSComponent[];
+    related: { brandId: string; product: Product }[];
 };
 const brand = site.brands.find((b) => b.id === brandId)!;
 
 interface ProductoDetalleData { txt_h2?: string; txt_cta_label?: string; }
 const productoDetalle = cms.components.getByType<ProductoDetalleData>(prodComponents, "producto_detalle");
 const typeName = getTypeNamesForProduct(product)[0];
-const typeCategory = typeName ? allCategories.find((c) => c.name === typeName) : undefined;
-const images = product.images?.length ? product.images : [brand.logo];
+const hasProductImages = (product.images ?? []).some(img => !!img);
+const images = getProductImages(product, brand.logo);
 const productName = product.locale?.title ?? product.slug;
-const productDesc = product.locale?.description ?? typeCategory?.description ?? "";
+const productDescRaw = product.locale?.description ?? "";
+const { intro, specs } = splitDescription(productDescRaw);
+const introHtml = marked.parse(intro) as string;
+const specsHtml = specs ? marked.parse(specs) as string : null;
 ---
 
 <BaseLayout locale="es" title={`${productName} | ${brand.name} | Bernardin`}>
-    <section class="page-hero">
+    <section class:list={["page-hero", { "hero-with-image": hasProductImages }]}>
         <div class="container">
-            <div class="breadcrumbs">
-                <a href="/productos">Productos</a> / <a
-                    href={`/productos/${brand.id}`}>{brand.name}</a
-                > / {productName}
-            </div><span class="eyebrow">{brand.name}</span><h1>
-                {productName}
-            </h1><p>{productDesc}</p>
+            <div class="hero-text">
+                <div class="breadcrumbs">
+                    <a href="/productos">Productos</a> / <a
+                        href={`/productos/${brand.id}`}>{brand.name}</a
+                    > / {productName}
+                </div><span class="eyebrow">{brand.name}</span><h1>
+                    {productName}
+                </h1>
+            </div>
+            {hasProductImages && (
+                <img class="hero-product-img" src={images[0]} alt={productName} />
+            )}
         </div>
     </section>
+    {specsHtml && intro && (
+        <section class="section section-intro">
+            <div class="container">
+                <div class="prose prose-wide" set:html={introHtml}></div>
+            </div>
+        </section>
+    )}
     <section class="section">
         <div class="container product-detail">
             <div class="product-gallery">
                 <div class="gallery-main">
-                    <img src={images[0]} alt={productName} />
-                </div>{
-                    images.length > 1 && (
-                        <div class="gallery-thumbs">
-                            {images.map((image, index) => (
-                                <a href={`#media-${index}`}>
-                                    <img
-                                        id={`media-${index}`}
-                                        src={image}
-                                        alt={`${productName}, imagen ${index + 1}`}
-                                    />
-                                </a>
-                            ))}
-                        </div>
-                    )
-                }
+                    <img id="gallery-main-img" src={images[0]} alt={productName} />
+                </div>
+                {images.length > 1 && (
+                    <div class="gallery-thumbs">
+                        {images.map((image, index) => (
+                            <button
+                                class:list={["thumb-btn", { active: index === 0 }]}
+                                data-src={image}
+                                type="button"
+                                aria-label={`${productName}, imagen ${index + 1}`}
+                            >
+                                <img src={image} alt={`${productName}, imagen ${index + 1}`} />
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div><div class="product-copy">
-                <span class="eyebrow">{typeName ?? ""}</span><h2>
-                    {productoDetalle?.txt_h2}
-                </h2><p>
-                    {productDesc}
-                </p><a
+                <span class="eyebrow">{typeName ?? ""}</span>
+                <div class="prose" set:html={specsHtml ?? introHtml}></div><a
                     class="btn"
                     href={`/contacto?producto=${encodeURIComponent(productName)}`}
                     >{productoDetalle?.txt_cta_label} <span>→</span></a>
             </div>
         </div>
     </section>
+    {related.length > 0 && (
+        <section class="section related-section">
+            <div class="container">
+                <h2 class="related-title">Más productos {brand.name}</h2>
+                <div class="related-grid">
+                    {related.map(({ product: p }) => (
+                        <a class="related-card" href={`/productos/${brandId}/${p.slug}`}>
+                            <div class="related-media">
+                                <img src={getProductImageUrl(p, brand.logo)} alt={p.locale?.title ?? p.slug} loading="lazy" />
+                            </div>
+                            <span class="related-name">{p.locale?.title ?? p.slug}</span>
+                        </a>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )}
+    <script is:inline>
+    (function() {
+        var mainImg = document.getElementById("gallery-main-img");
+        if (!mainImg) return;
+        var thumbBtns = document.querySelectorAll(".thumb-btn");
+        thumbBtns.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                mainImg.src = btn.dataset.src;
+                thumbBtns.forEach(function(b) { b.classList.remove("active"); });
+                btn.classList.add("active");
+            });
+        });
+    })();
+    </script>
 </BaseLayout>
 <style>
+    /* ── hero with product image ───────────────────────── */
+    .page-hero { overflow: visible; padding-top: 36px; }
+    .hero-with-image { padding-bottom: 0; } /* let image overflow section bottom */
+    .hero-with-image .container {
+        display: flex;
+        align-items: flex-end;
+        gap: clamp(32px, 6vw, 72px);
+    }
+    .hero-text { flex: 1; min-width: 0; }
+    .hero-product-img {
+        height: 260px;
+        width: auto;
+        max-width: 46%;
+        object-fit: contain;
+        transform: translateY(50px);
+        filter: drop-shadow(0 20px 40px rgba(25,67,40,.18));
+        flex-shrink: 0;
+        pointer-events: none;
+    }
+    .page-hero + .section { padding-top: 70px; }
+
+    /* ── intro / specs layout ──────────────────────────── */
+    .section-intro { padding-bottom: 0; }
+    .prose.prose-wide { max-width: 100%; margin-bottom: 0; }
+
+    /* ── product detail grid ───────────────────────────── */
     .product-detail {
         display: grid;
         grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
@@ -123,36 +200,83 @@ const productDesc = product.locale?.description ?? typeCategory?.description ?? 
         display: flex;
         gap: 12px;
         margin-top: 16px;
+        flex-wrap: wrap;
     }
-    .gallery-thumbs a {
+    .thumb-btn {
         padding: 6px;
-        border: 1px solid var(--line);
+        border: 1.5px solid var(--line);
         border-radius: 8px;
         background: #fff;
+        cursor: pointer;
+        transition: border-color 160ms, box-shadow 160ms;
+        display: flex;
+        flex-shrink: 0;
+    }
+    .thumb-btn:hover { border-color: var(--green, #257446); }
+    .thumb-btn.active {
+        border-color: var(--green, #257446);
+        box-shadow: 0 0 0 2px rgba(37,116,70,.18);
     }
     .gallery-thumbs img {
         width: 74px;
         height: 58px;
-        object-fit: cover;
+        object-fit: contain;
     }
-    .product-copy h2 {
-        margin: 12px 0 20px;
-    }
-    .product-copy p {
+    .product-copy h2 { margin: 12px 0 20px; }
+    .prose {
         max-width: 520px;
         margin-bottom: 30px;
         color: #5b675e;
+        line-height: 1.7;
     }
+    .prose :global(p) { margin: 0 0 12px; }
+    .prose :global(ul) { padding-left: 1.2em; margin: 0 0 12px; }
+    .prose :global(li) { margin-bottom: 4px; }
+    .prose :global(strong) { color: var(--green, #257446); font-weight: 700; }
+
     @media (max-width: 760px) {
-        .product-detail {
-            grid-template-columns: 1fr;
-        }
-        .gallery-main {
-            min-height: 280px;
-            padding: 28px;
-        }
-        .gallery-main img {
-            height: 240px;
-        }
+        .hero-with-image .container { flex-direction: column; align-items: flex-start; gap: 0; }
+        .hero-product-img { height: 180px; max-width: 70vw; transform: translateY(36px); align-self: center; }
+        .page-hero + .section { padding-top: 50px; }
+        .product-detail { grid-template-columns: 1fr; }
+        .gallery-main { min-height: 280px; padding: 28px; }
+        .gallery-main img { height: 240px; }
+        .related-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── related products ─────────────────────────────── */
+    .related-section { background: #fff; border-top: 1px solid var(--line); }
+    .related-title { margin: 0 0 24px; font-size: clamp(1.1rem, 2vw, 1.4rem); color: var(--green, #257446); }
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 16px;
+    }
+    .related-card {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        text-decoration: none;
+        transition: transform 160ms, box-shadow 160ms;
+        background: #fff;
+    }
+    .related-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(25,67,40,.1); }
+    .related-media {
+        display: grid;
+        place-items: center;
+        height: 130px;
+        padding: 16px;
+        background: radial-gradient(circle at 50% 45%, rgba(64,181,83,.08), transparent 65%), var(--pale);
+        border-bottom: 1px solid rgba(37,116,70,.08);
+    }
+    .related-media img { height: 90px; width: auto; max-width: 100%; object-fit: contain; }
+    .related-name {
+        padding: 10px 14px 14px;
+        font-size: .88rem;
+        font-weight: 600;
+        color: var(--texto, #1a2e22);
+        line-height: 1.35;
     }
 </style>
